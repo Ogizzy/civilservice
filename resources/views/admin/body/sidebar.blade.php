@@ -98,27 +98,6 @@
           
         <li class="menu-label">Reports</li>
        
-        <li>
-            <a href="">
-                <div class="parent-icon"><i class="lni lni-funnel"></i>
-                </div>
-                <div class="menu-title">View Reports</div>
-            </a>
-        </li>
-    
-        <li class="menu-label">Pages</li>
-       
-        <li>
-            <a href="user-profile.html">
-                <div class="parent-icon"><i class="bx bx-user-circle"></i>
-                </div>
-                <div class="menu-title">User Profile</div>
-            </a>
-        </li>
-    
-        <li class="menu-label">Others</li>
-
-        <li class="menu-label">Reports</li>
 
 <li>
     <a href="">
@@ -128,7 +107,7 @@
 </li>
 
 <li>
-    <a href="{{ route('reports.by-mda')}}">
+    <a href="">
         <div class="parent-icon"><i class="lni lni-apartment"></i></div>
         <div class="menu-title">By MDA</div>
     </a>
