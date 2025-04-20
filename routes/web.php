@@ -6,15 +6,17 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Step\StepController;
 use App\Http\Controllers\User\UserController;
 use App\Http\Controllers\Admin\AdminController;
-use App\Http\Controllers\User\UserRoleController;
+// use App\Http\Controllers\User\UserRoleController;
 use App\Http\Controllers\Document\DocumentController;
 use App\Http\Controllers\Employee\EmployeeController;
 use App\Http\Controllers\Paygroup\PayGroupController;
+use App\Http\Controllers\UserRole\UserRoleController;
 use App\Http\Controllers\Gradelevel\GradeLevelController;
+use SebastianBergmann\CodeCoverage\Report\Html\Dashboard;
 use App\Http\Controllers\Transfer\TransferHistoryController;
 use App\Http\Controllers\Promotiom\PromotionHistoryController;
+use App\Http\Controllers\UserPermission\UserPermissionController;
 use App\Http\Controllers\Platformfeatures\PlatformFeatureController;
-use SebastianBergmann\CodeCoverage\Report\Html\Dashboard;
 
 Route::get('/', function () {
     return view('welcome');
@@ -45,14 +47,14 @@ Route::patch('/platform-features/{platform_feature}', [PlatformFeatureController
 Route::delete('/platform-features/{platform_feature}', [PlatformFeatureController::class, 'destroy'])->name('platform-features.destroy');
 
 // All User Roles
-Route::get('/user-roles', [UserRoleController::class, 'index'])->name('user-roles.index');
-Route::get('/user-roles/create', [UserRoleController::class, 'create'])->name('user-roles.create');
-Route::post('/user-roles', [UserRoleController::class, 'store'])->name('user-roles.store');
-Route::get('/user-roles/{user_role}', [UserRoleController::class, 'show'])->name('user-roles.show');
-Route::get('/user-roles/{user_role}/edit', [UserRoleController::class, 'edit'])->name('user-roles.edit');
-Route::put('/user-roles/{user_role}', [UserRoleController::class, 'update'])->name('user-roles.update');
-Route::patch('/user-roles/{user_role}', [UserRoleController::class, 'update']);
-Route::delete('/user-roles/{user_role}', [UserRoleController::class, 'destroy'])->name('user-roles.destroy');
+// Route::get('/user-roles', [UserRoleController::class, 'index'])->name('user-roles.index');
+// Route::get('/user-roles/create', [UserRoleController::class, 'create'])->name('user-roles.create');
+// Route::post('/user-roles', [UserRoleController::class, 'store'])->name('user-roles.store');
+// Route::get('/user-roles/{user_role}', [UserRoleController::class, 'show'])->name('user-roles.show');
+// Route::get('/user-roles/{user_role}/edit', [UserRoleController::class, 'edit'])->name('user-roles.edit');
+// Route::put('/user-roles/{user_role}', [UserRoleController::class, 'update'])->name('user-roles.update');
+// Route::patch('/user-roles/{user_role}', [UserRoleController::class, 'update']);
+// Route::delete('/user-roles/{user_role}', [UserRoleController::class, 'destroy'])->name('user-roles.destroy');
 
 // All Users Routes
 Route::get('/users', [UserController::class, 'index'])->name('users.index');
@@ -201,4 +203,37 @@ Route::prefix('employees')->group(function () {
     Route::get('/by-qualification', [EmployeeController::class, 'byQualification'])->name('employees.by-qualification');
     Route::get('/retired', [EmployeeController::class, 'retiredEmployees'])->name('employees.retired');
     Route::get('/retiring', [EmployeeController::class, 'retiringEmployees'])->name('employees.retiring');
+});
+
+// Roles Routes
+    Route::prefix('roles')->name('roles.')->group(function () {
+        Route::get('/', [UserRoleController::class, 'index'])->name('index');
+        Route::get('/create', [UserRoleController::class, 'create'])->name('create');
+        Route::post('/', [UserRoleController::class, 'store'])->name('store');
+        Route::get('/{role}', [UserRoleController::class, 'show'])->name('show');
+        Route::get('/{role}/edit', [UserRoleController::class, 'edit'])->name('edit');
+        Route::put('/{role}', [UserRoleController::class, 'update'])->name('update');
+        Route::delete('/{role}', [UserRoleController::class, 'destroy'])->name('destroy');
+    });
+
+    // Features Routes
+Route::prefix('features')->name('features.')->group(function () {
+    Route::get('/', [PlatformFeatureController::class, 'index'])->name('index');
+    Route::get('/create', [PlatformFeatureController::class, 'create'])->name('create');
+    Route::post('/', [PlatformFeatureController::class, 'store'])->name('store');
+    Route::get('/{feature}', [PlatformFeatureController::class, 'show'])->name('show');
+    Route::get('/{feature}/edit', [PlatformFeatureController::class, 'edit'])->name('edit');
+    Route::put('/{feature}', [PlatformFeatureController::class, 'update'])->name('update');
+    Route::delete('/{feature}', [PlatformFeatureController::class, 'destroy'])->name('destroy');
+});
+
+// Permissions Routes
+Route::prefix('permissions')->name('permissions.')->group(function () {
+    Route::get('/', [UserPermissionController::class, 'index'])->name('index');
+    Route::get('/create', [UserPermissionController::class, 'create'])->name('create');
+    Route::post('/', [UserPermissionController::class, 'store'])->name('store');
+    Route::get('/{permission}', [UserPermissionController::class, 'show'])->name('show');
+    Route::get('/{permission}/edit', [UserPermissionController::class, 'edit'])->name('edit');
+    Route::put('/{permission}', [UserPermissionController::class, 'update'])->name('update');
+    Route::delete('/{permission}', [UserPermissionController::class, 'destroy'])->name('destroy');
 });

@@ -227,4 +227,46 @@
 </div>
 </div>
 
+
+<style>
+    .detail-item {
+        margin-bottom: 20px;
+    }
+    .detail-title {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: #2c3e50;
+        margin-bottom: 15px;
+        padding-bottom: 5px;
+        border-bottom: 1px solid #eee;
+    }
+    .detail-row {
+        display: flex;
+        margin-bottom: 10px;
+    }
+    .detail-label {
+        font-weight: 600;
+        color: #7f8c8d;
+        width: 150px;
+    }
+    .detail-value {
+        flex: 1;
+        color: #34495e;
+    }
+    .nav-tabs .nav-link.active {
+        font-weight: 600;
+        border-bottom: 2px solid #3490dc;
+    }
+</style>
+
+<script>
+    $(document).ready(function() {
+        // Initialize tabs
+        $('#employeeTabs a').on('click', function (e) {
+            e.preventDefault()
+            $(this).tab('show')
+        });
+    });
+</script>
+
 @endsection

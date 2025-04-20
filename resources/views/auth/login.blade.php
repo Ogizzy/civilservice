@@ -38,7 +38,7 @@
 
                         <div class="card shadow-none bg-transparent shadow-none rounded-0 mb-0">
 							<div class="card-body">
-                                 <img src="{{ asset('backend/assets/images/login-images/benue-new-logo.svg') }}" class="img-fluid auth-img-cover-login" width="400" alt=""/>
+                                 <img src="{{ asset('backend/assets/images/login-images/benue-logo.png') }}" class="img-fluid auth-img-cover-login" width="400" alt=""/>
 							</div>
 						</div>
 						

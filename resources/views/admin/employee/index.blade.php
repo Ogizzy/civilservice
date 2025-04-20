@@ -39,7 +39,7 @@
                 <div class="card-body">
                     <div class="table-responsive">
                         <table id="example2" class="table table-striped table-bordered">
-                            <thead>
+                            <thead class="thead-dark">
                                 <tr>
                                     <th>S/N</th>
                                     <th>Employee No.</th>
@@ -90,7 +90,7 @@
                                             </a>
 
                                             <a href="{{ route('employees.documents.index', $employee->id) }}" class="btn btn-sm btn-secondary">
-                                                <i class="lni lni-files"></i>
+                                                <i class="lni lni-files" title="Upload Documents"></i>
                                             </a>
                                             
                                         </td>

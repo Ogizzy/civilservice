@@ -48,7 +48,7 @@
 
         <div class="mt-4">
             <button class="btn btn-primary" type="submit">Submit Transfer</button>
-            <a href="{{ route('employees.transfers.index', $employee->id) }}" class="btn btn-secondary">Back</a>
+            <a href="{{ route('employees.transfers.index', $employee->id) }}" class="btn btn-secondary">Transfer History</a>
         </div>
     </form>
 </div>

@@ -81,8 +81,8 @@ class EmployeeController extends Controller
         // Calculate retirement date if not provided
         if (empty($validated['retirement_date'])) {
             if (!empty($validated['dob'])) {
-                // Retirement age is typically 60 years
-                $validated['retirement_date'] = Carbon::parse($validated['dob'])->addYears(60)->format('Y-m-d');
+                // Retirement age is typically 65 years
+                $validated['retirement_date'] = Carbon::parse($validated['dob'])->addYears(65)->format('Y-m-d');
             } elseif (!empty($validated['first_appointment_date'])) {
                 // If DOB not available, use 35 years of service from first appointment
                 $validated['retirement_date'] = Carbon::parse($validated['first_appointment_date'])->addYears(35)->format('Y-m-d');
@@ -131,7 +131,7 @@ class EmployeeController extends Controller
     public function edit(Employee $employee)
     {
         // $employee = Employee::findOrFail($id);
-        $mdas = Mda::all();
+        $mdas = MDA::all();
         $payGroups = PayGroup::all();
         $gradeLevels = GradeLevel::all();
         $steps = Step::all();
@@ -197,8 +197,8 @@ class EmployeeController extends Controller
         // Calculate retirement date if not provided
         if (empty($validated['retirement_date'])) {
             if (!empty($validated['dob'])) {
-                // Retirement age is typically 60 years
-                $validated['retirement_date'] = Carbon::parse($validated['dob'])->addYears(60)->format('Y-m-d');
+                // Retirement age is typically 65 years
+                $validated['retirement_date'] = Carbon::parse($validated['dob'])->addYears(65)->format('Y-m-d');
             } elseif (!empty($validated['first_appointment_date'])) {
                 // If DOB not available, use 35 years of service from first appointment
                 $validated['retirement_date'] = Carbon::parse($validated['first_appointment_date'])->addYears(35)->format('Y-m-d');
@@ -216,8 +216,12 @@ class EmployeeController extends Controller
             'email' => $validated['email'] ?? ($validated['employee_number'] . '@gmail.com'),
         ]);
 
+        $notification = array(
+            'message' => 'Employee updated successfully',
+            'alert-type' => 'success'
+        );
         return redirect()->route('employees.index')
-            ->with('success', 'Employee updated successfully.');
+            ->with($notification);
     }
 
     /**
@@ -232,8 +236,13 @@ class EmployeeController extends Controller
             $employee->commendations()->count() > 0 || 
             $employee->queries()->count() > 0) {
             
+                $notification = array(
+                    'message' => 'Cannot delete employee as they have related records',
+                    'alert-type' => 'error'
+                );
+
             return redirect()->route('employees.index')
-                ->with('error', 'Cannot delete employee as they have related records.');
+                ->with($notification);
         }
 
         // Delete passport image if exists
@@ -246,8 +255,13 @@ class EmployeeController extends Controller
         $employee->delete();
         User::find($userId)->delete();
 
+ $notification = array(
+            'message' => 'Employee deleted successfully',
+            'alert-type' => 'success'
+        );
+
         return redirect()->route('employees.index')
-            ->with('success', 'Employee deleted successfully.');
+            ->with($notification);
     }
 
     /**
