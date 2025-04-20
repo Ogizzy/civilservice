@@ -1,8 +1,25 @@
 @extends('admin.admin_dashboard')
 @section('admin')
 
+
+<div class="page-content">
+    <!--breadcrumb-->
+    <div class="page-breadcrumb d-none d-sm-flex align-items-center mb-3">
+        <div class="breadcrumb-title pe-3">Edit Role</div>
+        <div class="ps-3">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-0 p-0">
+                    <li class="breadcrumb-item"><a href="javascript:;"><i class="bx bx-home-alt"></i></a>
+                    </li>
+                    <li class="breadcrumb-item active" aria-current="page">Edit Role</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+    <!--end breadcrumb-->
+
 <div class="container">
-    <h2>Edit Role: {{ $role->role }}</h2>
+    <h6>Edit Role: {{ $role->role }}</h6>
 
     <form action="{{ route('roles.update', $role->id) }}" method="POST">
         @csrf
@@ -10,7 +27,7 @@
 
         <div class="form-group">
             <label for="role">Role Name</label>
-            <input type="text" name="role" id="role" class="form-control" value="{{ old('role', $role->role) }}" required>
+            <input type="text" name="role" id="role" class="form-select" value="{{ old('role', $role->role) }}" required>
         </div>
 
         <h4>Update Permissions</h4>
@@ -41,5 +58,6 @@
 
         <button class="btn btn-primary mt-3">Update Role</button>
     </form>
+</div>
 </div>
 @endsection

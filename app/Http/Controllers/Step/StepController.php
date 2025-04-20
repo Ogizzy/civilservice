@@ -52,8 +52,13 @@ class StepController extends Controller
             'step' => $request->step,
         ]);
 
+        $notification = array(
+            'message' => 'Step created successfully',
+            'alert-type' => 'success'
+        );
+
         return redirect()->route('steps.index')
-            ->with('success', 'Step created successfully');
+            ->with($notification);
     }
 
     /**
@@ -105,8 +110,13 @@ class StepController extends Controller
             'step' => $request->step,
         ]);
 
+        $notification = array(
+            'message' => 'Step updated successfully',
+            'alert-type' => 'success'
+        );
+
         return redirect()->route('steps.index')
-            ->with('success', 'Step updated successfully');
+            ->with($notification);
     }
 
     /**

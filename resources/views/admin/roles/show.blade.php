@@ -37,7 +37,7 @@
                             <tbody>
                                 @foreach ($role->userPermissions as $perm)
                                     <tr>
-                                        <td>{{ $perm->feature->name }}</td>
+                                        <td>{{ $perm->feature->feature }}</td>
                                         <td>{{ $perm->can_create ? 'Yes' : 'No' }}</td>
                                         <td>{{ $perm->can_edit ? 'Yes' : 'No' }}</td>
                                         <td>{{ $perm->can_delete ? 'Yes' : 'No' }}</td>

@@ -46,25 +46,31 @@ Route::put('/platform-features/{platform_feature}', [PlatformFeatureController::
 Route::patch('/platform-features/{platform_feature}', [PlatformFeatureController::class, 'update']);
 Route::delete('/platform-features/{platform_feature}', [PlatformFeatureController::class, 'destroy'])->name('platform-features.destroy');
 
-// All User Roles
-// Route::get('/user-roles', [UserRoleController::class, 'index'])->name('user-roles.index');
-// Route::get('/user-roles/create', [UserRoleController::class, 'create'])->name('user-roles.create');
-// Route::post('/user-roles', [UserRoleController::class, 'store'])->name('user-roles.store');
-// Route::get('/user-roles/{user_role}', [UserRoleController::class, 'show'])->name('user-roles.show');
-// Route::get('/user-roles/{user_role}/edit', [UserRoleController::class, 'edit'])->name('user-roles.edit');
-// Route::put('/user-roles/{user_role}', [UserRoleController::class, 'update'])->name('user-roles.update');
-// Route::patch('/user-roles/{user_role}', [UserRoleController::class, 'update']);
-// Route::delete('/user-roles/{user_role}', [UserRoleController::class, 'destroy'])->name('user-roles.destroy');
 
 // All Users Routes
-Route::get('/users', [UserController::class, 'index'])->name('users.index');
-Route::get('/users/create', [UserController::class, 'create'])->name('users.create');
-Route::post('/users', [UserController::class, 'store'])->name('users.store');
-Route::get('/users/{user}', [UserController::class, 'show'])->name('users.show');
-Route::get('/users/{user}/edit', [UserController::class, 'edit'])->name('users.edit');
-Route::put('/users/{user}', [UserController::class, 'update'])->name('users.update');
-Route::patch('/users/{user}', [UserController::class, 'update']);
-Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('users.destroy');
+// Route::get('/users', [UserController::class, 'index'])->name('users.index');
+// Route::get('/users/create', [UserController::class, 'create'])->name('users.create');
+// Route::post('/users', [UserController::class, 'store'])->name('users.store');
+// Route::get('/users/{user}', [UserController::class, 'show'])->name('users.show');
+// Route::get('/users/{user}/edit', [UserController::class, 'edit'])->name('users.edit');
+// Route::put('/users/{user}', [UserController::class, 'update'])->name('users.update');
+// Route::patch('/users/{user}', [UserController::class, 'update']);
+// Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('users.destroy');
+
+Route::prefix('users')->middleware(['auth'])->group(function () {
+    Route::get('/', [UserController::class, 'index'])->name('users.index');
+    Route::get('/create', [UserController::class, 'create'])->name('users.create');
+    Route::post('/', [UserController::class, 'store'])->name('users.store');
+    Route::get('/{user}', [UserController::class, 'show'])->name('users.show');
+    Route::get('/{user}/edit', [UserController::class, 'edit'])->name('users.edit');
+    Route::put('/{user}', [UserController::class, 'update'])->name('users.update');
+    Route::delete('/{user}', [UserController::class, 'destroy'])->name('users.destroy');
+});
+
+// Profile routes
+Route::get('/profile', [UserController::class, 'profile'])->name('profile');
+Route::put('/profile', [UserController::class, 'updateProfile'])->name('profile.update');
+
 
 // All Employees Routes
 Route::get('/employees', [EmployeeController::class, 'index'])->name('employees.index');
@@ -168,31 +174,6 @@ Route::prefix('reports')->name('reports.')->group(function () {
     Route::get('/retiring', [EmployeeController::class, 'retiringEmployees'])->name('retiring');
 });
 
-
-// // // Reports Routes
-// Route::prefix('employees')->name('employees.')->group(function () {
-//     Route::get('/by-lga', [EmployeeController::class, 'byLga'])->name('by-lga');
-//     Route::get('/by-mda', [EmployeeController::class, 'byMda'])->name('by-mda');
-//     Route::get('/by-rank', [EmployeeController::class, 'byRank'])->name('by-rank');
-//     Route::get('/by-gender', [EmployeeController::class, 'byGender'])->name('by-gender');
-//     Route::get('/by-qualification', [EmployeeController::class, 'byQualification'])->name('by-qualification');
-//     Route::get('/by-pay-structure', [EmployeeController::class, 'byPayStructure'])->name('by-pay-structure');
-//     Route::get('/retired', [EmployeeController::class, 'retiredEmployees'])->name('retired');
-//     Route::get('/retiring', [EmployeeController::class, 'retiringEmployees'])->name('retiring');
-// });
-
-// Route::get('employees/report-filters', function () {
-//     return view('admin.reports.filter');
-// })->name('employees.filters');
-
-// Route::get('employees/by-lga', [EmployeeController::class, 'byLga'])->name('employees.byLga');
-// Route::get('employees/by-mda', [EmployeeController::class, 'byMda'])->name('employees.byMda');
-// Route::get('employees/by-rank', [EmployeeController::class, 'byRank'])->name('employees.byRank');
-// Route::get('employees/by-gender', [EmployeeController::class, 'byGender'])->name('employees.byGender');
-// Route::get('employees/by-qualification', [EmployeeController::class, 'byQualification'])->name('employees.byQualification');
-// Route::get('employees/by-pay-structure', [EmployeeController::class, 'byPayStructure'])->name('employees.byPayStructure');
-// Route::get('employees/retired', [EmployeeController::class, 'retiredEmployees'])->name('employees.retired');
-// Route::get('employees/retiring', [EmployeeController::class, 'retiringEmployees'])->name('employees.retiring');
 
 // Dashboard Analytics Routes
 Route::prefix('employees')->group(function () {

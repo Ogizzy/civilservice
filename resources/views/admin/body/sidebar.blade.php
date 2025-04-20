@@ -85,6 +85,20 @@
         </a>
     </li>
 
+    <li>
+        <a href="{{ route('permissions.index') }}">
+            <div class="parent-icon"><i class="lni lni-alarm-clock"></i></div>
+            <div class="menu-title">View Permission</div>
+        </a>
+    </li>
+
+    <li>
+        <a href="{{ route('users.index') }}">
+            <div class="parent-icon"><i class="lni lni-alarm-clock"></i></div>
+            <div class="menu-title">View User</div>
+        </a>
+    </li>
+
 
     <li class="menu-label">Documents</li>
     <li>
