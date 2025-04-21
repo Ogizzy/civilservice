@@ -7,6 +7,8 @@ use App\Http\Controllers\Step\StepController;
 use App\Http\Controllers\User\UserController;
 use App\Http\Controllers\Admin\AdminController;
 // use App\Http\Controllers\User\UserRoleController;
+// use App\Http\Controllers\CommendationController;
+use App\Http\Controllers\Queries\QueriesMisconduct;
 use App\Http\Controllers\Document\DocumentController;
 use App\Http\Controllers\Employee\EmployeeController;
 use App\Http\Controllers\Paygroup\PayGroupController;
@@ -14,6 +16,7 @@ use App\Http\Controllers\UserRole\UserRoleController;
 use App\Http\Controllers\Gradelevel\GradeLevelController;
 use SebastianBergmann\CodeCoverage\Report\Html\Dashboard;
 use App\Http\Controllers\Transfer\TransferHistoryController;
+use App\Http\Controllers\Commendation\CommendationController;
 use App\Http\Controllers\Promotiom\PromotionHistoryController;
 use App\Http\Controllers\UserPermission\UserPermissionController;
 use App\Http\Controllers\Platformfeatures\PlatformFeatureController;
@@ -25,6 +28,11 @@ Route::get('/', function () {
 Route::get('/dashboard', function () {
     return view('admin.dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
+
+
+Route::get('/employee/dashboard', function () {
+    return view('admin.employee.dashboard');
+})->middleware(['auth', 'employee'])->name('employee.dashboard');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -47,15 +55,7 @@ Route::patch('/platform-features/{platform_feature}', [PlatformFeatureController
 Route::delete('/platform-features/{platform_feature}', [PlatformFeatureController::class, 'destroy'])->name('platform-features.destroy');
 
 
-// All Users Routes
-// Route::get('/users', [UserController::class, 'index'])->name('users.index');
-// Route::get('/users/create', [UserController::class, 'create'])->name('users.create');
-// Route::post('/users', [UserController::class, 'store'])->name('users.store');
-// Route::get('/users/{user}', [UserController::class, 'show'])->name('users.show');
-// Route::get('/users/{user}/edit', [UserController::class, 'edit'])->name('users.edit');
-// Route::put('/users/{user}', [UserController::class, 'update'])->name('users.update');
-// Route::patch('/users/{user}', [UserController::class, 'update']);
-// Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('users.destroy');
+
 
 Route::prefix('users')->middleware(['auth'])->group(function () {
     Route::get('/', [UserController::class, 'index'])->name('users.index');
@@ -217,4 +217,30 @@ Route::prefix('permissions')->name('permissions.')->group(function () {
     Route::get('/{permission}/edit', [UserPermissionController::class, 'edit'])->name('edit');
     Route::put('/{permission}', [UserPermissionController::class, 'update'])->name('update');
     Route::delete('/{permission}', [UserPermissionController::class, 'destroy'])->name('destroy');
+});
+
+
+Route::prefix('commendations')->name('commendations.')->middleware(['web', 'auth'])->group(function () {
+    Route::get('/', [CommendationController::class, 'index'])->name('index');
+    Route::get('/create', [CommendationController::class, 'create'])->name('create');
+    Route::post('/', [CommendationController::class, 'store'])->name('store');
+    Route::get('/{commendationAward}', [CommendationController::class, 'show'])->name('show');
+    Route::get('/{commendationAward}/edit', [CommendationController::class, 'edit'])->name('edit');
+    Route::put('/{commendationAward}', [CommendationController::class, 'update'])->name('update');
+    Route::delete('/{commendationAward}', [CommendationController::class, 'destroy'])->name('destroy');
+    // For employee-specific commendation records
+    Route::get('/employee/{employee}', [CommendationController::class, 'employeeCommendations'])->name('employee');
+});
+
+
+Route::prefix('queries')->name('queries.')->middleware(['web', 'auth'])->group(function () {
+    Route::get('/', [QueriesMisconduct::class, 'index'])->name('index');
+    Route::get('/create', [QueriesMisconduct::class, 'create'])->name('create');
+    Route::post('/', [QueriesMisconduct::class, 'store'])->name('store');
+    Route::get('/{queriesMisconduct}', [QueriesMisconduct::class, 'show'])->name('show');
+    Route::get('/{queriesMisconduct}/edit', [QueriesMisconduct::class, 'edit'])->name('edit');
+    Route::put('/{queriesMisconduct}', [QueriesMisconduct::class, 'update'])->name('update');
+    Route::delete('/{queriesMisconduct}', [QueriesMisconduct::class, 'destroy'])->name('destroy');
+    // For employee-specific queries
+    Route::get('/employee/{employee}', [QueriesMisconduct::class, 'employeeQueries'])->name('employee');
 });

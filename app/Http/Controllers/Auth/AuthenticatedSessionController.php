@@ -33,7 +33,13 @@ class AuthenticatedSessionController extends Controller
             'alert-type' => 'info'
         ];
 
-        return redirect()->intended(route('dashboard', absolute: false))->with($notification);
+        $role = Auth::user()->role->role ?? null;
+
+        if ($role === 'Employee') {
+            return redirect()->route('employee.dashboard');
+        }
+
+        return redirect()->route('admin.dashboard')->with($notification);
     }
 
     /**

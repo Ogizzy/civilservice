@@ -79,7 +79,7 @@
     </li>
 
     <li>
-        <a href="{{ route('features.create') }}">
+        <a href="{{ route('features.index') }}">
             <div class="parent-icon"><i class="lni lni-alarm-clock"></i></div>
             <div class="menu-title">View Feature</div>
         </a>
@@ -96,6 +96,19 @@
         <a href="{{ route('users.index') }}">
             <div class="parent-icon"><i class="lni lni-alarm-clock"></i></div>
             <div class="menu-title">View User</div>
+        </a>
+    </li>
+
+    <li>
+        <a href="{{ route('commendations.create') }}">
+            <div class="parent-icon"><i class="lni lni-alarm-clock"></i></div>
+            <div class="menu-title">Create Commendation</div>
+        </a>
+    </li>
+    <li>
+        <a href="{{ route('commendations.create') }}">
+            <div class="parent-icon"><i class="lni lni-alarm-clock"></i></div>
+            <div class="menu-title">View Commendation</div>
         </a>
     </li>
 
