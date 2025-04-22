@@ -106,9 +106,16 @@
         </a>
     </li>
     <li>
-        <a href="{{ route('commendations.create') }}">
+        <a href="{{ route('queries.create') }}">
             <div class="parent-icon"><i class="lni lni-alarm-clock"></i></div>
-            <div class="menu-title">View Commendation</div>
+            <div class="menu-title">View Query</div>
+        </a>
+    </li>
+
+    <li>
+        {{-- <a href="{{ route('queries.employee', $employee->id) }}"> --}}
+            <div class="parent-icon"><i class="lni lni-alarm-clock"></i></div>
+            <div class="menu-title">Employee Query</div>
         </a>
     </li>
 

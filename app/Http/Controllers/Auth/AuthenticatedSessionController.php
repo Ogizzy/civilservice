@@ -39,7 +39,7 @@ class AuthenticatedSessionController extends Controller
             return redirect()->route('employee.dashboard');
         }
 
-        return redirect()->route('admin.dashboard')->with($notification);
+        return redirect()->route('dashboard')->with($notification);
     }
 
     /**

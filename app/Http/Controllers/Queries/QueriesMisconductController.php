@@ -1,20 +1,18 @@
 <?php
 
 namespace App\Http\Controllers\Queries;
-
 use App\Models\Document;
 use App\Models\Employee;
 use Illuminate\Http\Request;
+use App\Models\QueriesMisconduct;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
-class QueriesMisconduct extends Controller
+class QueriesMisconductController extends Controller
 {
      /**
-     * Display a listing of the queries.
-     *
-     * @return \Illuminate\Http\Response
+     * Display a listing of the queries/misconducts.
      */
     public function index()
     {
@@ -24,8 +22,6 @@ class QueriesMisconduct extends Controller
 
     /**
      * Show the form for creating a new query.
-     *
-     * @return \Illuminate\Http\Response
      */
     public function create()
     {
@@ -35,9 +31,6 @@ class QueriesMisconduct extends Controller
 
     /**
      * Store a newly created query in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
     {
@@ -56,37 +49,31 @@ class QueriesMisconduct extends Controller
 
         $documentId = null;
         if ($request->hasFile('supporting_document')) {
-            // Upload to cloud storage (Cloudinary or AWS S3)
             $path = $request->file('supporting_document')->store('queries', 'public');
-            
-            // Create document record
+
             $document = Document::create([
                 'employee_id' => $request->employee_id,
                 'document_type' => 'query',
-                'document' => $path, // Store the cloud URL here
-                'user_id' => Auth::id()
+                'document' => $path,
+                'user_id' => Auth::id(),
             ]);
-            
+
             $documentId = $document->id;
         }
 
         QueriesMisconduct::create([
             'employee_id' => $request->employee_id,
-            'query' => $request->query,
+            'query' => $request->input('query'),
             'date_issued' => $request->date_issued,
             'supporting_document' => $documentId,
-            'user_id' => Auth::id()
+            'user_id' => Auth::id(),
         ]);
 
-        return redirect()->route('queries.index')
-            ->with('success', 'Query/Misconduct record created successfully.');
+        return redirect()->route('queries.index')->with('success', 'Query/Misconduct record created successfully.');
     }
 
     /**
-     * Display the specified query.
-     *
-     * @param  \App\Models\QueriesMisconduct $queriesMisconduct
-     * @return \Illuminate\Http\Response
+     * Show the specified query/misconduct.
      */
     public function show(QueriesMisconduct $queriesMisconduct)
     {
@@ -96,9 +83,6 @@ class QueriesMisconduct extends Controller
 
     /**
      * Show the form for editing the specified query.
-     *
-     * @param  \App\Models\QueriesMisconduct  $queriesMisconduct
-     * @return \Illuminate\Http\Response
      */
     public function edit(QueriesMisconduct $queriesMisconduct)
     {
@@ -108,10 +92,6 @@ class QueriesMisconduct extends Controller
 
     /**
      * Update the specified query in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\QueriesMisconduct  $queriesMisconduct
-     * @return \Illuminate\Http\Response
      */
     public function update(Request $request, QueriesMisconduct $queriesMisconduct)
     {
@@ -123,79 +103,62 @@ class QueriesMisconduct extends Controller
         ]);
 
         if ($validator->fails()) {
-            return redirect()->back()
-                ->withErrors($validator)
-                ->withInput();
+            return redirect()->back()->withErrors($validator)->withInput();
         }
 
         if ($request->hasFile('supporting_document')) {
-            // Delete old document if exists
             if ($queriesMisconduct->supporting_document) {
-                // If there's cloud storage integration, add code to delete old file
                 if ($document = Document::find($queriesMisconduct->supporting_document)) {
                     $document->delete();
                 }
             }
-            
-            // Upload to cloud storage
+
             $path = $request->file('supporting_document')->store('queries', 'public');
-            
-            // Create new document record
+
             $document = Document::create([
                 'employee_id' => $request->employee_id,
                 'document_type' => 'query',
                 'document' => $path,
                 'user_id' => Auth::id()
             ]);
-            
+
             $queriesMisconduct->supporting_document = $document->id;
         }
 
         $queriesMisconduct->update([
             'employee_id' => $request->employee_id,
-            'QueriesMisconduct' => $request->QueriesMisconduct,
+            'query' => $request->input('query'),
             'date_issued' => $request->date_issued,
             'user_id' => Auth::id()
         ]);
 
-        return redirect()->route('queries.index')
-            ->with('success', 'Query/Misconduct record updated successfully');
+        return redirect()->route('queries.index')->with('success', 'Query/Misconduct updated successfully.');
     }
 
     /**
-     * Remove the specified query from storage.
-     *
-     * @param  \App\Models\QueriesMisconduct  $queriesMisconduct
-     * @return \Illuminate\Http\Response
+     * Remove the specified query.
      */
     public function destroy(QueriesMisconduct $queriesMisconduct)
     {
-        // Delete associated document if exists
         if ($queriesMisconduct->supporting_document) {
             if ($document = Document::find($queriesMisconduct->supporting_document)) {
-                // If there's cloud storage integration, add code to delete file
                 $document->delete();
             }
         }
 
         $queriesMisconduct->delete();
 
-        return redirect()->route('queries.index')
-            ->with('success', 'Query/Misconduct record deleted successfully');
+        return redirect()->route('queries.index')->with('success', 'Query/Misconduct deleted successfully.');
     }
 
     /**
-     * Display queries for a specific employee
-     *
-     * @param  \App\Models\Employee  $employee
-     * @return \Illuminate\Http\Response
+     * Show all queries for a specific employee.
      */
     public function employeeQueries(Employee $employee)
     {
         $queries = QueriesMisconduct::where('employee_id', $employee->id)
-            ->with(['document', 'user'])
-            ->paginate(10);
-            
+            ->with(['document', 'user'])->paginate(10);
+
         return view('admin.queries.employee', compact('queries', 'employee'));
     }
 }

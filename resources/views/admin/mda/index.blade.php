@@ -55,7 +55,7 @@
                             </div>
                         </div>
                         <div class="modal-footer">
-                            <button type="submit" class="btn btn-success">Create MDA</button>
+                            <button type="submit" class="btn btn-primary">Create MDA</button>
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                         </div>
                     </form>
@@ -95,7 +95,7 @@
                                                 style="display:inline;">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button class="btn btn-danger btn-sm" id="delete"><i
+                                                <button class="btn btn-danger btn-sm delete-btn" ><i
                                                         class="lni lni-trash" title="Delete MDA"></i>
 
                                                 </button>

@@ -63,7 +63,7 @@
                                                 style="display:inline-block;">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button class="btn btn-danger btn-sm" id="delete"><i class="lni lni-trash"
+                                                <button class="btn btn-danger btn-sm delete-btn"><i class="lni lni-trash"
                                                     title="Delete Pay Group"></i></button>
                                             </form>
                                         </td>
@@ -80,7 +80,7 @@
             </div>
         </div>
     </div>
-
+    
     <script>
         $(document).ready(function() {
             $('#example').DataTable();

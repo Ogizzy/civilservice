@@ -8,7 +8,7 @@ use App\Http\Controllers\User\UserController;
 use App\Http\Controllers\Admin\AdminController;
 // use App\Http\Controllers\User\UserRoleController;
 // use App\Http\Controllers\CommendationController;
-use App\Http\Controllers\Queries\QueriesMisconduct;
+use App\Http\Controllers\Queries\QueriesMisconductController;
 use App\Http\Controllers\Document\DocumentController;
 use App\Http\Controllers\Employee\EmployeeController;
 use App\Http\Controllers\Paygroup\PayGroupController;
@@ -20,6 +20,7 @@ use App\Http\Controllers\Commendation\CommendationController;
 use App\Http\Controllers\Promotiom\PromotionHistoryController;
 use App\Http\Controllers\UserPermission\UserPermissionController;
 use App\Http\Controllers\Platformfeatures\PlatformFeatureController;
+
 
 Route::get('/', function () {
     return view('welcome');
@@ -233,14 +234,13 @@ Route::prefix('commendations')->name('commendations.')->middleware(['web', 'auth
 });
 
 
-Route::prefix('queries')->name('queries.')->middleware(['web', 'auth'])->group(function () {
-    Route::get('/', [QueriesMisconduct::class, 'index'])->name('index');
-    Route::get('/create', [QueriesMisconduct::class, 'create'])->name('create');
-    Route::post('/', [QueriesMisconduct::class, 'store'])->name('store');
-    Route::get('/{queriesMisconduct}', [QueriesMisconduct::class, 'show'])->name('show');
-    Route::get('/{queriesMisconduct}/edit', [QueriesMisconduct::class, 'edit'])->name('edit');
-    Route::put('/{queriesMisconduct}', [QueriesMisconduct::class, 'update'])->name('update');
-    Route::delete('/{queriesMisconduct}', [QueriesMisconduct::class, 'destroy'])->name('destroy');
-    // For employee-specific queries
-    Route::get('/employee/{employee}', [QueriesMisconduct::class, 'employeeQueries'])->name('employee');
+Route::prefix('queries')->middleware(['auth'])->group(function () {
+    Route::get('/', [QueriesMisconductController::class, 'index'])->name('queries.index');
+    Route::get('/create', [QueriesMisconductController::class, 'create'])->name('queries.create');
+    Route::post('/', [QueriesMisconductController::class, 'store'])->name('queries.store');
+    Route::get('/{queriesMisconduct}', [QueriesMisconductController::class, 'show'])->name('queries.show');
+    Route::get('/{queriesMisconduct}/edit', [QueriesMisconductController::class, 'edit'])->name('queries.edit');
+    Route::put('/{queriesMisconduct}', [QueriesMisconductController::class, 'update'])->name('queries.update');
+    Route::delete('/{queriesMisconduct}', [QueriesMisconductController::class, 'destroy'])->name('queries.destroy');
+    Route::get('/employee/{employee}/queries', [QueriesMisconductController::class, 'employeeQueries'])->name('queries.employee');
 });

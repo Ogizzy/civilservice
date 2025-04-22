@@ -37,8 +37,11 @@ class MdaController extends Controller
 
         MDA::create($validated);
 
-        return redirect()->route('mdas.index')
-            ->with('success', 'MDA created successfully.');
+        $notification = array(
+            'message' => 'MDA created successfully',
+            'alert-type' => 'success'
+        );
+        return redirect()->route('mdas.index')->with($notification);
     }
 
     /**
@@ -71,8 +74,14 @@ class MdaController extends Controller
 
         $mda->update($validated);
 
+
+        $notification = array(
+            'message' => 'MDA updated successfully',
+            'alert-type' => 'success'
+        );
+
         return redirect()->route('mdas.index')
-            ->with('success', 'MDA updated successfully.');
+            ->with($notification);
     }
 
     /**
@@ -82,19 +91,36 @@ class MdaController extends Controller
     {
         // Check if MDA has employees
         if ($mda->employees()->count() > 0) {
+
+            $notification = array(
+                'message' => 'Cannot delete MDA as it has employees',
+                'alert-type' => 'error'
+            );
+    
             return redirect()->route('mdas.index')
-                ->with('error', 'Cannot delete MDA as it has employees.');
+                ->with($notification);
         }
 
         // Check if MDA is referenced in transfer history
         if ($mda->previousTransfers()->count() > 0 || $mda->currentTransfers()->count() > 0) {
+
+            $notification = array(
+                'message' => 'Cannot delete MDA as it is referenced in transfer history',
+                'alert-type' => 'error'
+            );
+
             return redirect()->route('mdas.index')
-                ->with('error', 'Cannot delete MDA as it is referenced in transfer history.');
+                ->with($notification);
         }
 
         $mda->delete();
 
+        $notification = array(
+            'message' => 'MDA deleted successfully',
+            'alert-type' => 'success'
+        );
+
         return redirect()->route('mdas.index')
-            ->with('success', 'MDA deleted successfully.');
+            ->with($notification);
     }
 }

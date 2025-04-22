@@ -1,8 +1,6 @@
-@extends('layouts.app')
+@extends('admin.admin_dashboard')
+@section('admin')
 
-@section('title', 'Employee Queries')
-
-@section('content')
 <div class="container-fluid px-4">
     <h1 class="mt-4">Queries & Misconduct Records for {{ $employee->surname }}, {{ $employee->first_name }}</h1>
     <ol class="breadcrumb mb-4">
@@ -16,7 +14,7 @@
         <div class="card-header">
             <i class="fas fa-exclamation-triangle me-1"></i>
             Employee Query History
-            <a href="{{ route('queries.create', ['employee_id' => $employee->id]) }}" class="btn btn-primary btn-sm float-end">
+            <a href="{{ route('queries.create', ['employee_id' => $employee]) }}" class="btn btn-primary btn-sm float-end">
                 <i class="fas fa-plus"></i> Add New Query
             </a>
         </div>

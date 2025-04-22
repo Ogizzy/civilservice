@@ -1,10 +1,10 @@
 @extends('admin.admin_dashboard')
-
-@section('title', 'Add Query/Misconduct')
-
 @section('admin')
+
+<div class="page-content">
+
 <div class="container-fluid px-4">
-    <h1 class="mt-4">Add New Query/Misconduct</h1>
+    <h4 class="mt-4">Add New Query/Misconduct</h4>
     <ol class="breadcrumb mb-4">
         <li class="breadcrumb-item"><a href="{{ route('dashboard') }}">Dashboard</a></li>
         <li class="breadcrumb-item"><a href="{{ route('queries.index') }}">Queries & Misconduct</a></li>
@@ -13,7 +13,7 @@
     
     <div class="card mb-4">
         <div class="card-header">
-            <i class="fas fa-exclamation-triangle me-1"></i>
+            <i class="fadeIn animated bx bx-error"></i>
             New Query/Misconduct Information
         </div>
         <div class="card-body">
@@ -51,7 +51,7 @@
                 <div class="row mb-3">
                     <div class="col-12">
                         <label for="query" class="form-label">Query/Misconduct Details <span class="text-danger">*</span></label>
-                        <textarea class="form-control" id="query" name="query" rows="5" required>{{ old('query') }}</textarea>
+                        <textarea class="form-control"  name="query" rows="5" required>{{ old('query') }}</textarea>
                     </div>
                 </div>
                 
@@ -62,14 +62,14 @@
                         <div class="form-text">Upload PDF, DOC, DOCX, JPG, JPEG, or PNG files (max 10MB)</div>
                     </div>
                 </div>
-                
+               
                 <div class="row mt-4">
                     <div class="col-12">
                         <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-save me-1"></i> Save Query Record
+                            <i class="lni lni-save"></i> Save Query Record
                         </button>
                         <a href="{{ route('queries.index') }}" class="btn btn-secondary ms-2">
-                            <i class="fas fa-times me-1"></i> Cancel
+                            <i class="lni lni-cross-circle"></i> Cancel
                         </a>
                     </div>
                 </div>
@@ -77,9 +77,10 @@
         </div>
     </div>
 </div>
-@endsection
+</div>
 
-@section('scripts')
+
+
 <script>
     $(document).ready(function() {
         $('.select2').select2({

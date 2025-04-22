@@ -91,6 +91,7 @@
 
 	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
 	<script src="{{ asset('backend/assets/js/code.js') }}"></script>
+	<script src="{{ asset('backend/assets/js/deletescript.js') }}"></script>
 
 	<script>
 		new PerfectScrollbar(".app-container")
@@ -107,6 +108,8 @@
 	<!--End Datatable-->
 
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+<!-- Include Summernote JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.18/summernote-lite.min.js"></script>
 
 <script>
  @if(Session::has('message'))
@@ -131,16 +134,26 @@
  @endif 
 </script>
 
-<script src="https://cdn.tiny.cloud/1/no-api-key/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
-	<script>
-	   tinymce.init({
-		 selector: 'textarea#myeditorinstance', // Replace this CSS selector to match the placeholder element for TinyMCE
-		 plugins: 'powerpaste advcode table lists checklist',
-		 toolbar: 'undo redo | blocks| bold italic | bullist numlist checklist | code | table'
-	   });
-	</script>
 
+<script>
+	$(document).ready(function() {
+		$('#description').summernote({
+			placeholder: 'Description...',
+			tabsize: 2,
+			height: 200,
+			toolbar: [
+				['style', ['style']],
+				['font', ['bold', 'italic', 'underline', 'clear']],
+				['fontname', ['fontname']],
+				['color', ['color']],
+				['para', ['ul', 'ol', 'paragraph']],
+				['table', ['table']],
+				['insert', ['link', 'picture', 'video']],
+				['view', ['fullscreen', 'codeview', 'help']]
+			]
+		});
+	});
+</script>
 
 </body>
-
 </html>
