@@ -23,7 +23,7 @@
             <div class="d-flex justify-content-between align-items-center mb-3">
                 <h6>Promotion History for:<span style="color: royalblue"> {{ $employee->surname }} {{ $employee->first_name }} {{ $employee->middle_name }}</span></h6>
                 <a href="{{ route('employees.promotions.create', $employee->id) }}" class="btn btn-primary btn-sm">
-                    <i class="fadeIn animated bx bx-plus"></i>New Promotion
+                    <i class="lni lni-circle-plus"></i>New Promotion
                 </a>
             </div>
 
@@ -69,10 +69,9 @@
                                                 class="btn btn-sm btn-secondary">Details</a>
                                             <form
                                                 action="{{ route('employees.promotions.destroy', [$employee->id, $promotion->id]) }}"
-                                                method="POST" class="d-inline"
-                                                onsubmit="return confirm('Delete this promotion record?')">
+                                                method="POST" class="d-inline">
                                                 @csrf @method('DELETE')
-                                                <button class="btn btn-sm btn-danger">Delete</button>
+                                                <button class="btn btn-sm btn-danger delete-btn"><i class="bx bxs-trash" title="Delete This Promotion"></i></button>
                                             </form>
                                         </td>
                                     </tr>

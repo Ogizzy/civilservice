@@ -19,9 +19,10 @@
 	<link href="{{ asset('backend/assets/plugins/simplebar/css/simplebar.css') }}" rel="stylesheet" />
 	<link href="{{ asset('backend/assets/plugins/perfect-scrollbar/css/perfect-scrollbar.css') }}" rel="stylesheet" />
 	<link href="{{ asset('backend/assets/plugins/metismenu/css/metisMenu.min.css') }}" rel="stylesheet"/>
+	<link href="{{ asset('backend/assets/css/retirees.css') }}" rel="stylesheet"/>
 	<!-- loader-->
-	<link href="{{ asset('backend/assets/css/pace.min.css') }}" rel="stylesheet"/>
-	<script src="{{ asset('backend/assets/js/pace.min.js') }}"></script>
+	{{-- <link href="{{ asset('backend/assets/css/pace.min.css') }}" rel="stylesheet"/>
+	<script src="{{ asset('backend/assets/js/pace.min.js') }}"></script> --}}
 	<!-- Bootstrap CSS -->
 	<link href="{{ asset('backend/assets/css/bootstrap.min.css') }}" rel="stylesheet">
 	<link href="{{ asset('backend/assets/css/bootstrap-extended.css') }}" rel="stylesheet">
@@ -60,6 +61,7 @@
 		<!--start overlay-->
 		 <div class="overlay toggle-icon"></div>
 		<!--end overlay-->
+		
 		<!--Start Back To Top Button-->
 		  <a href="javaScript:;" class="back-to-top"><i class='bx bxs-up-arrow-alt'></i></a>
 		<!--End Back To Top Button-->
@@ -91,7 +93,6 @@
 
 	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
 	<script src="{{ asset('backend/assets/js/code.js') }}"></script>
-	<script src="{{ asset('backend/assets/js/deletescript.js') }}"></script>
 
 	<script>
 		new PerfectScrollbar(".app-container")
@@ -131,7 +132,7 @@
     toastr.error(" {{ Session::get('message') }} ");
     break; 
  }
- @endif 
+ @endif
 </script>
 
 

@@ -47,13 +47,13 @@
 
             <div class="mt-4">
                 <button class="btn btn-sm btn-warning" data-bs-toggle="modal"
-                 data-bs-target="#editUserModal{{ $user->id }}">Edit</button>
-                <form action="{{ route('users.destroy', $user->id) }}" method="POST" class="d-inline-block"
+                 data-bs-target="#editUserModal{{ $user->id }}"><i class="bx bxs-edit" title="Edit This User"></i></button>
+                {{-- <form action="{{ route('users.destroy', $user->id) }}" method="POST" class="d-inline-block"
                       onsubmit="return confirm('Are you sure you want to delete this user?')">
                     @csrf
                     @method('DELETE')
                     <button class="btn btn-danger btn-sm">Delete</button>
-                </form>
+                </form> --}}
             </div>
 
         </div>

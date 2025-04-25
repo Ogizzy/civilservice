@@ -20,16 +20,8 @@ class PromotionHistoryController extends Controller
     public function index(Employee $employee)
     {
         $promotions = PromotionHistory::where('employee_id', $employee->id)
-        ->with([
-            'previousGradeLevel', 
-            'previousStep', 
-            'currentGradeLevel', 
-            'currentStep', 
-            'document', 
-            'user'
-        ])
-        ->orderBy('effective_date', 'desc')
-        ->paginate(15);
+        ->with(['previousGradeLevel','previousStep','currentGradeLevel','currentStep','document', 
+            'user'])->orderBy('effective_date', 'desc')->paginate(5);
         
         return view('admin.promotion.index', compact('employee', 'promotions'));
     }
@@ -60,13 +52,13 @@ class PromotionHistoryController extends Controller
 
         // Upload supporting document
         $path = $request->file('document_file')->store('promotions', 'public');
-        $url = Storage::url($path);
+        // $url = Storage::url($path);
 
         // Create document record
         $document = Document::create([
             'employee_id' => $employee->id,
             'document_type' => 'Promotion Letter',
-            'document' => $url,
+            'document' => $path,
             'user_id' => Auth::id(),
         ]);
 

@@ -53,7 +53,7 @@ class QueriesMisconductController extends Controller
 
             $document = Document::create([
                 'employee_id' => $request->employee_id,
-                'document_type' => 'query',
+                'document_type' => 'Query Letter',
                 'document' => $path,
                 'user_id' => Auth::id(),
             ]);
@@ -69,7 +69,12 @@ class QueriesMisconductController extends Controller
             'user_id' => Auth::id(),
         ]);
 
-        return redirect()->route('queries.index')->with('success', 'Query/Misconduct record created successfully.');
+        $notification = array(
+            'message' => 'Query/Misconduct record created successfully',
+            'alert-type' => 'success'
+        );
+
+        return redirect()->route('queries.index')->with($notification);
     }
 
     /**
@@ -117,7 +122,7 @@ class QueriesMisconductController extends Controller
 
             $document = Document::create([
                 'employee_id' => $request->employee_id,
-                'document_type' => 'query',
+                'document_type' => 'Query Letter',
                 'document' => $path,
                 'user_id' => Auth::id()
             ]);
@@ -132,7 +137,12 @@ class QueriesMisconductController extends Controller
             'user_id' => Auth::id()
         ]);
 
-        return redirect()->route('queries.index')->with('success', 'Query/Misconduct updated successfully.');
+        $notification = array(
+            'message' => 'Query/Misconduct updated successfully',
+            'alert-type' => 'success'
+        );
+
+        return redirect()->route('queries.index')->with($notification);
     }
 
     /**
@@ -148,7 +158,12 @@ class QueriesMisconductController extends Controller
 
         $queriesMisconduct->delete();
 
-        return redirect()->route('queries.index')->with('success', 'Query/Misconduct deleted successfully.');
+        $notification = array(
+            'message' => 'Query/Misconduct deleted successfully',
+            'alert-type' => 'success'
+        );
+
+        return redirect()->route('queries.index')->with($notification);
     }
 
     /**

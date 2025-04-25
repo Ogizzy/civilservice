@@ -23,7 +23,7 @@
     <div class="d-flex justify-content-between align-items-center mb-3">
         <h6>Transfer History for: <span style="color: royalblue"> {{ $employee->surname }} {{ $employee->first_name }} {{ $employee->middle_name }}</span></h6>
         <a href="{{ route('employees.transfers.create', $employee->id) }}" class="btn btn-sm btn-primary">
-            <i class="fadeIn animated bx bx-plus"></i> New Transfer</a>
+            <i class="lni lni-circle-plus"></i> New Transfer</a>
         
     </div>
 
@@ -54,11 +54,11 @@
                             <td>
                                 <a href="{{ $transfer->document->document ?? '#' }}" target="_blank" class="btn btn-sm btn-info" title="View Transfer Document"><i class="lni lni-eye"></i></a>
                             </td>
-                            <td>{{ $transfer->user->surname ?? 'N/A' }}</td>
+                            <td>{{ $transfer->user->surname ?? 'N/A' }} {{ $transfer->user->first_name ?? 'N/A' }}</td>
                             <td>
-                                <form action="{{ route('employees.transfers.destroy', [$employee->id, $transfer->id]) }}" method="POST" onsubmit="return confirm('Delete this transfer?')">
+                                <form action="{{ route('employees.transfers.destroy', [$employee->id, $transfer->id]) }}" method="POST" >
                                     @csrf @method('DELETE')
-                                    <button class="btn btn-sm btn-danger">Delete</button>
+                                    <button class="btn btn-sm btn-danger delete-btn"><i class="lni lni-trash"></i></button>
                                 </form>
                             </td>
                         </tr>

@@ -50,13 +50,13 @@
                             <td>{{ $doc->created_at->format('d M, Y') }}</td>
                             <td>{{ $doc->user->surname ?? 'N/A' }} {{ $doc->user->first_name ?? 'N/A' }}</td>
                             <td>
-                                <a href="{{ asset('storage/' . $doc->document) }}" target="_blank" class="btn btn-sm btn-info">View</a>
+                                <a href="{{ asset('storage/' . $doc->document) }}" target="_blank" class="btn btn-sm btn-info"><i class="lni lni-eye" title="View This Document"></i> View</a>
                             </td>
                             <td>
-                                <a href="{{ route('employees.documents.edit', [$employee->id, $doc->id]) }}" class="btn btn-warning btn-sm">Edit</a>
-                                <form action="{{ route('employees.documents.destroy', [$employee->id, $doc->id]) }}" method="POST" class="d-inline" onsubmit="return confirm('Delete this document?')">
+                                <a href="{{ route('employees.documents.edit', [$employee->id, $doc->id]) }}" class="btn btn-warning btn-sm"><i class="bx bxs-edit" title="Edit This Document"></i></a>
+                                <form action="{{ route('employees.documents.destroy', [$employee->id, $doc->id]) }}" method="POST" class="d-inline">
                                     @csrf @method('DELETE')
-                                    <button class="btn btn-danger btn-sm">Delete</button>
+                                    <button class="btn btn-danger btn-sm delete-btn"><i class="bx bxs-trash" title="Delete This Document"></i></button>
                                 </form>
                             </td>
                         </tr>
@@ -65,8 +65,7 @@
                     @endforelse
                 </tbody>
             </table>
-
-            <div class="mt-3">{{ $documents->links() }}</div>
+            {{-- <div class="mt-3">{{ $documents->links() }}</div> --}}
         </div>
     </div>
 </div>
@@ -80,6 +79,7 @@
         $('#example').DataTable();
     });
 </script>
+
 <script>
     $(document).ready(function() {
         var table = $('#example2').DataTable({

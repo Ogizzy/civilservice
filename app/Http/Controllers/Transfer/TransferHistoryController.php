@@ -80,8 +80,13 @@ class TransferHistoryController extends Controller
     // Update the employee's current MDA
     $employee->update(['mda_id' => $validated['current_mda']]);
 
+    $notification = array(
+        'message' => 'Transfer record created successfully',
+        'alert-type' => 'success'
+    );
+
     return redirect()->route('employees.transfers.index', $employee->id)
-        ->with('success', 'Transfer record created successfully.');
+        ->with($notification);
     }
 
     /**
@@ -110,7 +115,13 @@ class TransferHistoryController extends Controller
         // Don't delete the document, as it might be referenced elsewhere
         $transfer->delete();
 
+        $notification = array(
+            'message' => 'Transfer record deleted successfully',
+            'alert-type' => 'success'
+        );
+
+
         return redirect()->route('employees.transfers.index', $employee->id)
-            ->with('success', 'Transfer record deleted successfully.');
+            ->with($notification);
     }
 }

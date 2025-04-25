@@ -37,8 +37,12 @@ class PayGroupController extends Controller
 
         PayGroup::create($validated);
 
-        return redirect()->route('pay-groups.index')
-            ->with('success', 'Pay Group created successfully.');
+        $notification = array(
+            'message' => 'Pay Group created successfully',
+            'alert-type' => 'success'
+        );
+
+        return redirect()->route('pay-groups.index')->with($notification);
     }
 
     /**
@@ -71,8 +75,12 @@ class PayGroupController extends Controller
 
         $payGroup->update($validated);
 
-        return redirect()->route('pay-groups.index')
-            ->with('success', 'Pay Group updated successfully.');
+        $notification = array(
+            'message' => 'Pay Group Updated successfully',
+            'alert-type' => 'success'
+        );
+
+        return redirect()->route('pay-groups.index')->with($notification);
     }
 
     /**
@@ -82,13 +90,25 @@ class PayGroupController extends Controller
     {
         // Check if pay group has employees
         if ($payGroup->employees()->count() > 0) {
+
+            $notification = array(
+                'message' => 'Cannot delete Pay Group as it has employees',
+                'alert-type' => 'error'
+            );
+    
+    
             return redirect()->route('pay-groups.index')
-                ->with('error', 'Cannot delete Pay Group as it has employees.');
+                ->with($notification);
         }
 
         $payGroup->delete();
 
+        $notification = array(
+            'message' => 'Pay Group deleted successfully.',
+            'alert-type' => 'success'
+        );
+
         return redirect()->route('pay-groups.index')
-            ->with('success', 'Pay Group deleted successfully.');
+            ->with($notification);
     }
 }

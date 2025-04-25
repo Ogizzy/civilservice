@@ -1,0 +1,23 @@
+
+    .avatar {
+        width: 36px;
+        height: 36px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
+    }
+    .chart-container {
+        position: relative;
+    }
+    .table th {
+        white-space: nowrap;
+    }
+    .card {
+        border: none;
+        border-radius: 10px;
+    }
+    .badge {
+        padding: 5px 10px;
+        font-weight: 500;
+    }

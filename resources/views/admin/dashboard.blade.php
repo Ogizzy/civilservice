@@ -77,7 +77,41 @@
            </div>
         </div>
       </div> 
-    </div><!--end row-->
+
+      {{-- Male Total --}}
+      <div class="col">
+        <div class="card radius-10">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div>
+                        <p class="mb-0 text-secondary">Total Male Employees</p>
+                        <h4 class="my-1">{{ $maleCount }}</h4>
+                        <p class="mb-0 font-13 text-success"><i class="bx bxs-up-arrow align-middle"></i>From last week</p>
+                    </div>
+                    <div class="widgets-icons bg-light-success text-success ms-auto"><i class="lni lni-users"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {{-- Female Total --}}
+      <div class="col">
+        <div class="card radius-10">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div>
+                        <p class="mb-0 text-secondary">Total Female Employees</p>
+                        <h4 class="my-1">{{ $femaleCount }}</h4>
+                        <p class="mb-0 font-13 text-primary"><i class="bx bxs-up-arrow align-middle"></i>From last week</p>
+                    </div>
+                    <div class="widgets-icons bg-light-primary text-primary ms-auto"><i class="bx bxs-group"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+     </div><!--end row-->
 
     <div class="row">
       <div class="col-12 col-lg-12 d-flex">

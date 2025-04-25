@@ -64,6 +64,43 @@ class User extends Authenticatable implements Auditable
         return $this->hasMany(QueriesMisconduct::class, 'user_id');
     }
 
+//     public function hasFeaturePermission($featureName)
+// {
+//     return $this->permissions()
+//         ->whereHas('platform_feature', function($query) use ($featureName) {
+//             $query->where('feature', $featureName);
+//         })
+//         ->exists();
+// }
+
+public function hasFeaturePermission($featureId, $permission = null)
+{
+    $query = $this->role->permissions()->where('feature_id', $featureId);
+    
+    if ($permission === 'create') {
+        $query->where('can_create');
+    } elseif ($permission === 'edit') {
+        $query->where('can_edit');
+    } elseif ($permission === 'delete') {
+        $query->where('can_delete');
+    }
+    
+    return $query->exists();
+}
+
+// In your User model (app/Models/User.php)
+
+public function hasFeatureByName($featureName, $permission = null)
+{
+    $feature = \App\Models\PlatformFeature::where('feature', $featureName)->first();
+    
+    if (!$feature) {
+        return false;
+    }
+    
+    return $this->hasFeaturePermission($feature->id, $permission);
+}
+
     /**
      * The attributes that should be hidden for serialization.
      *

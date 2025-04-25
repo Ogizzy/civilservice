@@ -7,11 +7,13 @@ use App\Models\LGA;
 use App\Models\MDA;
 use App\Models\Step;
 use App\Models\User;
+use App\Models\Document;
 use App\Models\Employee;
 use App\Models\PayGroup;
 use App\Models\GradeLevel;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
@@ -121,8 +123,11 @@ class EmployeeController extends Controller
      */
     public function show(Employee $employee)
     {
-        $employee->load(['mda', 'payGroup', 'gradeLevel', 'step', 'documents', 'transferHistories', 'promotionHistories', 'commendationAward', 'queriesMisconduct']);
-        return view('admin.employee.show', compact('employee'));
+    $documents = Document::where('employee_id', $employee->id)->paginate(5);
+    $documents = $employee->documents()->paginate(5, ['*'], 'documents');
+    $transfers = $employee->transferHistories()->with(['previousMda', 'currentMda'])->paginate(5, ['*'], 'transfers');
+    $promotions = $employee->promotionHistories()->with(['previousLevel', 'currentLevel', 'previousStep', 'currentStep'])->paginate(5, ['*'], 'promotions');
+    return view('admin.employee.show', compact('employee', 'documents', 'transfers', 'promotions'));
     }
 
     /**
@@ -267,33 +272,73 @@ class EmployeeController extends Controller
     /**
      * Display employees by LGA of origin.
      */
-    public function byLga(Request $request)
-    {
-        $lga = $request->input('lga');
-        $employees = Employee::where('lga', $lga)->with(['mda', 'payGroup', 'gradeLevel', 'step'])->get();
-        return view('admin.reports.employees-by-lga', compact('employees', 'lga'));
+    //  Filter Employees by LGA
+public function employeesPerLga(Request $request)
+{
+    $query = DB::table('employees');
+
+    if ($request->filled('mda_id')) {
+        $query->where('mda_id', $request->mda_id);
     }
+    if ($request->filled('gender')) {
+        $query->where('gender', $request->gender);
+    }
+    $lgaCounts = $query
+        ->select('lga', DB::raw('count(*) as total'))
+        ->groupBy('lga')
+        ->orderBy('total', 'desc')
+        ->get();
+
+    $mdas = \App\Models\MDA::all();
+    $genders = ['Male', 'Female'];
+
+    return view('admin.reports.employes-by-lga', compact('lgaCounts', 'mdas', 'genders'));
+}
 
     /**
      * Display employees by MDA.
      */
     public function byMda(Request $request)
     {
-        $mdaId = $request->input('mda_id');
-        $mda = Mda::find($mdaId);
-        $employees = Employee::where('mda_id', $mdaId)->with(['payGroup', 'gradeLevel', 'step'])->get();
-        return view('admin.reports.employees-by-mda', compact('employees', 'mda'));
+        $mdas = MDA::all();
+        $selectedMdaId = $request->input('mda_id');
+        $employees = collect();
+        $genderStats = [];
+    
+        if ($selectedMdaId) {
+            $employees = Employee::where('mda_id', $selectedMdaId)
+                ->with(['mda', 'payGroup', 'gradeLevel', 'step'])
+                ->get();
+    
+            $genderStats = [
+                'Male' => $employees->where('gender', 'Male')->count(),
+                'Female' => $employees->where('gender', 'Female')->count()
+            ];
+        }
+    
+        return view('admin.reports.employees-by-mda', compact('mdas', 'selectedMdaId', 'employees', 'genderStats'));
     }
+    
 
     /**
      * Display employees by rank.
      */
-    public function byRank(Request $request)
-    {
-        $rank = $request->input('rank');
-        $employees = Employee::where('rank', $rank)->with(['mda', 'payGroup', 'gradeLevel', 'step'])->get();
-        return view('admin.reports.employees-by-rank', compact('employees', 'rank'));
+    
+// Filter Employee By Rank
+public function employeesByRank(Request $request)
+{
+    $rank = $request->input('rank');
+
+    $query = Employee::query();
+    if ($rank) {
+        $query->where('rank', $rank);
     }
+
+    $employees = $query->with(['mda'])->get();
+    $ranks = Employee::select('rank')->distinct()->pluck('rank');
+
+    return view('admin.reports.employees-by-rank', compact('employees', 'ranks', 'rank'));
+}
 
     /**
      * Display employees by gender.
@@ -308,78 +353,79 @@ class EmployeeController extends Controller
     /**
      * Display employees by qualification.
      */
-    public function byQualification(Request $request)
-    {
-        $qualification = $request->input('qualification');
-        $employees = Employee::where('qualifications', 'like', "%$qualification%")->with(['mda', 'payGroup', 'gradeLevel', 'step'])->get();
-        return view('admin.reports.employees-by-qualification', compact('employees', 'qualification'));
+    // Filter Employees By Qualification
+public function employeesByQualification(Request $request)
+{
+    $qualification = $request->input('qualification');
+
+    $query = Employee::query();
+    if ($qualification) {
+        $query->where('qualifications', 'like', "%$qualification%");
     }
+
+    $employees = $query->with('mda')->get();
+    $qualifications = Employee::select('qualifications')->distinct()->pluck('qualifications');
+
+    return view('admin.reports.employees-by-qualification', compact('employees', 'qualifications', 'qualification'));
+}
+
 
     /**
      * Display employees by pay group, grade level, and step.
      */
-    public function byPayStructure(Request $request)
-    {
-        $payGroupId = $request->input('paygroup_id');
-        $levelId = $request->input('level_id');
-        $stepId = $request->input('step_id');
+    // Filter Employees By PayStructure
+public function employeesByPayStructure(Request $request)
+{
+    $paygroup_id = $request->input('paygroup_id');
+    $level_id = $request->input('level_id');
+    $step_id = $request->input('step_id');
 
-        $query = Employee::query();
+    $query = Employee::query();
+    if ($paygroup_id) $query->where('paygroup_id', $paygroup_id);
+    if ($level_id) $query->where('level_id', $level_id);
+    if ($step_id) $query->where('step_id', $step_id);
 
-        if ($payGroupId) {
-            $query->where('paygroup_id', $payGroupId);
-        }
+    $employees = $query->with(['mda', 'payGroup', 'gradeLevel', 'step'])->get();
 
-        if ($levelId) {
-            $query->where('level_id', $levelId);
-        }
+    $payGroups = \App\Models\PayGroup::all();
+    $levels = \App\Models\GradeLevel::all();
+    $steps = \App\Models\Step::all();
 
-        if ($stepId) {
-            $query->where('step_id', $stepId);
-        }
-
-        $employees = $query->with(['mda', 'payGroup', 'gradeLevel', 'step'])->get();
-        
-        $payGroup = $payGroupId ? PayGroup::find($payGroupId) : null;
-        $level = $levelId ? GradeLevel::find($levelId) : null;
-        $step = $stepId ? Step::find($stepId) : null;
-
-        return view('admin.reports.employees-by-pay-structure', compact('employees', 'payGroup', 'level', 'step'));
-    }
+    return view('admin.reports.employees-by-pay-structure', compact('employees', 'payGroups', 'levels', 'steps'));
+}
 
     /**
      * Display employees that retired in a given date range.
      */
-    public function retiredEmployees(Request $request)
-    {
-        $startDate = $request->input('start_date');
-        $endDate = $request->input('end_date');
+   // Filter Employee By Retirement
+public function retiredEmployees(Request $request)
+{
+    $startDate = $request->input('start_date');
+    $endDate = $request->input('end_date');
 
-        $employees = Employee::whereBetween('retirement_date', [$startDate, $endDate])
-                              ->where('retirement_date', '<=', now())
-                              ->with(['mda', 'payGroup', 'gradeLevel', 'step'])
-                              ->get();
-        
-        // I am Calculating total amount that left the wage bill
-        $totalAmount = $employees->sum('net_pay');
-        
-        return view('admin.reports.retired-employees', compact('employees', 'startDate', 'endDate', 'totalAmount'));
+    $query = Employee::where('retirement_date', '<=', now());
+    if ($startDate && $endDate) {
+        $query->whereBetween('retirement_date', [$startDate, $endDate]);
     }
+
+    $employees = $query->get();
+    return view('admin.reports.retired-employees', compact('employees', 'startDate', 'endDate'));
+}
 
     /**
      * Display employees retiring in a given date range.
      */
     public function retiringEmployees(Request $request)
     {
-        $startDate = $request->input('start_date');
-        $endDate = $request->input('end_date');
-
-        $employees = Employee::whereBetween('retirement_date', [$startDate, $endDate])
-                              ->where('retirement_date', '>', now())
-                              ->with(['mda', 'payGroup', 'gradeLevel', 'step'])
-                              ->get();
+        $startDate = $request->input('start_date') ?? now();
+        $endDate = $request->input('end_date') ?? now()->addMonths(6);
+    
+        $employees = Employee::whereBetween('retirement_date', [$startDate, $endDate])->get();
+        return view('admin.reports.retiring-employees', compact('employees', 'startDate', 'endDate'));
     }
 
+    
+    // Stat on main Dashboard
     public function dashboard()
     {
      // Retirement per Year
@@ -396,7 +442,13 @@ class EmployeeController extends Controller
  // MDA-wise population
  $mdaStats = MDA::withCount('employees')->orderBy('employees_count', 'desc')->take(10)->get();
 
- return view('admin.dashboard', compact('retirementPerYear', 'genderStats', 'mdaStats'));
+ // Gender (Male and Female)
+ $maleCount = Employee::where('gender', 'Male')->count();
+ $femaleCount = Employee::where('gender', 'Female')->count();
+
+ return view('admin.dashboard', compact('retirementPerYear', 'genderStats', 'mdaStats', 'maleCount', 'femaleCount'));
     
 }
+
+
 }

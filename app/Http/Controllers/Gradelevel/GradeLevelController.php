@@ -52,8 +52,12 @@ class GradeLevelController extends Controller
             'level' => $request->level,
         ]);
 
-        return redirect()->route('grade-levels.index')
-            ->with('success', 'Grade level created successfully');
+ $notification = array(
+            'message' => 'Grade level created successfully',
+            'alert-type' => 'success'
+        );
+
+        return redirect()->route('grade-levels.index')->with($notification);
     }
 
     /**
@@ -105,8 +109,13 @@ class GradeLevelController extends Controller
             'level' => $request->level,
         ]);
 
-        return redirect()->route('grade-levels.index')
-            ->with('success', 'Grade level updated successfully');
+        $notification = array(
+            'message' => 'Grade Level Updated successfully',
+            'alert-type' => 'success'
+        );
+
+
+        return redirect()->route('grade-levels.index')->with($notification);
     }
 
     /**
@@ -120,8 +129,13 @@ class GradeLevelController extends Controller
         $gradeLevel = GradeLevel::findOrFail($id);
         $gradeLevel->delete();
 
+        $notification = array(
+            'message' => 'Grade Level Deleted Successfully',
+            'alert-type' => 'success'
+        );
+
         return redirect()->route('grade-levels.index')
-            ->with('success', 'Grade level deleted successfully');
+            ->with($notification);
     }
 
     /**

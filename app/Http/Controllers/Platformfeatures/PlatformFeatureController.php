@@ -40,8 +40,14 @@ class PlatformFeatureController extends Controller
 
         PlatformFeature::create($validated);
 
+        $notification = array(
+            'message' => 'Feature created successfully',
+            'alert-type' => 'success'
+        );
+
+
         return redirect()->route('features.index')
-            ->with('success', 'Feature created successfully.');
+            ->with($notification);
     }
 
     /**
@@ -78,8 +84,13 @@ class PlatformFeatureController extends Controller
 
         $feature->update($validated);
 
+        $notification = array(
+            'message' => 'Feature Updated successfully',
+            'alert-type' => 'success'
+        );
+
         return redirect()->route('features.index')
-            ->with('success', 'Feature updated successfully.');
+            ->with($notification);
     }
 
     /**
@@ -89,13 +100,25 @@ class PlatformFeatureController extends Controller
     {
         // Check if there are permissions with this feature
         if ($feature->userPermissions()->count() > 0) {
+
+            
+        $notification = array(
+            'message' => 'Cannot delete feature that has associated permissions',
+            'alert-type' => 'error'
+        );
+
             return redirect()->route('features.index')
-                ->with('error', 'Cannot delete feature that has associated permissions.');
+                ->with($notification);
         }
 
         $feature->delete();
 
+        $notification = array(
+            'message' => 'Feature deleted successfully.',
+            'alert-type' => 'success'
+        );
+
         return redirect()->route('features.index')
-            ->with('success', 'Feature deleted successfully.');
+            ->with($notification);
     }
 }

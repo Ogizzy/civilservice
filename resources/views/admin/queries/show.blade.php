@@ -21,7 +21,7 @@
                                 </div>
                                 <div>
                                     <p class="mb-0 fw-bold fs-5">{{ $queriesMisconduct->employee->surname }}, {{ $queriesMisconduct->employee->first_name }}</p>
-                                    <small class="text-muted">Employee ID: {{ $queriesMisconduct->employee->id ?? 'N/A' }}</small>
+                                    <small class="text-muted">Employee Number: {{ $queriesMisconduct->employee->employee_number ?? 'N/A' }}</small>
                                 </div>
                             </div>
                         </div>
@@ -86,9 +86,9 @@
                 <a href="{{ route('queries.index') }}" class="btn btn-secondary me-2">
                     <i class="bi bi-x-circle me-1"></i>Cancel
                 </a>
-                <button type="button" class="btn btn-primary" onclick="window.print()">
+                {{-- <button type="button" class="btn btn-primary" onclick="window.print()">
                     <i class="bi bi-printer me-1"></i>Print Details
-                </button>
+                </button> --}}
             </div>
         </div>
     </div>

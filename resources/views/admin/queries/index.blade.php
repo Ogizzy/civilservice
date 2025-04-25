@@ -37,7 +37,7 @@
                         <a href="{{ route('queries.edit', $query->id) }}" class="btn btn-warning btn-sm">Edit</a>
                         <form action="{{ route('queries.destroy', $query->id) }}" method="POST" style="display:inline-block;">
                             @csrf @method('DELETE')
-                            <button class="btn btn-danger btn-sm">Delete</button>
+                            <button class="btn btn-danger btn-sm delete-btn">Delete</button>
                         </form>
                     </td>
                 </tr>

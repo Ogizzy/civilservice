@@ -61,15 +61,17 @@
                                         </td>
 
                                         <td>
-                                            <button class="btn btn-sm btn-warning" data-bs-toggle="modal"
-                                                data-bs-target="#editUserModal{{ $user->id }}">Edit</button>
                                             <a href="{{ route('users.show', $user->id) }}"
-                                                class="btn btn-sm btn-info">View</a>
+                                                class="btn btn-sm btn-info"><i class="lni lni-eye" title="View User Details"></i></a>
+
+                                            <button class="btn btn-sm btn-warning" data-bs-toggle="modal"
+                                                data-bs-target="#editUserModal{{ $user->id }}"><i class="bx bxs-edit" title="Edit User"></i></button>
+
+                                           
                                             <form action="{{ route('users.destroy', $user->id) }}" method="POST"
                                                 style="display:inline-block">
                                                 @csrf @method('DELETE')
-                                                <button class="btn btn-sm btn-danger"
-                                                    onclick="return confirm('Delete user?')">Delete</button>
+                                                <button class="btn btn-sm btn-danger delete-btn"><i class="bx bxs-trash" title="Delete User"></i></button>
                                             </form>
                                             @include('admin.users.modals.edit', ['user' => $user])
                                         </td>

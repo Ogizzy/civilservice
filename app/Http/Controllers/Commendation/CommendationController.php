@@ -66,7 +66,7 @@ class CommendationController extends Controller
             // Create document record
             $document = Document::create([
                 'employee_id' => $request->employee_id,
-                'document_type' => 'commendation',
+                'document_type' => 'Commendation Letter',
                 'document' => $path, // Store the cloud URL here
                 'user_id' => Auth::id()
             ]);

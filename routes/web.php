@@ -177,15 +177,15 @@ Route::prefix('reports')->name('reports.')->group(function () {
 
 
 // Dashboard Analytics Routes
-Route::prefix('employees')->group(function () {
-    Route::get('/by-lga', [EmployeeController::class, 'byLga'])->name('employees.by-lga');
-    Route::get('/by-mda', [EmployeeController::class, 'byMda'])->name('employees.by-mda');
-    Route::get('/by-rank', [EmployeeController::class, 'byRank'])->name('employees.by-rank');
-    Route::get('/by-gender', [EmployeeController::class, 'byGender'])->name('employees.by-gender');
-    Route::get('/by-qualification', [EmployeeController::class, 'byQualification'])->name('employees.by-qualification');
-    Route::get('/retired', [EmployeeController::class, 'retiredEmployees'])->name('employees.retired');
-    Route::get('/retiring', [EmployeeController::class, 'retiringEmployees'])->name('employees.retiring');
-});
+// Route::prefix('employees')->group(function () {
+//     Route::get('/by-lga', [EmployeeController::class, 'byLga'])->name('employees.by-lga');
+//     Route::get('/by-mda', [EmployeeController::class, 'byMda'])->name('employees.by-mda');
+//     Route::get('/by-rank', [EmployeeController::class, 'byRank'])->name('employees.by-rank');
+//     Route::get('/by-gender', [EmployeeController::class, 'byGender'])->name('employees.by-gender');
+//     Route::get('/by-qualification', [EmployeeController::class, 'byQualification'])->name('employees.by-qualification');
+//     Route::get('/retired', [EmployeeController::class, 'retiredEmployees'])->name('employees.retired');
+//     Route::get('/retiring', [EmployeeController::class, 'retiringEmployees'])->name('employees.retiring');
+// });
 
 // Roles Routes
     Route::prefix('roles')->name('roles.')->group(function () {
@@ -244,3 +244,26 @@ Route::prefix('queries')->middleware(['auth'])->group(function () {
     Route::delete('/{queriesMisconduct}', [QueriesMisconductController::class, 'destroy'])->name('queries.destroy');
     Route::get('/employee/{employee}/queries', [QueriesMisconductController::class, 'employeeQueries'])->name('queries.employee');
 });
+
+
+// Report Routes
+Route::prefix('reports/employees')->group(function () {
+    Route::get('by-lga', [EmployeeController::class, 'byLga'])->name('reports.employees.by-lga');
+    Route::get('by-mda', [EmployeeController::class, 'byMda'])->name('reports.employees.by-mda');
+    Route::get('by-rank', [EmployeeController::class, 'byRank'])->name('reports.employees.by-rank');
+    Route::get('by-gender', [EmployeeController::class, 'byGender'])->name('reports.employees.by-gender');
+    Route::get('by-qualification', [EmployeeController::class, 'byQualification'])->name('reports.employees.by-qualification');
+    Route::get('by-pay-structure', [EmployeeController::class, 'byPayStructure'])->name('reports.employees.by-pay-structure');
+    Route::get('retired', [EmployeeController::class, 'retiredEmployees'])->name('reports.employees.retired');
+    Route::get('retiring', [EmployeeController::class, 'retiringEmployees'])->name('reports.employees.retiring');
+});
+
+
+// Report Routes
+Route::get('/reports/employees-per-lga', [EmployeeController::class, 'employeesPerLga'])->name('reports.employees.per-lga');
+Route::get('/reports/employees/by-rank', [EmployeeController::class, 'employeesByRank'])->name('reports.by-rank');
+Route::get('/reports/employees/by-qualification', [EmployeeController::class, 'employeesByQualification'])->name('reports.by-qualification');
+Route::get('/reports/employees/by-pay-structure', [EmployeeController::class, 'employeesByPayStructure'])->name('reports.by-pay-structure');
+Route::get('/reports/employees/retired', [EmployeeController::class, 'retiredEmployees'])->name('reports.employees.retired');
+Route::get('/reports/employees/retiring', [EmployeeController::class, 'retiringEmployees'])->name('reports.employees.retiring');
+Route::get('/reports/employees/by-mda', [EmployeeController::class, 'byMda'])->name('reports.by-mda');
