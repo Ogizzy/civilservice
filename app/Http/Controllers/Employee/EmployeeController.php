@@ -270,9 +270,9 @@ class EmployeeController extends Controller
     }
 
     /**
-     * Display employees by LGA of origin.
+     * Display employees by LGA.
      */
-    //  Filter Employees by LGA
+ 
 public function employeesPerLga(Request $request)
 {
     $query = DB::table('employees');
@@ -324,7 +324,6 @@ public function employeesPerLga(Request $request)
      * Display employees by rank.
      */
     
-// Filter Employee By Rank
 public function employeesByRank(Request $request)
 {
     $rank = $request->input('rank');
@@ -353,8 +352,7 @@ public function employeesByRank(Request $request)
     /**
      * Display employees by qualification.
      */
-    // Filter Employees By Qualification
-public function employeesByQualification(Request $request)
+  public function employeesByQualification(Request $request)
 {
     $qualification = $request->input('qualification');
 
@@ -373,7 +371,7 @@ public function employeesByQualification(Request $request)
     /**
      * Display employees by pay group, grade level, and step.
      */
-    // Filter Employees By PayStructure
+   
 public function employeesByPayStructure(Request $request)
 {
     $paygroup_id = $request->input('paygroup_id');
@@ -397,8 +395,7 @@ public function employeesByPayStructure(Request $request)
     /**
      * Display employees that retired in a given date range.
      */
-   // Filter Employee By Retirement
-public function retiredEmployees(Request $request)
+   public function retiredEmployees(Request $request)
 {
     $startDate = $request->input('start_date');
     $endDate = $request->input('end_date');

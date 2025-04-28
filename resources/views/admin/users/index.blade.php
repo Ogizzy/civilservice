@@ -67,12 +67,20 @@
                                             <button class="btn btn-sm btn-warning" data-bs-toggle="modal"
                                                 data-bs-target="#editUserModal{{ $user->id }}"><i class="bx bxs-edit" title="Edit User"></i></button>
 
-                                           
+                                                <form action="{{ route('users.destroy', $user->id) }}" method="POST" class="d-inline-block">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="button" class="btn btn-outline-danger " title="Delete User" 
+                                                            onclick="confirmDelete(this.parentElement)">
+                                                        <i class="bx bx-trash me-1"></i> 
+                                                    </button>
+                                                </form>
+{{--                                            
                                             <form action="{{ route('users.destroy', $user->id) }}" method="POST"
                                                 style="display:inline-block">
                                                 @csrf @method('DELETE')
                                                 <button class="btn btn-sm btn-danger delete-btn"><i class="bx bxs-trash" title="Delete User"></i></button>
-                                            </form>
+                                            </form> --}}
                                             @include('admin.users.modals.edit', ['user' => $user])
                                         </td>
                                     </tr>
@@ -104,4 +112,22 @@
             });
         </script>
         
+        <script>
+            function confirmDelete(form) {
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: "This User Account will be Permanently Deleted!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#3085d6',
+                    confirmButtonText: 'Yes, delete it!'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        form.submit();
+                    }
+                });
+            }
+        </script>
+
     @endsection

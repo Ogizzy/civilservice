@@ -88,17 +88,26 @@ public function hasFeaturePermission($featureId, $permission = null)
     return $query->exists();
 }
 
-// In your User model (app/Models/User.php)
 
-public function hasFeatureByName($featureName, $permission = null)
+
+// public function hasFeatureByName($featureName, $permission = null)
+// {
+//     $feature = \App\Models\PlatformFeature::where('feature', $featureName)->first();
+    
+//     if (!$feature) {
+//         return false;
+//     }
+    
+//     return $this->hasFeaturePermission($feature->id, $permission);
+// }
+
+// Show Employee Profile Photo on the Header
+public function getPassportUrlAttribute()
 {
-    $feature = \App\Models\PlatformFeature::where('feature', $featureName)->first();
-    
-    if (!$feature) {
-        return false;
+    if ($this->employee && $this->employee->passport) {
+        return asset('storage/' . $this->employee->passport);
     }
-    
-    return $this->hasFeaturePermission($feature->id, $permission);
+    return asset('backend/assets/images/avatars/avatar-1.jpg');
 }
 
     /**

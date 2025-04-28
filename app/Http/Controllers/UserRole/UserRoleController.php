@@ -86,10 +86,7 @@ class UserRoleController extends Controller
     public function update(Request $request, UserRole $role)
     {
         $validated = $request->validate([
-            'role' => [
-                'required',
-                'string',
-                'max:255',
+            'role' => ['required','string','max:255',
                 Rule::unique('user_roles')->ignore($role->id),
             ],
             'permissions' => 'required|array',
@@ -117,8 +114,14 @@ class UserRoleController extends Controller
             ]);
         }
 
+        $notification = array(
+            'message' => 'Role updated successfully',
+            'alert-type' => 'success'
+        );
+
+
         return redirect()->route('roles.index')
-            ->with('success', 'Role updated successfully.');
+            ->with($notification);
     }
 
     /**
@@ -128,8 +131,14 @@ class UserRoleController extends Controller
     {
         // Check if role has users
         if ($role->users()->count() > 0) {
+
+            $notification = array(
+                'message' => 'Cannot delete role with assigned users',
+                'alert-type' => 'error'
+            );
+            
             return redirect()->route('roles.index')
-                ->with('error', 'Cannot delete role with assigned users.');
+                ->with($notification);
         }
 
         // Delete permissions
@@ -138,7 +147,12 @@ class UserRoleController extends Controller
         // Delete role
         $role->delete();
 
+        $notification = array(
+            'message' => 'Role deleted successfully',
+            'alert-type' => 'success'
+        );
+
         return redirect()->route('roles.index')
-            ->with('success', 'Role deleted successfully.');
+            ->with($notification);
     }
 }

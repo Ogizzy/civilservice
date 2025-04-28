@@ -23,6 +23,7 @@ class Employee extends Model implements Auditable
         'email',
         'password',
         'phone',
+        'contact_address',
         'dob',
         'gender',
         'marital_status',

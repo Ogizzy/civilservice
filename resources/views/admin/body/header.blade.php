@@ -401,7 +401,7 @@
             </div>
             <div class="user-box dropdown px-3">
                 <a class="d-flex align-items-center nav-link dropdown-toggle gap-3 dropdown-toggle-nocaret" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                    <img src="{{ asset('backend/assets/images/avatars/avatar-1.jpg')}}" class="user-img" alt="user avatar">
+                    <img src="{{ Auth::user()->passport_url }}" class="user-img" alt="user avatar">
                     <div class="user-info">
                         <p class="user-name mb-0">
                             {{ Auth::user()->surname ?? '' }} {{ Auth::user()->first_name ?? '' }}
@@ -413,7 +413,7 @@
                     
                 </a>
                 <ul class="dropdown-menu dropdown-menu-end">
-                    <li><a class="dropdown-item d-flex align-items-center" href="javascript:;"><i class="bx bx-user fs-5"></i><span>Profile</span></a>
+                    <li><a class="dropdown-item d-flex align-items-center" href="{{ route('service-account.edit')}}"><i class="bx bx-user fs-5"></i><span>My Service Account</span></a>
                     </li>
                     <li>
                         <div class="dropdown-divider mb-0"></div>

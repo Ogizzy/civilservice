@@ -19,7 +19,13 @@
 	<link href="{{ asset('backend/assets/plugins/simplebar/css/simplebar.css') }}" rel="stylesheet" />
 	<link href="{{ asset('backend/assets/plugins/perfect-scrollbar/css/perfect-scrollbar.css') }}" rel="stylesheet" />
 	<link href="{{ asset('backend/assets/plugins/metismenu/css/metisMenu.min.css') }}" rel="stylesheet"/>
+	
+	{{-- Custom Css Start --}}
 	<link href="{{ asset('backend/assets/css/retirees.css') }}" rel="stylesheet"/>
+	<link href="{{ asset('backend/assets/css/employee-form.css') }}" rel="stylesheet"/>
+	<link href="{{ asset('backend/assets/css/service-account.css') }}" rel="stylesheet"/>
+
+
 	<!-- loader-->
 	{{-- <link href="{{ asset('backend/assets/css/pace.min.css') }}" rel="stylesheet"/>
 	<script src="{{ asset('backend/assets/js/pace.min.js') }}"></script> --}}
@@ -82,6 +88,12 @@
     <script src="{{ asset('backend/assets/plugins/vectormap/jquery-jvectormap-world-mill-en.js') }}"></script>
 	<script src="{{ asset('backend/assets/plugins/chartjs/js/chart.js') }}"></script>
 	<script src="{{ asset('backend/assets/js/index.js') }}"></script>
+	
+	{{-- Custom JS --}}
+	<script src="{{ asset('backend/assets/js/employee-form.js') }}"></script>
+	<script src="{{ asset('backend/assets/js/service-account.js') }}"></script>
+
+
 	<!--tagsinput-->
 	<script src="{{ asset('backend/assets/plugins/input-tags/js/tagsinput.js') }}"></script>
 	<!--tagsinput-->

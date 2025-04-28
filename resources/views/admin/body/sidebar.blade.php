@@ -20,22 +20,24 @@
         </li>
 
        
-        @if(auth()->user()->hasFeatureByName('Employee Management'))
+        {{-- @if(auth()->user()->hasFeatureByName('Employee Management')) --}}
+        @usercan('Employee Management', 'can_edit')
         <li>
             <a href="javascript:;" class="has-arrow">
                 <div class="parent-icon"><i class="bx bx-category"></i></div>
                 <div class="menu-title">Employee Mgt</div>
             </a>
             <ul>
-                @if(auth()->user()->hasFeaturePermission('can_create'))
+                {{-- @if(auth()->user()->hasFeaturePermission('can_create')) --}}
                 <li> 
                     <a href="{{ route('employees.create') }}">
                         <i class='bx bx-radio-circle'></i>Create Employee
                     </a>
                 </li>
-                @endif
+                {{-- @endif --}}
                 
-                
+                @endusercan
+                @usercan('Employee Management', 'can_edit')
                 <li>
                     <a href="{{ route('employees.index') }}">
                         <i class='bx bx-radio-circle'></i>View Employee
@@ -44,13 +46,12 @@
                
             </ul>
         </li>
-        @endif
-
        
+        @endusercan
         <li class="menu-label">Administration</li>
        
 
-       
+        @usercan('MDA Management', 'can_edit')
         <li>
             <a href="{{ route('mdas.index') }}">
                 <div class="parent-icon"><i class="lni lni-layers"></i>
@@ -58,7 +59,7 @@
                 <div class="menu-title">Manage MDAs</div>
             </a>
         </li>
-     
+        @endusercan
 
       
         <li>
@@ -215,6 +216,20 @@
             <a href="{{ route('reports.employees.retiring')}}">
                 <div class="parent-icon"><i class="lni lni-alarm-clock"></i></div>
                 <div class="menu-title">Retiring Soon</div>
+            </a>
+        </li>
+
+        <li>
+            <a href="{{ route('audit.logs')}}">
+                <div class="parent-icon"><i class="lni lni-alarm-clock"></i></div>
+                <div class="menu-title">Audit Logs</div>
+            </a>
+        </li>
+
+        <li>
+            <a href="{{ route('service-account.edit')}}">
+                <div class="parent-icon"><i class="lni lni-alarm-clock"></i></div>
+                <div class="menu-title">Service Account</div>
             </a>
         </li>
        

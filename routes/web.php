@@ -8,7 +8,7 @@ use App\Http\Controllers\User\UserController;
 use App\Http\Controllers\Admin\AdminController;
 // use App\Http\Controllers\User\UserRoleController;
 // use App\Http\Controllers\CommendationController;
-use App\Http\Controllers\Queries\QueriesMisconductController;
+use App\Http\Controllers\AuditLog\AuditLogController;
 use App\Http\Controllers\Document\DocumentController;
 use App\Http\Controllers\Employee\EmployeeController;
 use App\Http\Controllers\Paygroup\PayGroupController;
@@ -17,7 +17,9 @@ use App\Http\Controllers\Gradelevel\GradeLevelController;
 use SebastianBergmann\CodeCoverage\Report\Html\Dashboard;
 use App\Http\Controllers\Transfer\TransferHistoryController;
 use App\Http\Controllers\Commendation\CommendationController;
+use App\Http\Controllers\Queries\QueriesMisconductController;
 use App\Http\Controllers\Promotiom\PromotionHistoryController;
+use App\Http\Controllers\ServiceAccount\ServiceAccountController;
 use App\Http\Controllers\UserPermission\UserPermissionController;
 use App\Http\Controllers\Platformfeatures\PlatformFeatureController;
 
@@ -26,7 +28,7 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/dashboard', function () {
+Route::get('/admin/dashboard', function () {
     return view('admin.dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
@@ -175,18 +177,6 @@ Route::prefix('reports')->name('reports.')->group(function () {
     Route::get('/retiring', [EmployeeController::class, 'retiringEmployees'])->name('retiring');
 });
 
-
-// Dashboard Analytics Routes
-// Route::prefix('employees')->group(function () {
-//     Route::get('/by-lga', [EmployeeController::class, 'byLga'])->name('employees.by-lga');
-//     Route::get('/by-mda', [EmployeeController::class, 'byMda'])->name('employees.by-mda');
-//     Route::get('/by-rank', [EmployeeController::class, 'byRank'])->name('employees.by-rank');
-//     Route::get('/by-gender', [EmployeeController::class, 'byGender'])->name('employees.by-gender');
-//     Route::get('/by-qualification', [EmployeeController::class, 'byQualification'])->name('employees.by-qualification');
-//     Route::get('/retired', [EmployeeController::class, 'retiredEmployees'])->name('employees.retired');
-//     Route::get('/retiring', [EmployeeController::class, 'retiringEmployees'])->name('employees.retiring');
-// });
-
 // Roles Routes
     Route::prefix('roles')->name('roles.')->group(function () {
         Route::get('/', [UserRoleController::class, 'index'])->name('index');
@@ -233,7 +223,6 @@ Route::prefix('commendations')->name('commendations.')->middleware(['web', 'auth
     Route::get('/employee/{employee}', [CommendationController::class, 'employeeCommendations'])->name('employee');
 });
 
-
 Route::prefix('queries')->middleware(['auth'])->group(function () {
     Route::get('/', [QueriesMisconductController::class, 'index'])->name('queries.index');
     Route::get('/create', [QueriesMisconductController::class, 'create'])->name('queries.create');
@@ -245,25 +234,18 @@ Route::prefix('queries')->middleware(['auth'])->group(function () {
     Route::get('/employee/{employee}/queries', [QueriesMisconductController::class, 'employeeQueries'])->name('queries.employee');
 });
 
-
 // Report Routes
-Route::prefix('reports/employees')->group(function () {
-    Route::get('by-lga', [EmployeeController::class, 'byLga'])->name('reports.employees.by-lga');
-    Route::get('by-mda', [EmployeeController::class, 'byMda'])->name('reports.employees.by-mda');
-    Route::get('by-rank', [EmployeeController::class, 'byRank'])->name('reports.employees.by-rank');
-    Route::get('by-gender', [EmployeeController::class, 'byGender'])->name('reports.employees.by-gender');
-    Route::get('by-qualification', [EmployeeController::class, 'byQualification'])->name('reports.employees.by-qualification');
-    Route::get('by-pay-structure', [EmployeeController::class, 'byPayStructure'])->name('reports.employees.by-pay-structure');
-    Route::get('retired', [EmployeeController::class, 'retiredEmployees'])->name('reports.employees.retired');
-    Route::get('retiring', [EmployeeController::class, 'retiringEmployees'])->name('reports.employees.retiring');
+Route::prefix('reports')->name('reports.')->group(function () {
+    Route::get('/employees-per-lga', [EmployeeController::class, 'employeesPerLga'])->name('employees.per-lga');
+    Route::get('/employees/by-rank', [EmployeeController::class, 'employeesByRank'])->name('by-rank');
+    Route::get('/employees/by-qualification', [EmployeeController::class, 'employeesByQualification'])->name('by-qualification');
+    Route::get('/employees/by-pay-structure', [EmployeeController::class, 'employeesByPayStructure'])->name('by-pay-structure');
+    Route::get('/employees/retired', [EmployeeController::class, 'retiredEmployees'])->name('employees.retired');
+    Route::get('/employees/retiring', [EmployeeController::class, 'retiringEmployees'])->name('employees.retiring');
+    Route::get('/employees/by-mda', [EmployeeController::class, 'byMda'])->name('by-mda');
 });
 
-
-// Report Routes
-Route::get('/reports/employees-per-lga', [EmployeeController::class, 'employeesPerLga'])->name('reports.employees.per-lga');
-Route::get('/reports/employees/by-rank', [EmployeeController::class, 'employeesByRank'])->name('reports.by-rank');
-Route::get('/reports/employees/by-qualification', [EmployeeController::class, 'employeesByQualification'])->name('reports.by-qualification');
-Route::get('/reports/employees/by-pay-structure', [EmployeeController::class, 'employeesByPayStructure'])->name('reports.by-pay-structure');
-Route::get('/reports/employees/retired', [EmployeeController::class, 'retiredEmployees'])->name('reports.employees.retired');
-Route::get('/reports/employees/retiring', [EmployeeController::class, 'retiringEmployees'])->name('reports.employees.retiring');
-Route::get('/reports/employees/by-mda', [EmployeeController::class, 'byMda'])->name('reports.by-mda');
+Route::get('/audit-logs', [AuditLogController::class, 'index'])->name('audit.logs');
+// For "My Service Account"
+Route::get('/service-account', [ServiceAccountController::class, 'edit'])->name('service-account.edit')->middleware('auth');
+Route::put('/service-account', [ServiceAccountController::class, 'update'])->name('service-account.update')->middleware('auth');

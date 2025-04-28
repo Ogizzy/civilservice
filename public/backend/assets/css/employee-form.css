@@ -1,0 +1,152 @@
+
+    /* Modern styling */
+    body {
+        background-color: #f8f9fc;
+    }
+    
+    .bg-gradient-primary {
+        background: linear-gradient(135deg, #4e73df 0%, #224abe 100%);
+    }
+    
+    .bg-gradient-info {
+        background: linear-gradient(135deg, #36b9cc 0%, #1a8eaa 100%);
+    }
+    
+    .bg-gradient-success {
+        background: linear-gradient(135deg, #1cc88a 0%, #13855c 100%);
+    }
+    
+    .card {
+        transition: all 0.3s ease;
+        border-radius: 0.75rem;
+        overflow: hidden;
+    }
+    
+    .card-header {
+        border-bottom: none;
+    }
+    
+    .form-control, .form-select, .input-group-text {
+        border-radius: 0.5rem;
+        padding: 0.6rem 1rem;
+        font-size: 0.9rem;
+    }
+    
+    .form-label {
+        font-size: 0.85rem;
+        margin-bottom: 0.3rem;
+    }
+    
+    .input-group-seamless .input-group-text {
+        background-color: transparent !important;
+        border-right: none;
+        padding-right: 0;
+    }
+    
+    .input-group-seamless .form-control,
+    .input-group-seamless .form-select {
+        border-left: none;
+        padding-left: 0;
+    }
+    
+    .input-group-seamless .form-control:focus,
+    .input-group-seamless .form-select:focus {
+        box-shadow: none;
+        border-color: #ced4da;
+    }
+    
+    .input-group-seamless .form-control:focus + .input-group-text,
+    .input-group-seamless .form-select:focus + .input-group-text {
+        border-color: #ced4da;
+    }
+    
+    .btn {
+        border-radius: 0.5rem;
+        font-weight: 500;
+        padding: 0.6rem 1.2rem;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-primary {
+        background-color: #4e73df;
+        border-color: #4e73df;
+    }
+    
+    .btn-primary:hover {
+        background-color: #2e59d9;
+        border-color: #2653d4;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 10px rgba(46, 89, 217, 0.3);
+    }
+    
+    .btn-light {
+        background-color: #f8f9fc;
+        border-color: #eaecf4;
+    }
+    
+    .btn-light:hover {
+        background-color: #e9ecef;
+        border-color: #dde2f1;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    }
+    
+    .btn-outline-primary {
+        color: #4e73df;
+        border-color: #4e73df;
+    }
+    
+    .btn-outline-primary:hover {
+        background-color: #4e73df;
+        border-color: #4e73df;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 10px rgba(46, 89, 217, 0.3);
+    }
+    
+    .breadcrumb-item a {
+        color: #4e73df;
+    }
+    
+    .passport-container:hover {
+        border-color: #4e73df;
+        cursor: pointer;
+        box-shadow: 0 0.5rem 1rem rgba(78, 115, 223, 0.15);
+    }
+    
+    .list-group-item {
+        padding: 1rem 0;
+    }
+    
+    .invalid-feedback {
+        font-size: 0.8rem;
+    }
+    
+    .progress {
+        border-radius: 0.5rem;
+        overflow: hidden;
+    }
+    
+    .progress-bar {
+        transition: width 0.6s ease;
+    }
+    
+    /* Animation */
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .card {
+        animation: fadeIn 0.5s ease-out;
+    }
+    
+    /* Responsive improvements */
+    @media (max-width: 768px) {
+        .card {
+            margin-bottom: 1.5rem;
+        }
+        
+        .col-md-4 {
+            margin-bottom: 0.5rem;
+        }
+    }
