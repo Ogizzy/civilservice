@@ -13,13 +13,13 @@
                             </h4>
 
                             <div class="d-flex gap-2">
-                                <a href="{{ route('employees.edit', $employee->id) }}"
+                                {{-- <a href="{{ route('employees.edit', $employee->id) }}"
                                     class="btn btn-light btn-sm d-flex align-items-center shadow-sm border-0">
-                                    <i class="fas fa-edit mr-1 text-primary"></i> Edit
-                                </a>
+                                    <i class="bx bx-edit mr-1 text-primary"></i> Edit
+                                </a> --}}
                                 <a href="{{ route('employees.index') }}"
                                     class="btn btn-light btn-sm d-flex align-items-center shadow-sm border-0">
-                                    <i class="fas fa-chevron-left mr-1 text-danger"></i>
+                                    <i class="bx bxs-chevron-left mr-1 text-danger"></i>
                                     Back
                                 </a>
                             </div>
@@ -73,6 +73,7 @@
                                             <h5 class="mb-2">Contact Information</h5>
                                             <p><strong>Email:</strong> {{ $employee->email ?? 'N/A' }}</p>
                                             <p><strong>Phone:</strong> {{ $employee->phone ?? 'N/A' }}</p>
+                                            <p><strong>Contact Address:</strong> {{ $employee->contact_address ?? 'N/A' }}</p>
                                         </div>
                                     </div>
 

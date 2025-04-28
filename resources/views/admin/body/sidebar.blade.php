@@ -35,12 +35,17 @@
                     </a>
                 </li>
                 {{-- @endif --}}
-                
                 @endusercan
+
                 @usercan('Employee Management', 'can_edit')
                 <li>
                     <a href="{{ route('employees.index') }}">
                         <i class='bx bx-radio-circle'></i>View Employee
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ route('employees.import.form') }}">
+                        <i class='bx bx-radio-circle'></i>Import Employees
                     </a>
                 </li>
                
@@ -61,7 +66,7 @@
         </li>
         @endusercan
 
-      
+        @usercan('Manage Pay Group', 'can_edit')
         <li>
             <a href="{{ route('pay-groups.index') }}">
                 <div class="parent-icon"><i class="lni lni-wallet"></i>
@@ -69,6 +74,9 @@
                 <div class="menu-title">Manage Pay Groups</div>
             </a>
         </li>
+        @endusercan
+
+        @usercan('Employee Management', 'can_create')
         <li>
             <a href="{{ route('grade-levels.index') }}">
                 <div class="parent-icon"><i class="lni lni-signal"></i>
@@ -83,7 +91,7 @@
                 <div class="menu-title">Manage Steps</div>
             </a>
         </li>
-       
+       @endusercan
        
         <li>
             <a href="{{ route('roles.index') }}">
@@ -118,7 +126,7 @@
         <li>
             <a href="{{ route('commendations.create') }}">
                 <div class="parent-icon"><i class="lni lni-alarm-clock"></i></div>
-                <div class="menu-title">Create Commendation</div>
+                <div class="menu-title">Manage Commendation</div>
             </a>
         </li>
         <li>
@@ -128,13 +136,6 @@
             </a>
         </li>
 
-        <li>
-            <div class="parent-icon"><i class="lni lni-alarm-clock"></i></div>
-            <div class="menu-title">Employee Query</div>
-        </li>
-       
-
-       
         <li class="menu-label">Documents</li>
         <li>
             <a href="{{ route('employees.index') }}">
@@ -225,14 +226,6 @@
                 <div class="menu-title">Audit Logs</div>
             </a>
         </li>
-
-        <li>
-            <a href="{{ route('service-account.edit')}}">
-                <div class="parent-icon"><i class="lni lni-alarm-clock"></i></div>
-                <div class="menu-title">Service Account</div>
-            </a>
-        </li>
-       
     </ul>
     <!--end navigation-->
 </div>

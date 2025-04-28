@@ -20,7 +20,7 @@
                     <span class="fw-bold text-primary fs-4">{{ substr($user->first_name, 0, 1) }}{{ substr($user->surname, 0, 1) }}</span>
                 </div>
                 <div>
-                    <h4 class="mb-0">{{ $user->first_name }} {{ $user->surname }}</h4>
+                    <h4 class="mb-0"> {{ $user->surname }} {{ $user->first_name }}</h4>
                     <p class="text-muted mb-0">
                         <i class="bx bx-envelope me-1"></i>{{ $user->email }}
                     </p>
@@ -115,23 +115,6 @@
     </div>
 </div>
 
-<script>
-    function confirmDelete(form) {
-        Swal.fire({
-            title: 'Are you sure?',
-            text: "This user account will be permanently deleted!",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#d33',
-            cancelButtonColor: '#3085d6',
-            confirmButtonText: 'Yes, delete it!'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                form.submit();
-            }
-        });
-    }
-</script>
 @include('admin.users.modals.edit', ['user' => $user])
 @endsection
 

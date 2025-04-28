@@ -64,8 +64,8 @@
                                             <a href="{{ route('users.show', $user->id) }}"
                                                 class="btn btn-sm btn-info"><i class="lni lni-eye" title="View User Details"></i></a>
 
-                                            <button class="btn btn-sm btn-warning" data-bs-toggle="modal"
-                                                data-bs-target="#editUserModal{{ $user->id }}"><i class="bx bxs-edit" title="Edit User"></i></button>
+                                            {{-- <button class="btn btn-sm btn-warning" data-bs-toggle="modal"
+                                                data-bs-target="#editUserModal{{ $user->id }}"><i class="bx bxs-edit" title="Edit User"></i></button> --}}
 
                                                 <form action="{{ route('users.destroy', $user->id) }}" method="POST" class="d-inline-block">
                                                     @csrf
