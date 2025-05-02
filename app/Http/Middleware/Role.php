@@ -13,20 +13,21 @@ class Role
      *
      * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
      */
-    public function handle(Request $request, Closure $next, $role): Response
+    public function handle(Request $request, Closure $next, $roles): Response
     {
       
+        $user = $request->user();
 
-        $userRole = $request->user()->role->role; // assuming role() relationship returns role name
+        $userRole = $request->user()->role->role; 
 
         switch ($userRole) {
             case 'Employee':
-                return redirect('/employee/dashboard');
+                return redirect('employee.dashboard');
             case 'BDIC Super Admin':
             case 'Head of Service':
             case 'Commissioner':
             case 'Director':
-                return redirect('/dashboard');
+                return redirect('dashboard');
             default:
                 abort(403); // or redirect to login or error page
         }

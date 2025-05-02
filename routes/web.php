@@ -28,9 +28,13 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+// Route::get('/dashboard', function () {
+//     return view('admin.dashboard');
+// })->middleware(['auth', 'roles:BDIC Super Admin, Head of Service, Commissioner, Director'])->name('dashboard');
+
 Route::get('/dashboard', function () {
     return view('admin.dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+})->middleware(['auth', 'roles:BDIC Super Admin, Head of Service, Commissioner, Director'])->name('dashboard');
 
 
 Route::get('/employee/dashboard', function () {
