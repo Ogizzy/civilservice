@@ -57,7 +57,7 @@
                                             <td>{{ $employee->employee_number }}</td>
                                             <td>{{ $employee->surname }} {{ $employee->first_name }}</td>
                                             <td>{{ $employee->mda->mda ?? 'N/A' }}</td>
-                                            <td>{{ $employee->level->level ?? 'N/A' }}</td>
+                                            <td>{{ $employee->gradeLevel->level ?? 'N/A' }}</td>
                                             <td>{{ $employee->step->step ?? 'N/A' }}</td>
                                         </tr>
                                     @endforeach

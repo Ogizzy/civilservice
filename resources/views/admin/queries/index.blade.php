@@ -29,15 +29,15 @@
                     <td>{{ \Str::limit($query->query, 10) }}</td>
                     <td>
                         @if($query->document)
-                            <a href="{{ asset('storage/' . $query->document->document) }}" target="_blank">View</a>
+                            <a href="{{ asset('storage/' . $query->document->document) }}" target="_blank">View Document</a>
                         @endif
                     </td>
                     <td>
-                        <a href="{{ route('queries.show', $query->id) }}" class="btn btn-info btn-sm">Show</a>
-                        <a href="{{ route('queries.edit', $query->id) }}" class="btn btn-warning btn-sm">Edit</a>
+                        <a href="{{ route('queries.show', $query->id) }}" class="btn btn-info btn-sm" title="View Query"><i class="lni lni-eye"></i></a>
+                        <a href="{{ route('queries.edit', $query->id) }}" class="btn btn-warning btn-sm" title="Edit Query"> <i class="bx bx-edit"></i></a>
                         <form action="{{ route('queries.destroy', $query->id) }}" method="POST" style="display:inline-block;">
                             @csrf @method('DELETE')
-                            <button class="btn btn-danger btn-sm delete-btn">Delete</button>
+                            <button class="btn btn-danger btn-sm delete-btn" title="Delete Query"><i class="bx bx-trash"></i> </button>
                         </form>
                     </td>
                 </tr>

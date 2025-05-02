@@ -73,10 +73,10 @@
                 <div class="row mt-4">
                     <div class="col-12">
                         <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-save me-1"></i> Save Commendation
+                            <i class="bx bx-save me-1"></i> Save Commendation
                         </button>
                         <a href="{{ route('commendations.index') }}" class="btn btn-secondary ms-2">
-                            <i class="fas fa-times me-1"></i> Cancel
+                            <i class="fas fa-times me-1"></i> History
                         </a>
                     </div>
                 </div>

@@ -28,7 +28,7 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/admin/dashboard', function () {
+Route::get('/dashboard', function () {
     return view('admin.dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
@@ -250,18 +250,6 @@ Route::get('/audit-logs', [AuditLogController::class, 'index'])->name('audit.log
 Route::get('/service-account', [ServiceAccountController::class, 'edit'])->name('service-account.edit')->middleware('auth');
 Route::put('/service-account', [ServiceAccountController::class, 'update'])->name('service-account.update')->middleware('auth');
 
-// Show the import form
-Route::get('/employees/import', [EmployeeController::class, 'showImportForm'])->name('employees.import.form');
-
-// Preview import
-Route::post('/employee/preview-import', [EmployeeController::class, 'previewImport'])->name('employee.preview-import');
-
-// Actual import
-Route::post('/employees/import', [EmployeeController::class, 'import'])->name('employees.import');
-
-// Routes for Employee Import
-Route::get('/employees/import', [EmployeeController::class, 'showImportForm'])->name('employees.import.form');
-Route::post('/employee/preview-import', [EmployeeController::class, 'previewImport'])->name('employee.preview-import');
-Route::post('/employees/import', [EmployeeController::class, 'import'])->name('employees.import');
-Route::get('/employees/template/download', [EmployeeController::class, 'downloadTemplate'])->name('employees.template.download');
-
+    // Import Excel
+Route::get('/import-employees-form', [EmployeeController::class, 'showImportForm'])->name('import.employees.form');
+Route::post('/import-employees', [EmployeeController::class, 'import'])->name('import.employees');

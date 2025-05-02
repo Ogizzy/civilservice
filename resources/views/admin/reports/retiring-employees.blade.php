@@ -137,6 +137,7 @@
                                 <td>{{ $emp->mda->mda ?? 'N/A' }}</td>
                                 <td>
                                     <button class="btn btn-sm btn-outline-primary" title="View Profile">
+                                        
                                         <i class="bx bx-user"></i>
                                     </button>
                                 </td>

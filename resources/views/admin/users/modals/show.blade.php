@@ -17,7 +17,7 @@
             <!-- User Profile Header -->
             <div class="d-flex align-items-center mb-4 pb-3 border-bottom">
                 <div class="avatar avatar-xl bg-light-primary rounded-circle me-3 d-flex align-items-center justify-content-center">
-                    <span class="fw-bold text-primary fs-4">{{ substr($user->first_name, 0, 1) }}{{ substr($user->surname, 0, 1) }}</span>
+                    <span class="fw-bold text-primary fs-4">{{ substr($user->surname, 0, 1) }}{{ substr($user->first_name, 0, 1) }}</span>
                 </div>
                 <div>
                     <h4 class="mb-0"> {{ $user->surname }} {{ $user->first_name }}</h4>

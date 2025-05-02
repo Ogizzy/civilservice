@@ -68,8 +68,8 @@
                     </div>
                     <div class="card-footer bg-white border-0 py-3">
                         <div class="d-flex gap-2">
-                            <a href="{{ route('mdas.edit', $mda->id) }}" class="btn btn-primary d-flex align-items-center justify-content-center flex-grow-1">
-                                <i class="bx bx-edit me-1"></i> Edit Details
+                            <a href="{{ route('mdas.show', $mda->id) }}" class="btn btn-primary d-flex align-items-center justify-content-center flex-grow-1">
+                                <i class="bx bx-show me-2"></i> View Details
                             </a>
                             <a href="{{ route('mdas.index') }}" class="btn btn-outline-secondary d-flex align-items-center justify-content-center flex-grow-1">
                                 <i class="bx bx-arrow-back me-1"></i> Back
@@ -113,7 +113,7 @@
                                 <table class="table table-hover align-middle">
                                     <thead class="table-light">
                                         <tr>
-                                            <th scope="col" class="ps-4">#</th>
+                                            <th scope="col" class="ps-4">S/N</th>
                                             <th scope="col">Employee</th>
                                             <th scope="col">Employee No.</th>
                                             <th scope="col">Actions</th>

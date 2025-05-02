@@ -44,7 +44,7 @@
                     </a>
                 </li>
                 <li>
-                    <a href="{{ route('employees.import.form') }}">
+                    <a href="{{ route('import.employees.form') }}">
                         <i class='bx bx-radio-circle'></i>Import Employees
                     </a>
                 </li>
@@ -59,7 +59,7 @@
         @usercan('MDA Management', 'can_edit')
         <li>
             <a href="{{ route('mdas.index') }}">
-                <div class="parent-icon"><i class="lni lni-layers"></i>
+                <div class="parent-icon"><i class="bx bx-minus-front"></i>
                 </div>
                 <div class="menu-title">Manage MDAs</div>
             </a>
@@ -69,7 +69,7 @@
         @usercan('Manage Pay Group', 'can_edit')
         <li>
             <a href="{{ route('pay-groups.index') }}">
-                <div class="parent-icon"><i class="lni lni-wallet"></i>
+                <div class="parent-icon"><i class="bx bx-intersect"></i>
                 </div>
                 <div class="menu-title">Manage Pay Groups</div>
             </a>
@@ -79,45 +79,45 @@
         @usercan('Employee Management', 'can_create')
         <li>
             <a href="{{ route('grade-levels.index') }}">
-                <div class="parent-icon"><i class="lni lni-signal"></i>
+                <div class="parent-icon"><i class="bx bx-merge"></i>
                 </div>
                 <div class="menu-title">Manage Grade Levels</div>
             </a>
         </li>
         <li>
             <a href="{{ route('steps.index') }}">
-                <div class="parent-icon"><i class="lni lni-world-alt"></i>
+                <div class="parent-icon"><i class="bx bx-intersect"></i>
                 </div>
                 <div class="menu-title">Manage Steps</div>
             </a>
         </li>
-       @endusercan
+   
        
         <li>
             <a href="{{ route('roles.index') }}">
-                <div class="parent-icon"><i class="lni lni-alarm-clock"></i></div>
-                <div class="menu-title">View User Role</div>
+                <div class="parent-icon"><i class="bx bx-user-pin"></i></div>
+                <div class="menu-title">Manage User Role</div>
             </a>
         </li>
 
         <li>
             <a href="{{ route('features.index') }}">
-                <div class="parent-icon"><i class="lni lni-alarm-clock"></i></div>
-                <div class="menu-title">View Feature</div>
+                <div class="parent-icon"><i class="bx bx-minus-front"></i></div>
+                <div class="menu-title">Manage Feature</div>
             </a>
         </li>
 
         <li>
             <a href="{{ route('permissions.index') }}">
-                <div class="parent-icon"><i class="lni lni-alarm-clock"></i></div>
-                <div class="menu-title">View Permission</div>
+                <div class="parent-icon"><i class="bx bx-shield-alt-2"></i></div>
+                <div class="menu-title">Manage Permission</div>
             </a>
         </li>
 
         <li>
             <a href="{{ route('users.index') }}">
-                <div class="parent-icon"><i class="lni lni-alarm-clock"></i></div>
-                <div class="menu-title">View User</div>
+                <div class="parent-icon"><i class="bx bx-user-check"></i></div>
+                <div class="menu-title">Manage Users</div>
             </a>
         </li>
        
@@ -125,21 +125,21 @@
        
         <li>
             <a href="{{ route('commendations.create') }}">
-                <div class="parent-icon"><i class="lni lni-alarm-clock"></i></div>
+                <div class="parent-icon"><i class="bx bx-unite"></i></div>
                 <div class="menu-title">Manage Commendation</div>
             </a>
         </li>
         <li>
             <a href="{{ route('queries.create') }}">
-                <div class="parent-icon"><i class="lni lni-alarm-clock"></i></div>
-                <div class="menu-title">View Query</div>
+                <div class="parent-icon"><i class="bx bx-layer-plus"></i></div>
+                <div class="menu-title">Manage Queries</div>
             </a>
         </li>
 
         <li class="menu-label">Documents</li>
         <li>
             <a href="{{ route('employees.index') }}">
-                <div class="parent-icon"><i class="lni lni-world-alt"></i>
+                <div class="parent-icon"><i class="bx bx-comment-edit"></i>
                 </div>
                 <div class="menu-title">Manage Documents</div>
             </a>
@@ -149,7 +149,7 @@
       
         <li>
             <a href="{{ route('employees.index') }}">
-                <div class="parent-icon"><i class="lni lni-world-alt"></i>
+                <div class="parent-icon"><i class="bx bx-transfer-alt"></i>
                 </div>
                 <div class="menu-title">Transfer Employee</div>
             </a>
@@ -226,6 +226,7 @@
                 <div class="menu-title">Audit Logs</div>
             </a>
         </li>
+        @endusercan
     </ul>
     <!--end navigation-->
 </div>

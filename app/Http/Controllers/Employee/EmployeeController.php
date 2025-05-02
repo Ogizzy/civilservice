@@ -453,137 +453,40 @@ public function employeesByPayStructure(Request $request)
 }
 
 // Import Employee via Excel
+ // Show Import Form
+ public function showImportForm()
+ {
+     return view('admin.employee.importemployee'); // This matches your blade.
+ }
 
-public function showImportForm()
-{
-    return view('admin.employee.importemployee');
-}
+ // Handle Excel Import
+ public function import(Request $request)
+ {
+     // Validate the uploaded file
+     $validated = $request->validate([
+         'file' => 'required|mimes:xlsx,xls,csv|max:2048', // max 2MB for safety
+     ]);
 
-public function import(Request $request)
-{
-    try {
-        (new EmployeeImport)->import($request->file('file'));
+     try {
+         // Perform the import
+         Excel::import(new EmployeeImport, $validated['file']);
 
-        return response()->json([
-            'status' => 'success',
-            'message' => 'Employees imported successfully!'
-        ]);
-    } catch (ValidationException $e) {
-        $failures = $e->failures();
+         return redirect()->back()->with('success', 'Employees imported successfully!');
+         
+     } catch (\Maatwebsite\Excel\Validators\ValidationException $e) {
+         // Handle validation errors inside the Excel file
+         $failures = $e->failures();
 
-        $errorData = [];
+         $errorMessages = [];
+         foreach ($failures as $failure) {
+             $errorMessages[] = 'Row ' . $failure->row() . ': ' . implode(', ', $failure->errors());
+         }
 
-        foreach ($failures as $failure) {
-            $errorData[] = [
-                'Row' => $failure->row(), 
-                'Attribute' => $failure->attribute(), 
-                'Errors' => implode(', ', $failure->errors())
-            ];
-        }
-
-        // Save errors as CSV
-        $filename = 'import_errors/errors_' . time() . '.csv';
-        Storage::put($filename, $this->arrayToCsv($errorData));
-
-        return response()->json([
-            'status' => 'error',
-            'message' => 'Some rows failed to import. Download the error file.',
-            'error_file' => asset('storage/' . $filename)
-        ]);
-    }
-
-    if (!Storage::exists('import_errors')) {
-        Storage::makeDirectory('import_errors');
-    }
-}
-
-protected function arrayToCsv($array)
-{
-    $handle = fopen('php://temp', 'r+');
-
-    fputcsv($handle, array_keys($array[0]));
-
-    foreach ($array as $row) {
-        fputcsv($handle, $row);
-    }
-
-    rewind($handle);
-    $csv = stream_get_contents($handle);
-    fclose($handle);
-
-    return $csv;
-}
-
-public function downloadTemplate()
-{
-    $headers = ['Employee ID', 'First Name', 'Last Name', 'Email', 'Phone', 'Department', 'Designation', 'Joining Date', 'Salary'];
-    
-    $filename = 'employee_import_template.xlsx';
-    
-    return Excel::download(new class($headers) implements FromArray, WithHeadings {
-        protected $headers;
-        
-        public function __construct($headers)
-        {
-            $this->headers = $headers;
-        }
-        
-        public function array(): array
-        {
-            return []; // Empty rows
-        }
-        
-        public function headings(): array
-        {
-            return $this->headers;
-        }
-    }, $filename);
-}
-
-public function previewImport(Request $request)
-{
-    $request->validate([
-        'file' => 'required|mimes:xlsx,xls,csv|max:10240', // 10MB max
-    ]);
-
-    $path = $request->file('file')->getRealPath();
-    $rows = Excel::toArray([], $path)[0];
-    
-    if (count($rows) <= 1) {
-        return response()->json([
-            'status' => 'error',
-            'message' => 'No data found in the uploaded file or headers are missing'
-        ], 422);
-    }
-    
-    // Extract headers from first row
-    $headers = array_shift($rows);
-    
-    // Map rows to associative arrays
-    $employees = [];
-    foreach ($rows as $row) {
-        if (count($headers) !== count($row)) {
-            continue; // Skip rows with different column count
-        }
-        
-        $employee = [];
-        foreach ($headers as $index => $header) {
-            $employee[strtolower(str_replace(' ', '_', $header))] = $row[$index];
-        }
-        $employees[] = $employee;
-    }
-    
-    // Limit preview to 10 rows
-    $totalRows = count($employees);
-    $previewRows = min(10, $totalRows);
-    $previewEmployees = array_slice($employees, 0, $previewRows);
-    
-    return response()->json([
-        'status' => 'success',
-        'employees' => $previewEmployees,
-        'total_rows' => $totalRows,
-        'preview_rows' => $previewRows
-    ]);
-}
+         return redirect()->back()->withErrors($errorMessages);
+     } catch (\Exception $e) {
+         // Handle any other errors
+         return redirect()->back()->withErrors('An error occurred during import: ' . $e->getMessage());
+     }
+ }
 
 }

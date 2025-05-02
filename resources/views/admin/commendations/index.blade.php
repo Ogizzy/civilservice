@@ -57,11 +57,10 @@
                                         <a href="{{ route('commendations.edit', $commendation) }}" class="btn btn-sm btn-primary">
                                             <i class="fadeIn animated bx bx-edit"></i>
                                         </a>
-                                        <form action="{{ route('commendations.destroy', $commendation) }}" method="POST" 
-                                            onsubmit="return confirm('Are you sure you want to delete this commendation?');">
+                                        <form action="{{ route('commendations.destroy', $commendation) }}" method="POST">
                                             @csrf
                                             @method('DELETE')
-                                            <button type="submit" class="btn btn-sm btn-danger">
+                                            <button type="submit" class="btn btn-sm btn-danger delete-btn">
                                                 <i class="lni lni-trash"></i>
                                             </button>
                                         </form>

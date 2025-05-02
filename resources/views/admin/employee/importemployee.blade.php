@@ -3,43 +3,105 @@
 
 <div class="page-content">
     <div class="container-fluid">
+        <!-- Breadcrumb -->
         <div class="row">
             <div class="col-12">
+                <div class="page-title-box d-sm-flex align-items-center justify-content-between">
+                    {{-- <h4 class="mb-sm-0">Upload Employee Data</h4> --}}
+                    <div class="page-title-right">
+                        <ol class="breadcrumb m-0">
+                            <li class="breadcrumb-item"><a href="javascript: void(0);">Employees</a></li>
+                            <li class="breadcrumb-item active">Bulk Import</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="row">
+            <div class="col-xl-8">
                 <div class="card">
                     <div class="card-header">
-                        <h4 class="card-title">Import Employees</h4>
+                        <h5 class="card-title mb-0">Import Employee Data from Excel</h5>
                     </div>
                     <div class="card-body">
-                        <div class="mb-4">
-                            <h5>Instructions:</h5>
-                            <ol>
-                                <li>Download the template file below</li>
-                                <li>Fill in employee information in the Excel file</li>
-                                <li>Upload the completed file</li>
-                                <li>Preview the data and confirm import</li>
-                            </ol>
-                            <a href="{{ route('employees.template.download') }}" class="btn btn-info">
-                                <i class="fas fa-download"></i> Download Template
-                            </a>
-                        </div>
+                        <p class="text-muted mb-4">Upload your Excel file containing employee information. The system will process the data and add employees to the database.</p>
                         
-                        <form id="importForm" enctype="multipart/form-data">
+                        @if(session('success'))
+                            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                                <i class="ri-check-double-line me-2"></i> {{ session('success') }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        @endif
+                    
+                        @if($errors->any())
+                            <div class="alert alert-danger alert-dismissible fade show mb-4" role="alert">
+                                <i class="ri-error-warning-line me-2"></i> Please fix the following errors:
+                                <ul class="mt-2 mb-0">
+                                    @foreach($errors->all() as $error)
+                                        <li>{{ $error }}</li>
+                                    @endforeach
+                                </ul>
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        @endif
+                        
+                        <form action="{{ route('import.employees') }}" method="POST" enctype="multipart/form-data" class="needs-validation" novalidate>
                             @csrf
-                            <div class="mb-3">
-                                <label for="importFile" class="form-label">Select Excel File</label>
-                                <input type="file" name="file" id="importFile" class="form-control" required accept=".xlsx,.xls,.csv">
-                                <small class="text-muted">Supported formats: .xlsx, .xls, .csv</small>
+                            <div class="row mb-4">
+                                <div class="col-lg-8">
+                                    <div class="input-group">
+                                        <input type="file" class="form-control" name="file" id="inputGroupFile" required accept=".xlsx,.xls,.csv">
+                                        <label class="input-group-text" for="inputGroupFile">Choose File</label>
+                                    </div>
+                                    <div class="form-text">Accepted formats: .xlsx, .xls, .csv</div>
+                                </div>
                             </div>
-                            <button type="submit" class="btn btn-primary">
-                                <i class="fas fa-eye"></i> Preview Import
-                            </button>
+                            
+                            <div>
+                                <button type="submit" class="btn btn-primary btn-sm">
+                                    <i class="ri-upload-cloud-2-line align-middle me-1"></i> Import Employees
+                                </button>
+                                <a href="{{ route('employees.index') }}" class="btn btn-light btn-sm ms-1">Cancel</a>
+                            </div>
                         </form>
-                        
-                        <div id="loadingIndicator" class="text-center my-4" style="display: none;">
-                            <div class="spinner-border text-primary" role="status">
-                                <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-xl-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">Import Guidelines</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-flex mb-3">
+                            <div class="flex-shrink-0">
+                                <i class="ri-information-line text-primary fs-24"></i>
                             </div>
-                            <p>Processing file, please wait...</p>
+                            <div class="flex-grow-1 ms-3">
+                                <h5 class="fs-15">File Requirements</h5>
+                                <p class="text-muted mb-0">Make sure your Excel file has the following columns: Name, Email, Phone, Department, Position, Joining Date.</p>
+                            </div>
+                        </div>
+                        <div class="d-flex mb-3">
+                            <div class="flex-shrink-0">
+                                <i class="ri-file-download-line text-success fs-24"></i>
+                            </div>
+                            <div class="flex-grow-1 ms-3">
+                                <h5 class="fs-15">Sample Template</h5>
+                                <p class="text-muted mb-0">Download our <a href="#" class="text-decoration-underline">sample template</a> to ensure your data is properly formatted.</p>
+                            </div>
+                        </div>
+                        <div class="d-flex">
+                            <div class="flex-shrink-0">
+                                <i class="ri-error-warning-line text-warning fs-24"></i>
+                            </div>
+                            <div class="flex-grow-1 ms-3">
+                                <h5 class="fs-15">Important Note</h5>
+                                <p class="text-muted mb-0">Duplicate email addresses will be rejected. Maximum allowed file size is 2MB.</p>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -48,197 +110,29 @@
     </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
-$(document).ready(function(){
-    $('#importForm').on('submit', function(e){
-        e.preventDefault();
-        
-        // Validate file input
-        let fileInput = $('#importFile')[0];
-        if (fileInput.files.length === 0) {
-            Swal.fire({
-                icon: 'error',
-                title: 'No File Selected',
-                text: 'Please select an Excel file to import'
-            });
-            return;
-        }
-        
-        // Check file extension
-        let fileName = fileInput.files[0].name;
-        let extension = fileName.substring(fileName.lastIndexOf('.')).toLowerCase();
-        if (!['.xlsx', '.xls', '.csv'].includes(extension)) {
-            Swal.fire({
-                icon: 'error',
-                title: 'Invalid File',
-                text: 'Please select a valid Excel file (.xlsx, .xls) or CSV file'
-            });
-            return;
-        }
-        
-        // Show loading indicator
-        $('#loadingIndicator').show();
-        
-        let formData = new FormData(this);
-        
-        $.ajax({
-            url: "{{ route('employee.preview-import') }}",
-            type: 'POST',
-            data: formData,
-            contentType: false,
-            processData: false,
-            success: function(response){
-                // Hide loading indicator
-                $('#loadingIndicator').hide();
-                
-                let employees = response.employees;
-                let totalRows = response.total_rows;
-                let previewRows = response.preview_rows;
-                
-                if (employees.length === 0) {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Empty File',
-                        text: 'No data found in the uploaded file or headers are missing'
-                    });
-                    return;
+    document.addEventListener('DOMContentLoaded', function () {
+        // Form validation
+        var forms = document.querySelectorAll('.needs-validation');
+        Array.prototype.slice.call(forms).forEach(function (form) {
+            form.addEventListener('submit', function (event) {
+                if (!form.checkValidity()) {
+                    event.preventDefault();
+                    event.stopPropagation();
                 }
-                
-                // Build table headers based on first row keys
-                let headers = Object.keys(employees[0]);
-                
-                let table = '<div class="table-responsive"><table class="table table-bordered table-striped"><thead><tr>';
-                table += '<th>#</th>';
-                
-                // Add header cells
-                headers.forEach(function(header) {
-                    let formattedHeader = header.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
-                    table += `<th>${formattedHeader}</th>`;
-                });
-                
-                table += '</tr></thead><tbody>';
-                
-                // Add data rows
-                employees.forEach(function(emp, index) {
-                    table += '<tr>';
-                    table += `<td>${index+1}</td>`;
-                    
-                    // Add cells for each field
-                    headers.forEach(function(header) {
-                        table += `<td>${emp[header] !== '' ? emp[header] : '-'}</td>`;
-                    });
-                    
-                    table += '</tr>';
-                });
-                
-                table += '</tbody></table></div>';
-                
-                // Add notice if only showing partial data
-                let noticeHtml = '';
-                if (totalRows > previewRows) {
-                    noticeHtml = `<div class="alert alert-info">
-                        Showing ${previewRows} of ${totalRows} total rows in preview. 
-                        All ${totalRows} rows will be imported if you confirm.
-                    </div>`;
-                }
-                
-                Swal.fire({
-                    title: 'Preview Uploaded Employees',
-                    html: noticeHtml + table,
-                    width: '90%',
-                    confirmButtonText: 'Confirm & Import',
-                    showCancelButton: true,
-                    confirmButtonColor: '#28a745',
-                    cancelButtonColor: '#dc3545',
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        // Submit actual import now
-                        importConfirmed();
-                    }
-                });
-            },
-            error: function(xhr) {
-                // Hide loading indicator
-                $('#loadingIndicator').hide();
-                
-                let errorMessage = 'Failed to preview import';
-                if (xhr.responseJSON && xhr.responseJSON.message) {
-                    errorMessage = xhr.responseJSON.message;
-                }
-                
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Preview Failed',
-                    text: errorMessage
-                });
-            }
+                form.classList.add('was-validated');
+            }, false);
         });
-    });
-});
-
-function importConfirmed(){
-    // Show loading indicator
-    $('#loadingIndicator').show();
-    
-    let formData = new FormData($('#importForm')[0]);
-    
-    $.ajax({
-        url: "{{ route('employees.import') }}",
-        type: 'POST',
-        data: formData,
-        contentType: false,
-        processData: false,
-        success: function(response){
-            // Hide loading indicator
-            $('#loadingIndicator').hide();
-            
-            if(response.status === 'success') {
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Import Successful!',
-                    text: response.message,
-                    confirmButtonColor: '#28a745',
-                }).then(() => {
-                    location.reload();
-                });
-            } else {
-                let errorHtml = response.message;
-                
-                // Add download link if available
-                if (response.error_file) {
-                    errorHtml += `<div class="mt-3">
-                        <a href="${response.error_file}" class="btn btn-warning" download>
-                            <i class="fas fa-download"></i> Download Error Report
-                        </a>
-                    </div>`;
-                }
-                
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Import Failed',
-                    html: errorHtml,
-                    confirmButtonColor: '#17a2b8',
-                });
-            }
-        },
-        error: function(xhr) {
-            // Hide loading indicator
-            $('#loadingIndicator').hide();
-            
-            let errorMessage = 'Failed to import';
-            if (xhr.responseJSON && xhr.responseJSON.message) {
-                errorMessage = xhr.responseJSON.message;
-            }
-            
-            Swal.fire({
-                icon: 'error',
-                title: 'Import Failed',
-                text: errorMessage
+        
+        // Auto close alerts after 5 seconds
+        setTimeout(function() {
+            var alerts = document.querySelectorAll('.alert');
+            alerts.forEach(function(alert) {
+                var bsAlert = new bootstrap.Alert(alert);
+                bsAlert.close();
             });
-        }
+        }, 5000);
     });
-}
 </script>
 
 @endsection
