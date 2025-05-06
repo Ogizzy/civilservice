@@ -1,0 +1,86 @@
+
+        /* Custom styling */
+        .bg-gradient-primary-to-secondary {
+            background: linear-gradient(135deg, #4e73df 0%, #224abe 100%);
+        }
+        
+        .icon-box {
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .form-control:focus,
+        .form-select:focus {
+            box-shadow: 0 0 0 0.25rem rgba(78, 115, 223, 0.25);
+            border-color: #bac8f3;
+        }
+        
+        .btn-primary {
+            background-color: #4e73df;
+            border-color: #4e73df;
+        }
+        
+        .btn-primary:hover {
+            background-color: #2e59d9;
+            border-color: #2653d4;
+        }
+        
+        .btn-warning {
+            background-color: #f6c23e;
+            border-color: #f6c23e;
+        }
+        
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+        
+        /* Custom switch styling */
+        .form-check-input.status-switch {
+            height: 1.25em;
+            width: 2.5em;
+            cursor: pointer;
+        }
+        
+        .form-check-input:checked {
+            background-color: #28a745;
+            border-color: #28a745;
+        }
+        
+        .status-label {
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+        
+        /* Datatable customizations */
+        div.dataTables_wrapper div.dataTables_filter {
+            display: none; /* Hide default search as we use custom */
+        }
+        
+        table.dataTable thead th {
+            font-weight: 500;
+            padding-top: 1rem;
+            padding-bottom: 1rem;
+        }
+        
+        /* Sweet Alert customizations */
+        .swal2-popup {
+            border-radius: 0.5rem;
+        }
+        
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .card {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+   

@@ -13,10 +13,27 @@ class MdaController extends Controller
      */
     public function index()
     {
-        $mdas = MDA::all();
+        $mdas = MDA::all();// Show all MDAs, both active and inactive
+        // $mdas = Mda::where('status', true)->get(); // Only active MDAs
         return view('admin.mda.index', compact('mdas'));
     }
 
+    public function deactivate(Mda $mda)
+    {
+        $mda->status = 0;
+        $mda->save();
+    
+        return redirect()->route('mdas.index')->with('message', 'MDA deactivated successfully.');
+    }
+    
+    public function activate(Mda $mda)
+    {
+        $mda->status = 1;
+        $mda->save();
+    
+        return redirect()->route('mdas.index')->with('message', 'MDA activated successfully.');
+    }
+    
     /**
      * Show the form for creating a new MDA.
      */

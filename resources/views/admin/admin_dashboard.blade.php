@@ -24,6 +24,7 @@
 	<link href="{{ asset('backend/assets/css/retirees.css') }}" rel="stylesheet"/>
 	<link href="{{ asset('backend/assets/css/employee-form.css') }}" rel="stylesheet"/>
 	<link href="{{ asset('backend/assets/css/service-account.css') }}" rel="stylesheet"/>
+	<link href="{{ asset('backend/assets/css/mda.css') }}" rel="stylesheet"/>
 
 
 	<!-- loader-->
@@ -46,11 +47,12 @@
 
 	<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.css" >
 
-
 	<title>Benue State Civil Service Admin App</title>
 </head>
 
-<body>
+{{-- <body style="font-weight:bold"><div style="width:300px;margin:auto auto;"><img src="/resources/images/loading.gif" width="300px"/></div> --}}
+
+	<body>
 	<!--wrapper-->
 	<div class="wrapper">
 		<!--sidebar wrapper -->
@@ -92,7 +94,6 @@
 	{{-- Custom JS --}}
 	<script src="{{ asset('backend/assets/js/employee-form.js') }}"></script>
 	<script src="{{ asset('backend/assets/js/service-account.js') }}"></script>
-
 
 	<!--tagsinput-->
 	<script src="{{ asset('backend/assets/plugins/input-tags/js/tagsinput.js') }}"></script>

@@ -100,6 +100,13 @@ Route::get('/mdas/{mda}/edit', [MdaController::class, 'edit'])->name('mdas.edit'
 Route::put('/mdas/{mda}', [MdaController::class, 'update'])->name('mdas.update');
 Route::patch('/mdas/{mda}', [MdaController::class, 'update']);
 Route::delete('/mdas/{mda}', [MdaController::class, 'destroy'])->name('mdas.destroy');
+// Deactivate/Activate Routes
+Route::get('/mdas/{mda}/deactivate', [MdaController::class, 'deactivate'])->name('mdas.deactivate');
+Route::get('/mdas/{mda}/activate', [MdaController::class, 'activate'])->name('mdas.activate');
+
+
+
+
 
 // All Pay Groups Routes
 Route::get('/pay-groups', [PayGroupController::class, 'index'])->name('pay-groups.index');

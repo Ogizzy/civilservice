@@ -152,17 +152,13 @@
                                                                     <i class="bx bx-show me-2"></i> View Details
                                                                 </a>
                                                             </li>
-                                                            <li>
+                                                            {{-- <li>
                                                                 <a class="dropdown-item" href="{{ route('employees.edit', $employee->id) }}">
                                                                     <i class="bx bx-edit me-2"></i> Edit
                                                                 </a>
-                                                            </li>
-                                                            <li><hr class="dropdown-divider"></li>
-                                                            <li>
-                                                                <a class="dropdown-item text-danger" href="#">
-                                                                    <i class="bx bx-trash me-2"></i> Remove
-                                                                </a>
-                                                            </li>
+                                                            </li> --}}
+                                                            {{-- <li><hr class="dropdown-divider"></li> --}}
+                                                            
                                                         </ul>
                                                     </div>
                                                 </td>
@@ -181,7 +177,7 @@
                                     <i class="bx bx-user-plus me-1"></i> Add Employee
                                 </a>
                                 <a href="#" class="btn btn-sm btn-outline-secondary">
-                                    <i class="bx bx-download me-1"></i> Export List
+                                    <i class="bx bx-download"></i> Export List
                                 </a>
                             </div>
                         </div>
