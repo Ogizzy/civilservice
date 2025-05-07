@@ -14,6 +14,7 @@ class PayGroup extends Model implements Auditable
     protected $fillable = [
         'paygroup',
         'paygroup_code',
+        'status',
     ];
 
     public function employees()

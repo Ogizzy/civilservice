@@ -16,7 +16,7 @@ class PlatformFeatureController extends Controller
      */
     public function index()
     {
-        $features = PlatformFeature::paginate(15);
+        $features = PlatformFeature::all();
         return view('admin.features.index', compact('features'));
     }
 

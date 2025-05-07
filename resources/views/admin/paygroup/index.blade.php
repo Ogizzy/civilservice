@@ -137,7 +137,6 @@
                                         <th class="text-center">S/N</th>
                                         <th>Pay Group</th>
                                         <th>Code</th>
-                                        <th>Employees</th>
                                         <th>Last Updated</th>
                                         <th>Status</th>
                                         <th class="text-center">Actions</th>
@@ -165,11 +164,7 @@
                                             <td>
                                                 <span class="badge bg-light text-dark border">{{ $group->paygroup_code }}</span>
                                             </td>
-                                            <td>
-                                                <span class="badge bg-info rounded-pill">
-                                                    {{ $group->members_count ?? rand(0, 50) }} <!-- Replace with actual relationship count -->
-                                                </span>
-                                            </td>
+                                            
                                             <td>
                                                 <small class="text-muted">
                                                     {{ \Carbon\Carbon::parse($group->updated_at)->diffForHumans() }}

@@ -222,7 +222,7 @@
 
         <li>
             <a href="{{ route('audit.logs')}}">
-                <div class="parent-icon"><i class="lni lni-alarm-clock"></i></div>
+                <div class="parent-icon"><i class="bx bx-info-circle"></i></div>
                 <div class="menu-title">Audit Logs</div>
             </a>
         </li>

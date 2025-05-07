@@ -16,6 +16,7 @@ class MDA extends Model implements Auditable
     protected $fillable = [
         'mda',
         'mda_code',
+        'status',
     ];
 
     public function employees()

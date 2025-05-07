@@ -61,7 +61,7 @@
                     </tbody>
                 </table>
 
-                {{ $features->links() }}
+                {{-- {{ $features->links() }} --}}
             </div>
         </div>
     </div>
