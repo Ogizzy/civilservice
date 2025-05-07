@@ -17,6 +17,22 @@ class PayGroupController extends Controller
         return view('admin.paygroup.index', compact('payGroups'));
     }
 
+    public function deactivate(PayGroup $payGroup)
+    {
+        $payGroup->status = 0;
+        $payGroup->save();
+    
+        return redirect()->route('pay-groups.index')->with('message', 'Paygroup deactivated successfully.');
+    }
+    
+    public function activate(PayGroup $payGroup)
+    {
+        $payGroup->status = 1;
+        $payGroup->save();
+    
+        return redirect()->route('pay-groups.index')->with('message', 'Paygroup activated successfully.');
+    }
+
     /**
      * Show the form for creating a new pay group.
      */

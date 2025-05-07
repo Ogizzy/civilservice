@@ -117,6 +117,9 @@ Route::get('/pay-groups/{pay_group}/edit', [PayGroupController::class, 'edit'])-
 Route::put('/pay-groups/{pay_group}', [PayGroupController::class, 'update'])->name('pay-groups.update');
 Route::patch('/pay-groups/{pay_group}', [PayGroupController::class, 'update']);
 Route::delete('/pay-groups/{pay_group}', [PayGroupController::class, 'destroy'])->name('pay-groups.destroy');
+// Deactivate/Activate Routes
+Route::patch('/pay-groups/{payGroup}/activate', [PayGroupController::class, 'activate'])->name('pay-groups.activate');
+Route::patch('/pay-groups/{payGroup}/deactivate', [PayGroupController::class, 'deactivate'])->name('pay-groups.deactivate');
 
 
 // All Grade Levels Routes

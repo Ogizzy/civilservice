@@ -103,7 +103,7 @@
         <li>
             <a href="{{ route('features.index') }}">
                 <div class="parent-icon"><i class="bx bx-minus-front"></i></div>
-                <div class="menu-title">Manage Feature</div>
+                <div class="menu-title">Manage Features</div>
             </a>
         </li>
 
