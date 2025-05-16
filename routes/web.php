@@ -32,6 +32,13 @@ Route::get('/', function () {
 //     return view('admin.dashboard');
 // })->middleware(['auth', 'roles:BDIC Super Admin, Head of Service, Commissioner, Director'])->name('dashboard');
 
+
+///// Admin Group Middleware 
+Route::middleware(['auth','roles:roles:BDIC Super Admin, Head of Service, Commissioner, Director'])->group(function(){
+    Route::get('/admin/dashboard', [AdminController::class, 'AdminDashboard'])->name('admin.dashboard');
+});
+
+
 Route::get('/dashboard', function () {
     return view('admin.dashboard');
 })->middleware(['auth', 'roles:BDIC Super Admin, Head of Service, Commissioner, Director'])->name('dashboard');

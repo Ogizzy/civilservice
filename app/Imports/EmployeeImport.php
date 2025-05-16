@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use App\Models\MDA;
 use App\Models\Step;
 use App\Models\User;
+use App\Models\State;  // Make sure to add this import
 use App\Models\Employee;
 use App\Models\PayGroup;
 use App\Models\GradeLevel;
@@ -74,7 +75,8 @@ class EmployeeImport implements ToModel, WithValidation, SkipsOnFailure, WithHea
             'rank' => $row['rank'] ?? null,
             'qualifications' => $row['qualifications'] ?? null,
             'net_pay' => $row['net_pay'] ?? null,
-            'password' => bcrypt('benue2025'), // Default password
+            'state_id' => $this->findStateId($row['state'] ?? ''), 
+            'password' => bcrypt('password'), // Default password
         ]);
     }
 
@@ -191,6 +193,43 @@ class EmployeeImport implements ToModel, WithValidation, SkipsOnFailure, WithHea
     }
 
     /**
+     * Find State ID by state state, log an error if not found
+     *
+     * @param string $stateName
+     * @return int|null
+     */
+    private function findStateId($stateName)
+    {
+        if (empty($stateName)) {
+            return null;
+        }
+        
+        // First try exact match
+        $state = State::where('state', $stateName)->first();
+        
+        // If not found, try with 'state' column
+        if (!$state) {
+            $state = State::where('state', $stateName)->first();
+        }
+        
+        // If still not found, try case-insensitive search on both columns
+        if (!$state) {
+            $state = State::whereRaw('LOWER(state) = ?', [strtolower($stateName)])->first();
+        }
+        
+        if (!$state) {
+            $state = State::whereRaw('LOWER(state) = ?', [strtolower($stateName)])->first();
+        }
+        
+        if (!$state) {
+            Log::warning("State not found: {$stateName}");
+            return null; // Return null for state if not found
+        }
+        
+        return $state->id;
+    }
+
+    /**
      * Transform date value from Excel to DateTime object safely
      *
      * @param mixed $value The date value from Excel
@@ -240,6 +279,7 @@ class EmployeeImport implements ToModel, WithValidation, SkipsOnFailure, WithHea
             'level' => 'required',
             'step' => 'required',
             'mda' => 'required',
+            'state' => 'nullable',  // Added validation rule for state
         ];
     }
 }
