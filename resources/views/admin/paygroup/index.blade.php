@@ -93,12 +93,14 @@
                 <div class="card border-0 shadow-sm mb-4">
                     <div class="card-body p-4">
                         <div class="d-flex justify-content-between align-items-center flex-wrap">
+
                             <div>
                                 <h4 class="mb-1 fw-bold text-primary">
                                     <i class="bx bx-collection me-2"></i> Pay Group Management
                                 </h4>
                                 <p class="text-muted mb-0">Manage employee payment categories and classifications</p>
                             </div>
+                            
                             <div class="mt-3 mt-md-0">
                                 <div class="input-group">
                                     <div class="form-check form-switch me-3 d-flex align-items-center">

@@ -14,6 +14,17 @@ class LGA extends Model implements Auditable
     protected $table = 'lgas';
 
     protected $fillable = [
-        'lga',
+        'lga', 'state_id'
     ];
+
+    public function state()
+    {
+        return $this->belongsTo(State::class);
+    }
+
+    public function employees()
+{
+    return $this->hasMany(Employee::class);
+}
+
 }

@@ -7,6 +7,7 @@ use App\Models\LGA;
 use App\Models\MDA;
 use App\Models\Step;
 use App\Models\User;
+use App\Models\State;
 use App\Models\Document;
 use App\Models\Employee;
 use App\Models\PayGroup;
@@ -44,7 +45,8 @@ class EmployeeController extends Controller
         $gradeLevels = GradeLevel::all();
         $steps = Step::all();
         $lgas = LGA::all();
-        return view('admin.employee.create', compact('mdas', 'payGroups', 'gradeLevels', 'steps', 'lgas'));
+        $states = State::all();
+        return view('admin.employee.create', compact('mdas', 'payGroups', 'gradeLevels', 'steps', 'lgas', 'states'));
     }
 
     /**
@@ -57,6 +59,7 @@ class EmployeeController extends Controller
             'paygroup_id' => 'required|exists:pay_groups,id',
             'level_id' => 'required|exists:grade_levels,id',
             'step_id' => 'required|exists:steps,id',
+            'state_id' => 'required|exists:states,id',
             'employee_number' => 'required|string|max:255|unique:employees',
             'surname' => 'required|string|max:255',
             'first_name' => 'required|string|max:255',
@@ -119,8 +122,7 @@ class EmployeeController extends Controller
             'alert-type' => 'success'
         );
 
-        return redirect()->route('employees.index')
-            ->with($notification);
+        return redirect()->route('employees.index')->with($notification);
     }
 
     /**
@@ -128,11 +130,12 @@ class EmployeeController extends Controller
      */
     public function show(Employee $employee)
     {
+    $employees = Employee::with('state')->get();
     $documents = Document::where('employee_id', $employee->id)->paginate(5);
     $documents = $employee->documents()->paginate(5, ['*'], 'documents');
     $transfers = $employee->transferHistories()->with(['previousMda', 'currentMda'])->paginate(5, ['*'], 'transfers');
     $promotions = $employee->promotionHistories()->with(['previousLevel', 'currentLevel', 'previousStep', 'currentStep'])->paginate(5, ['*'], 'promotions');
-    return view('admin.employee.show', compact('employee', 'documents', 'transfers', 'promotions'));
+    return view('admin.employee.show', compact('employee', 'documents', 'transfers', 'promotions', 'employees'));
     }
 
     /**
@@ -159,6 +162,7 @@ class EmployeeController extends Controller
             'paygroup_id' => 'required|exists:pay_groups,id',
             'level_id' => 'required|exists:grade_levels,id',
             'step_id' => 'required|exists:steps,id',
+            'state_id' => 'required|exists:states,id',
             'employee_number' => ['required', 'string', 'max:255', Rule::unique('employees')->ignore($employee->id)],
             'surname' => 'required|string|max:255',
             'first_name' => 'required|string|max:255',
@@ -175,6 +179,7 @@ class EmployeeController extends Controller
             'retirement_date' => 'nullable|date',
             'rank' => 'nullable|string|max:100',
             'lga' => 'nullable|string|max:100',
+            'state' => 'nullable|string|max:100',
             'qualifications' => 'nullable|string|max:255',
             'net_pay' => 'nullable|numeric',
             'passport' => 'nullable|image|max:2048',

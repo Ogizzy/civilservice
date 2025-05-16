@@ -62,9 +62,18 @@
                                                 {{ $employee->first_name }} {{ $employee->middle_name ?? '' }}</p>
                                             <p><strong>Gender:</strong> {{ $employee->gender ?? 'N/A' }}</p>
                                             <p><strong>Date of Birth:</strong> {{ $dob }}</p>
-                                            <p><strong>Marital Status:</strong> {{ $employee->marital_status ?? 'N/A' }}
-                                            </p>
+                                            <p><strong>Marital Status:</strong> {{ $employee->marital_status ?? 'N/A' }}</p>
                                             <p><strong>Religion:</strong> {{ $employee->religion ?? 'N/A' }}</p>
+                                            <p><strong>State of Origin:</strong> <p><strong>State of Origin:</strong> 
+                                                @if($employee->state_id)
+                                                @php
+                                                    $state = \App\Models\State::find($employee->state_id);
+                                                @endphp
+                                                {{ $state->state ?? $state->state ?? 'N/A' }}
+                                            @else
+                                            State name not found
+                                            @endif</p>
+                                            
                                             <p><strong>LGA of Origin:</strong> {{ $employee->lga ?? 'N/A' }}</p>
                                         </div>
 

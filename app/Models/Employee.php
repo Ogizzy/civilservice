@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\State;
 use Illuminate\Database\Eloquent\Model;
 use OwenIt\Auditing\Contracts\Auditable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -38,6 +39,7 @@ class Employee extends Model implements Auditable
         'net_pay',
         'passport',
         'user_id',
+        'state_id',
     ];
 
     protected $hidden = [
@@ -107,6 +109,16 @@ class Employee extends Model implements Auditable
     public function getFullNameAttribute()
 {
     return "{$this->surname} {$this->first_name} {$this->middle_name}";
+}
+
+public function state()
+{
+    return $this->belongsTo(State::class, 'state_id');
+}
+
+public function lga()
+{
+    return $this->belongsTo(LGA::class);
 }
 
 }

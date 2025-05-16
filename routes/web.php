@@ -191,6 +191,11 @@ Route::prefix('reports')->name('reports.')->group(function () {
     Route::get('/retiring', [EmployeeController::class, 'retiringEmployees'])->name('retiring');
 });
 
+
+Route::get('/get-lgas/{state_id}', function ($state_id) {
+    return \App\Models\LGA::where('state_id', $state_id)->get();
+});
+
 // Roles Routes
     Route::prefix('roles')->name('roles.')->group(function () {
         Route::get('/', [UserRoleController::class, 'index'])->name('index');
