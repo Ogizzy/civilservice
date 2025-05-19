@@ -110,7 +110,7 @@
                                         <h6 class="text-muted mb-1">Document</h6>
                                         @if($queriesMisconduct->document)
                                             <a href="{{ asset('storage/' . $queriesMisconduct->document->document) }}" target="_blank" class="btn btn-sm btn-primary rounded-pill mt-1">
-                                                <i class="bi bi-file-earmark-text me-1"></i>View Document
+                                                <i class="bx bx-file"></i>View Query Letter
                                             </a>
                                         @else
                                             <span class="badge bg-light text-dark rounded-pill fs-6 px-3">No document attached</span>

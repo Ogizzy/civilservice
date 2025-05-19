@@ -8,6 +8,9 @@
 	<!--favicon-->
 	<link rel="icon" href="{{ asset('backend/assets/images/login-images/benue-logo.png') }}" type="image/png"/>
  
+	<!-- Place this in your <head> section -->
+<link rel="icon" href="data:," type="image/x-icon">
+
 	<meta name="csrf-token" content="{{ csrf_token() }}">
 
 <!--tagsinput-->
@@ -167,6 +170,57 @@
 			]
 		});
 	});
+</script>
+<style> 
+/* CSS */
+body.page-loading {
+    overflow: auto !important;
+}
+.page-loader-wrapper, 
+#preloader, 
+.preloader, 
+.loader-wrapper, 
+.page-loader {
+    display: none !important;
+    opacity: 0 !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+}
+</style>
+
+<script>
+	// JavaScript
+document.addEventListener('DOMContentLoaded', function() {
+    // Remove loading classes
+    document.body.classList.remove('page-loading', 'page-loader-open');
+    
+    // Hide all possible loader elements
+    const loaderElements = [
+        '.page-loader-wrapper',
+        '#preloader',
+        '.preloader',
+        '.loader-wrapper',
+        '.page-loader',
+        '.loading-overlay'
+    ];
+    
+    loaderElements.forEach(selector => {
+        const el = document.querySelector(selector);
+        if (el) el.style.display = 'none';
+    });
+    
+    // Force show content
+    const mainContent = document.querySelector('.page-wrapper, #main-wrapper, .main-wrapper');
+    if (mainContent) {
+        mainContent.style.opacity = '1';
+        mainContent.style.visibility = 'visible';
+    }
+});
+
+// Prevent loader from showing on page transitions
+window.addEventListener('load', function() {
+    document.body.classList.remove('page-loading');
+});
 </script>
 
 </body>

@@ -80,7 +80,7 @@
                             <span class="input-group-text bg-transparent"><i class="bx bx-upload"></i></span>
                             <input type="file" name="document_file" class="form-control" accept=".pdf" required>
                         </div>
-                        <div class="form-text">Please upload the official transfer letter in PDF format</div>
+                        <div class="form-text" style="color: red">Please upload the official transfer letter in PDF format</div>
                         @error('document_file') 
                             <div class="text-danger small mt-1">{{ $message }}</div>
                         @enderror

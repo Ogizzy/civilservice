@@ -6,7 +6,7 @@ use Carbon\Carbon;
 use App\Models\MDA;
 use App\Models\Step;
 use App\Models\User;
-use App\Models\State;  // Make sure to add this import
+use App\Models\State; 
 use App\Models\Employee;
 use App\Models\PayGroup;
 use App\Models\GradeLevel;
@@ -39,7 +39,7 @@ class EmployeeImport implements ToModel, WithValidation, SkipsOnFailure, WithHea
             'first_name' => $row['first_name'],
             'email' => $row['email'],
             'password' => bcrypt('password'), // Or generate one
-            'role_id' => 6, // Adjust to your 'employee' role
+            'role_id' => 6, // 'employee' role
             'status' => 'active',
         ]);
         

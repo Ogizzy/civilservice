@@ -66,7 +66,7 @@
                     <div class="col-md-6">
                         <label for="supporting_document" class="form-label">Supporting Document</label>
                         <input type="file" class="form-control" id="supporting_document" name="supporting_document">
-                        <div class="form-text">Upload PDF, DOC, DOCX, JPG, JPEG, or PNG files (max 10MB)</div>
+                        <div class="form-text" style="color: red">Upload PDF, DOC, DOCX, JPG, JPEG, or PNG files (max 10MB)</div>
                     </div>
                 </div>
                 

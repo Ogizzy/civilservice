@@ -59,17 +59,17 @@
                     <div class="col-md-6">
                         <label for="supporting_document" class="form-label">Supporting Document</label>
                         <input type="file" class="form-control" id="supporting_document" name="supporting_document">
-                        <div class="form-text">Upload PDF, DOC, DOCX, JPG, JPEG, or PNG files (max 10MB)</div>
+                        <div class="form-text" style="color: red">Upload PDF, DOC, DOCX, JPG, JPEG, or PNG files (max 10MB)</div>
                     </div>
                 </div>
                
                 <div class="row mt-4">
                     <div class="col-12">
                         <button type="submit" class="btn btn-primary">
-                            <i class="lni lni-save"></i> Save Query Record
+                            <i class="lni lni-save"></i> Submit Query Record
                         </button>
                         <a href="{{ route('queries.index') }}" class="btn btn-secondary ms-2">
-                            <i class="lni lni-cross-circle"></i> Cancel
+                            <i class="lni lni-cross-circle"></i> Query History
                         </a>
                     </div>
                 </div>
