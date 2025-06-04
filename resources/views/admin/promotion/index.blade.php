@@ -20,12 +20,23 @@
         <!--end breadcrumb-->
 
         <div class="container">
-            <div class="d-flex justify-content-between align-items-center mb-3">
+           
+ @if (auth()->user()->role->role === 'Employee')
+      <div class="d-flex justify-content-between align-items-center mb-3">
+                <h6>Promotion History for:<span style="color: royalblue"> {{ $employee->surname }} {{ $employee->first_name }} {{ $employee->middle_name }}</span></h6>
+                <a href="{{ route('employee.dashboard') }}" class="btn btn-primary btn-sm">
+                    <i class="fadeIn animated bx bx-chevrons-left"></i>Back
+                </a>
+          </div>
+        @else
+        <div class="d-flex justify-content-between align-items-center mb-3">
                 <h6>Promotion History for:<span style="color: royalblue"> {{ $employee->surname }} {{ $employee->first_name }} {{ $employee->middle_name }}</span></h6>
                 <a href="{{ route('employees.promotions.create', $employee->id) }}" class="btn btn-primary btn-sm">
                     <i class="lni lni-circle-plus"></i>New Promotion
                 </a>
             </div>
+         @endif
+            
 
             @if (session('success'))
                 <div class="alert alert-success">{{ session('success') }}</div>
@@ -42,7 +53,7 @@
                                     <th>To</th>
                                     <th>Type</th>
                                     <th>Effective Date</th>
-                                    <th>Uploader</th>
+                                    <th>Promoted By</th>
                                     <th>Document</th>
                                     <th>Actions</th>
                                 </tr>
@@ -51,9 +62,9 @@
                                 @forelse($promotions as $promotion)
                                     <tr>
                                         <td>{{ $loop->iteration }}</td>
-                                        <td>{{ $promotion->previousGradeLevel->level ?? 'N/A' }} - Step
+                                        <td>GL {{ $promotion->previousLevel->level ?? 'N/A' }} - Step
                                             {{ $promotion->previousStep->step ?? 'N/A' }}</td>
-                                        <td>{{ $promotion->currentGradeLevel->level ?? 'N/A' }} - Step
+                                        <td>GL {{ $promotion->currentLevel->level ?? 'N/A' }} - Step
                                             {{ $promotion->currentStep->step ?? 'N/A' }}</td>
                                         <td>{{ ucfirst($promotion->promotion_type) }}</td>
                                         <td>{{ $promotion->effective_date->format('d M, Y') }}</td>
@@ -67,12 +78,15 @@
                                         <td>
                                             <a href="{{ route('employees.promotions.show', [$employee->id, $promotion->id]) }}"
                                                 class="btn btn-sm btn-secondary">Details</a>
-                                            <form
+                                                
+                                            @if(auth()->user()->role->role != 'Employee')
+                                                <form
                                                 action="{{ route('employees.promotions.destroy', [$employee->id, $promotion->id]) }}"
                                                 method="POST" class="d-inline">
                                                 @csrf @method('DELETE')
                                                 <button class="btn btn-sm btn-danger delete-btn"><i class="bx bxs-trash" title="Delete This Promotion"></i></button>
                                             </form>
+                                              @endif
                                         </td>
                                     </tr>
                                 @empty

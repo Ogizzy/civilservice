@@ -13,19 +13,31 @@
                             </h4>
 
                             <div class="d-flex gap-2">
-                                {{-- <a href="{{ route('employees.edit', $employee->id) }}"
+                               
+
+
+                                @if (auth()->user()->role->role === 'Employee')
+                                    <a href=" {{ route('employee.dashboard') }}"
+                                        class="btn btn-light btn-sm d-flex align-items-center shadow-sm border-0">
+                                        <i class="bx bxs-chevron-left mr-1 text-danger"></i>
+                                        Back
+                                    </a>
+
+                                @else
+                                <a href="{{ route('employees.edit', $employee->id) }}"
                                     class="btn btn-light btn-sm d-flex align-items-center shadow-sm border-0">
-                                    <i class="bx bx-edit mr-1 text-primary"></i> Edit
-                                </a> --}}
-                                <a href="{{ route('employees.index') }}"
-                                    class="btn btn-light btn-sm d-flex align-items-center shadow-sm border-0">
-                                    <i class="bx bxs-chevron-left mr-1 text-danger"></i>
-                                    Back
+                                    <i class="bx bx-edit mr-1 text-primary"></i>
                                 </a>
+                                    <a href=" {{ route('employees.index') }}"
+                                        class="btn btn-light btn-sm d-flex align-items-center shadow-sm border-0">
+                                        <i class="bx bxs-chevron-left mr-1 text-danger"></i>
+                                        Back
+                                    </a>
+                                @endif
+
+
                             </div>
                         </div>
-
-
 
                         <div class="card-body">
                             <div class="row">
@@ -45,7 +57,7 @@
                                         @endif
                                     </div>
                                     <h4 class="mb-1">{{ $employee->surname }} {{ $employee->first_name }}</h4>
-                                    <p class="text-muted"><b>Employee:</b> {{ $employee->employee_number }}</p>
+                                    <p class="text-muted"><b>Employee No:</b> {{ $employee->employee_number }}</p>
                                     <span class="badge badge-primary">{{ $employee->mda->mda ?? 'N/A' }}</span>
                                 </div>
 
@@ -62,18 +74,21 @@
                                                 {{ $employee->first_name }} {{ $employee->middle_name ?? '' }}</p>
                                             <p><strong>Gender:</strong> {{ $employee->gender ?? 'N/A' }}</p>
                                             <p><strong>Date of Birth:</strong> {{ $dob }}</p>
-                                            <p><strong>Marital Status:</strong> {{ $employee->marital_status ?? 'N/A' }}</p>
+                                            <p><strong>Marital Status:</strong> {{ $employee->marital_status ?? 'N/A' }}
+                                            </p>
                                             <p><strong>Religion:</strong> {{ $employee->religion ?? 'N/A' }}</p>
-                                            <p><strong>State of Origin:</strong> <p><strong>State of Origin:</strong> 
-                                                @if($employee->state_id)
-                                                @php
-                                                    $state = \App\Models\State::find($employee->state_id);
-                                                @endphp
-                                                {{ $state->state ?? $state->state ?? 'N/A' }}
-                                            @else
-                                            State name not found
-                                            @endif</p>
-                                            
+                                            <p><strong>State of Origin:</strong>
+                                            <p><strong>State of Origin:</strong>
+                                                @if ($employee->state_id)
+                                                    @php
+                                                        $state = \App\Models\State::find($employee->state_id);
+                                                    @endphp
+                                                    {{ $state->state ?? ($state->state ?? 'N/A') }}
+                                                @else
+                                                    State name not found
+                                                @endif
+                                            </p>
+
                                             <p><strong>LGA of Origin:</strong> {{ $employee->lga ?? 'N/A' }}</p>
                                         </div>
 
@@ -82,7 +97,8 @@
                                             <h5 class="mb-2">Contact Information</h5>
                                             <p><strong>Email:</strong> {{ $employee->email ?? 'N/A' }}</p>
                                             <p><strong>Phone:</strong> {{ $employee->phone ?? 'N/A' }}</p>
-                                            <p><strong>Contact Address:</strong> {{ $employee->contact_address ?? 'N/A' }}</p>
+                                            <p><strong>Contact Address:</strong> {{ $employee->contact_address ?? 'N/A' }}
+                                            </p>
                                         </div>
                                     </div>
 
@@ -118,7 +134,7 @@
                                                 @if ($employee->retirement_date && $employee->retirement_date->isPast())
                                                     <span class="badge badge-danger ml-2">Retired</span>
                                                 @elseif($employee->retirement_date && $employee->retirement_date->diffInMonths(now()) <= 6)
-                                                    <span class="badge badge-warning ml-2">Retiring Soon</span>
+                                                    <span class="badge badge-warning ml-2" style="background-color: red; color: white;">Retiring Soon</span>
                                                 @endif
                                             </p>
                                         </div>
@@ -146,7 +162,8 @@
                         <div class="card-footer">
                             <ul class="nav nav-tabs" role="tablist">
                                 <li class="nav-item">
-                                    <a class="nav-link active" id="tab-documents" data-bs-toggle="tab" href="#documents">Documents</a>
+                                    <a class="nav-link active" id="tab-documents" data-bs-toggle="tab"
+                                        href="#documents">Documents</a>
                                 </li>
                                 <li class="nav-item">
 
@@ -154,10 +171,11 @@
 
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link" id="tab-promotions" data-bs-toggle="tab" href="#promotions">Promotion History</a>
+                                    <a class="nav-link" id="tab-promotions" data-bs-toggle="tab"
+                                        href="#promotions">Promotion History</a>
                                 </li>
                             </ul>
-                            
+
                             <div class="tab-content p-3 border border-top-0">
 
                                 <div class="tab-pane fade show active" id="documents">
@@ -176,7 +194,7 @@
                                                         <td>{{ $document->document_type }}</td>
                                                         <td>{{ $document->created_at->format('d M, Y') }}</td>
                                                         <td>
-                                                            <a href="{{ asset('storage/' . $document->document)}}"
+                                                            <a href="{{ asset('storage/' . $document->document) }}"
                                                                 target="_blank" class="btn btn-sm btn-primary">
                                                                 <i class="lni lni-eye"></i> View
                                                             </a>
@@ -273,7 +291,7 @@
         }
     </style>
 
-{{-- <script>
+    {{-- <script>
     // Activate tab from URL hash
     document.addEventListener('DOMContentLoaded', function () {
         let hash = window.location.hash;
@@ -294,27 +312,27 @@
     });
 </script> --}}
 
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        // Handle activating the correct tab from the hash
-        const hash = window.location.hash;
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Handle activating the correct tab from the hash
+            const hash = window.location.hash;
 
-        if (hash) {
-            const tabTrigger = document.querySelector(`a.nav-link[href="${hash}"]`);
-            if (tabTrigger) {
-                const tab = new bootstrap.Tab(tabTrigger);
-                tab.show();
+            if (hash) {
+                const tabTrigger = document.querySelector(`a.nav-link[href="${hash}"]`);
+                if (tabTrigger) {
+                    const tab = new bootstrap.Tab(tabTrigger);
+                    tab.show();
+                }
             }
-        }
 
-        // When switching tabs, update the URL hash
-        document.querySelectorAll('a.nav-link[data-bs-toggle="tab"]').forEach(tab => {
-            tab.addEventListener('shown.bs.tab', function (e) {
-                history.replaceState(null, null, e.target.getAttribute('href'));
+            // When switching tabs, update the URL hash
+            document.querySelectorAll('a.nav-link[data-bs-toggle="tab"]').forEach(tab => {
+                tab.addEventListener('shown.bs.tab', function(e) {
+                    history.replaceState(null, null, e.target.getAttribute('href'));
+                });
             });
         });
-    });
-</script>
+    </script>
 
 
 @endsection

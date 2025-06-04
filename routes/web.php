@@ -34,14 +34,11 @@ Route::get('/', function () {
 
 
 ///// Admin Group Middleware 
-Route::middleware(['auth','roles:roles:BDIC Super Admin, Head of Service, Commissioner, Director'])->group(function(){
-    Route::get('/admin/dashboard', [AdminController::class, 'AdminDashboard'])->name('admin.dashboard');
-});
-
-
-Route::get('/dashboard', function () {
-    return view('admin.dashboard');
-})->middleware(['auth', 'roles:BDIC Super Admin, Head of Service, Commissioner, Director'])->name('dashboard');
+Route::middleware(['auth', 'role:BDIC Super Admin,Head of Service,Commissioner,Director'])
+    ->group(function() {
+        Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
+        // other admin routes
+    });
 
 
 Route::get('/employee/dashboard', function () {
@@ -110,8 +107,6 @@ Route::delete('/mdas/{mda}', [MdaController::class, 'destroy'])->name('mdas.dest
 // Deactivate/Activate Routes
 Route::get('/mdas/{mda}/deactivate', [MdaController::class, 'deactivate'])->name('mdas.deactivate');
 Route::get('/mdas/{mda}/activate', [MdaController::class, 'activate'])->name('mdas.activate');
-
-
 
 
 
@@ -279,3 +274,18 @@ Route::put('/service-account', [ServiceAccountController::class, 'update'])->nam
     // Import Excel
 Route::get('/import-employees-form', [EmployeeController::class, 'showImportForm'])->name('import.employees.form');
 Route::post('/import-employees', [EmployeeController::class, 'import'])->name('import.employees');
+
+// Add this route for quick status changes
+Route::post('/users/{user}/status', [UserController::class, 'changeStatus'])
+    ->name('users.status.change')->middleware(['auth', 'user.status:active']);
+
+    Route::middleware(['auth', 'check.status'])->group(function () {
+        Route::get('/user/management/', [UserController::class, 'usermgt'])->name('user.management');
+        // Other routes...
+    });
+    
+    // Route::middleware(['auth', 'check.status'])->group(function () {
+    //     Route::get('/dashboard', [UserController::class, 'index'])->name('dashboard');
+    //     // Other routes...
+    // });
+    

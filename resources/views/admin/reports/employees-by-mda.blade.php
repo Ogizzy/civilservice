@@ -1,5 +1,6 @@
 @extends('admin.admin_dashboard')
 @section('admin')
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
 
 <div class="page-content">
     <!-- Header Section -->
@@ -44,7 +45,7 @@
         </div>
         <div class="card-body">
             <form method="GET" action="{{ route('reports.by-mda') }}" class="row g-3">
-                <div class="col-md-6">
+                <div class="col-md-4">
                     <label for="mda_id" class="form-label small text-uppercase fw-medium">Select MDA</label>
                     <div class="input-group">
                         <span class="input-group-text bg-light">
@@ -60,7 +61,21 @@
                         </select>
                     </div>
                 </div>
-                <div class="col-md-6 d-flex align-items-end">
+                <div class="col-md-4">
+                    <label for="per_page" class="form-label small text-uppercase fw-medium">Items per page</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-light">
+                            <i class="bx bx-list-ul"></i>
+                        </span>
+                        <select name="per_page" id="per_page" class="form-select">
+                            <option value="10" {{ request('per_page') == '10' ? 'selected' : '' }}>10</option>
+                            <option value="25" {{ request('per_page') == '25' ? 'selected' : '' }}>25</option>
+                            <option value="50" {{ request('per_page') == '50' ? 'selected' : '' }}>50</option>
+                            <option value="100" {{ request('per_page') == '100' ? 'selected' : '' }}>100</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-4 d-flex align-items-end">
                     <button class="btn btn-primary me-2" type="submit">
                         <i class="bx bx-filter me-1"></i> Apply Filter
                     </button>
@@ -83,7 +98,7 @@
                         </div>
                         <div>
                             <h6 class="mb-0">Total Employees</h6>
-                            <h3 class="mb-0">{{ $employees->count() }}</h3>
+                            <h3 class="mb-0">{{ $employees->total() }}</h3>
                         </div>
                     </div>
                 </div>
@@ -113,7 +128,7 @@
                         </div>
                         <div>
                             <h6 class="mb-0">Grade Levels</h6>
-                            <h3 class="mb-0">{{ $employees->groupBy('grade_level_id')->count() }}</h3>
+                            <h3 class="mb-0">{{ $totalGradeLevels ?? 0 }}</h3>
                         </div>
                     </div>
                 </div>
@@ -149,7 +164,7 @@
             <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
                 <h5 class="mb-0">
                     <i class="bx bx-list-ul me-2"></i>Employees in 
-                    <span class="fw-bold text-primary">{{ optional($employees->first()->mda)->mda ?? 'Selected MDA' }}</span>
+                    <span class="fw-bold text-primary">{{ optional($employees->first())->mda->mda ?? 'Selected MDA' }}</span>
                 </h5>
                 <div class="input-group input-group-sm" style="width: 200px;">
                     <input type="text" class="form-control" placeholder="Search employees..." id="searchEmployee">
@@ -191,9 +206,6 @@
                                     <td class="ps-4 fw-medium">{{ $emp->employee_number }}</td>
                                     <td>
                                         <div class="d-flex align-items-center">
-                                            {{-- <div class="avatar avatar-sm me-2 bg-light rounded-circle">
-                                                <span class="avatar-text rounded-circle">{{ substr($emp->first_name, 0, 1) }}</span>
-                                            </div> --}}
                                             {{ $emp->surname }}, {{ $emp->first_name }} {{ $emp->middle_name }}
                                         </div>
                                     </td>
@@ -216,17 +228,76 @@
                     </table>
                 </div>
             </div>
+            
+            <!-- Pagination Footer -->
             <div class="card-footer bg-white py-3">
-                <div class="d-flex justify-content-between align-items-center">
-                    <span class="text-muted small">Showing {{ $employees->count() }} employees</span>
-                    <div>
-                        <a href="#" class="btn btn-sm btn-outline-secondary me-2">
-                            <i class="bx bx-download me-1"></i> Export to Excel
-                        </a>
-                        <a href="#" class="btn btn-sm btn-outline-primary">
-                            <i class="bx bx-bar-chart-alt-2 me-1"></i> Advanced Analytics
-                        </a>
+                <div class="d-flex justify-content-between align-items-center flex-wrap">
+                    <div class="d-flex align-items-center mb-2 mb-md-0">
+                        <span class="text-muted small me-3">
+                            Showing {{ $employees->firstItem() ?? 0 }} to {{ $employees->lastItem() ?? 0 }} 
+                            of {{ $employees->total() }} employees
+                        </span>
+                        <div class="btn-group btn-group-sm me-3" role="group">
+                            <a href="#" class="btn btn-sm btn-outline-secondary me-2">
+                                <i class="bx bx-download me-1"></i> Export to Excel
+                            </a>
+                            <a href="#" class="btn btn-sm btn-outline-primary">
+                                <i class="bx bx-bar-chart-alt-2 me-1"></i> Advanced Analytics
+                            </a>
+                        </div>
                     </div>
+                    
+                    <!-- Custom Pagination -->
+                    @if ($employees->hasPages())
+                        <nav aria-label="Employee pagination">
+                            <ul class="pagination pagination-sm mb-0">
+                                {{-- Previous Page Link --}}
+                                @if ($employees->onFirstPage())
+                                    <li class="page-item disabled">
+                                        <span class="page-link">
+                                            <i class="bx bx-chevron-left"></i>
+                                        </span>
+                                    </li>
+                                @else
+                                    <li class="page-item">
+                                        <a class="page-link" href="{{ $employees->appends(request()->query())->previousPageUrl() }}">
+                                            <i class="bx bx-chevron-left"></i>
+                                        </a>
+                                    </li>
+                                @endif
+
+                                {{-- Pagination Elements --}}
+                                @foreach ($employees->getUrlRange(1, $employees->lastPage()) as $page => $url)
+                                    @if ($page == $employees->currentPage())
+                                        <li class="page-item active">
+                                            <span class="page-link">{{ $page }}</span>
+                                        </li>
+                                    @else
+                                        <li class="page-item">
+                                            <a class="page-link" href="{{ $employees->appends(request()->query())->url($page) }}">
+                                                {{ $page }}
+                                            </a>
+                                        </li>
+                                    @endif
+                                @endforeach
+
+                                {{-- Next Page Link --}}
+                                @if ($employees->hasMorePages())
+                                    <li class="page-item">
+                                        <a class="page-link" href="{{ $employees->appends(request()->query())->nextPageUrl() }}">
+                                            <i class="bx bx-chevron-right"></i>
+                                        </a>
+                                    </li>
+                                @else
+                                    <li class="page-item disabled">
+                                        <span class="page-link">
+                                            <i class="bx bx-chevron-right"></i>
+                                        </span>
+                                    </li>
+                                @endif
+                            </ul>
+                        </nav>
+                    @endif
                 </div>
             </div>
         </div>
@@ -397,7 +468,7 @@
             });
         }
         
-        // Search functionality
+        // Search functionality (for current page only)
         const searchInput = document.getElementById('searchEmployee');
         const table = document.getElementById('employeeTable');
         if (searchInput && table) {
@@ -417,7 +488,7 @@
             });
         }
         
-        // Table sorting
+        // Table sorting (for current page only)
         const sortLinks = document.querySelectorAll('.sort-link');
         sortLinks.forEach(link => {
             link.addEventListener('click', function(e) {
@@ -457,6 +528,23 @@
             // Reorder table
             rows.forEach(row => tbody.appendChild(row));
         }
+    });
+</script>
+
+<script>
+    $(document).ready(function() {
+        $('#example').DataTable();
+    });
+</script>
+<script>
+    $(document).ready(function() {
+        var table = $('#example2').DataTable({
+            lengthChange: false,
+            buttons: ['copy', 'excel', 'pdf', 'print']
+        });
+
+        table.buttons().container()
+            .appendTo('#example2_wrapper .col-md-6:eq(0)');
     });
 </script>
 @endif

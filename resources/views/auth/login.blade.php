@@ -22,6 +22,9 @@
     <link href="{{ asset('backend/assets/css/icons.css') }}" rel="stylesheet">
 
     <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.css">
+   
+    {{-- recaptcha Script --}}
+    <script src="https://www.google.com/recaptcha/api.js"></script>
 
     <title>Benue State Civil Service Admin App</title>
 </head>
@@ -54,8 +57,8 @@
                                             width="60" alt="">
                                     </div>
                                     <div class="text-center mb-4">
-                                        <h5 class="">Admin Login </h5>
-                                        <p class="mb-0">Benue State Civil Service Application</p>
+                                        <h5 class="">Benue State Civil Service Commission </h5>
+                                        {{-- <p class="mb-0">Benue State Civil Service Application</p> --}}
                                         <p class="mb-0" style="color: blue">Please Sign into your account</p>
                                     </div>
                                     <div class="form-body">
@@ -96,6 +99,14 @@
                                             </div>
                                             <div class="col-md-6 text-end"> <a href="#">Forgot Password ?</a>
                                             </div>
+                                            
+                                            {{-- {!! NoCaptcha::display() !!} --}}
+                                        <div class="g-recaptcha" data-sitekey="6LdWMVUrAAAAAKjvTH4nZ2G3yvuEU_50jR-wRFQB"></div>
+                                        @error('g-recaptcha-response')
+                                                <span class="text-danger">{{ $message }}</span>
+                                            @enderror
+                                          
+
                                             <div class="col-12">
                                                 <div class="d-grid">
                                                     <button type="submit" class="btn btn-primary">Sign in</button>
@@ -174,5 +185,11 @@
         @endif
     </script>
 
+{{-- <script>
+    function onSubmit(token) {
+      document.getElementById("demo-form").submit();
+    }
+  </script> --}}
+    {!! NoCaptcha::renderJs() !!}
 </body>
 </html>

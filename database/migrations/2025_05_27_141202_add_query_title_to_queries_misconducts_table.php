@@ -11,8 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('employees', function (Blueprint $table) {
-            $table->dropColumn('state');
+        Schema::table('queries_misconducts', function (Blueprint $table) {
+            $table->string('query_title')->after('employee_id');
         });
     }
 
@@ -21,8 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('employees', function (Blueprint $table) {
-             $table->string('state')->nullable();
+        Schema::table('queries_misconducts', function (Blueprint $table) {
+            $table->dropColumn('query_title');
         });
     }
 };

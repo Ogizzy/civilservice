@@ -30,11 +30,11 @@
     <div class="card">
         <div class="card-body">
             <p><strong>Employee:</strong> {{ $employee->surname }} {{ $employee->first_name }} {{ $employee->middle_name }}</p>
-            <p><strong>From:</strong> {{ $promotion->previousGradeLevel->level ?? 'N/A' }} - Step {{ $promotion->previousStep->step ?? 'N/A' }}</p>
-            <p><strong>To:</strong> {{ $promotion->currentGradeLevel->level ?? 'N/A' }} - Step {{ $promotion->currentStep->step ?? 'N/A' }}</p>
+            <p><strong>From:</strong> GL {{ $promotion->previousLevel->level ?? 'N/A' }} - Step {{ $promotion->previousStep->step ?? 'N/A' }}</p>
+            <p><strong>To:</strong>  GL {{ $promotion->currentLevel->level ?? 'N/A' }} - Step {{ $promotion->currentStep->step ?? 'N/A' }}</p>
             <p><strong>Promotion Type:</strong> {{ ucfirst($promotion->promotion_type) }}</p>
             <p><strong>Effective Date:</strong> {{ $promotion->effective_date->format('d M, Y') }}</p>
-            <p><strong>Uploaded By:</strong> {{ $promotion->user->surname ?? 'N/A' }} {{ $promotion->user->first_name ?? 'N/A' }}</p>
+            <p><strong>Promoted By:</strong> {{ $promotion->user->surname ?? 'N/A' }} {{ $promotion->user->first_name ?? 'N/A' }}</p>
             <hr>
             <p><strong>Document:</strong></p>
             @if($promotion->document)

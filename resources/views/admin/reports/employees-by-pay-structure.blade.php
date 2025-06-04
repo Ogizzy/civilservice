@@ -1,5 +1,8 @@
 @extends('admin.admin_dashboard')
 @section('admin')
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+
 <div class="page-content">
     <!-- Enhanced Breadcrumb -->
     <div class="card bg-light mb-4 border-0">
@@ -154,18 +157,19 @@
                             <button class="btn btn-sm btn-light" type="button" data-bs-toggle="dropdown">
                                 <i class="bx bx-dots-vertical-rounded"></i>
                             </button>
-                            <ul class="dropdown-menu">
+                            {{-- <ul class="dropdown-menu">
                                 <li><a class="dropdown-item" href="#"><i class="bx bx-sort me-1"></i> Sort by Name</a></li>
                                 <li><a class="dropdown-item" href="#"><i class="bx bx-sort-up me-1"></i> Sort by Level</a></li>
                                 <li><hr class="dropdown-divider"></li>
                                 <li><a class="dropdown-item" href="#"><i class="bx bx-download me-1"></i> Download List</a></li>
-                            </ul>
+                            </ul> --}}
                         </div>
                     </div>
                 </div>
                 <div class="card-body p-0">
                     <div class="table-responsive">
-                        <table class="table table-hover mb-0 align-middle">
+                        {{-- <table class="table table-hover mb-0 align-middle"> --}}
+                            <table id="example2" class="table table-striped table-bordered">
                             <thead class="table-light">
                                 <tr>
                                     <th class="ps-3">S/N</th>
@@ -173,7 +177,7 @@
                                     <th>Pay Group</th>
                                     <th>Grade Level</th>
                                     <th>Step</th>
-                                    <th class="text-end pe-3">Actions</th>
+                                    {{-- <th class="text-end pe-3">Actions</th> --}}
                                 </tr>
                             </thead>
                             <tbody>
@@ -206,7 +210,7 @@
                                             {{ $emp->step->step ?? 'N/A' }}
                                         </span>
                                     </td>
-                                    <td class="text-end pe-3">
+                                    {{-- <td class="text-end pe-3">
                                         <div class="d-flex justify-content-end">
                                             <button class="btn btn-sm btn-outline-primary me-1" title="View Details">
                                                 <i class="bx bx-show"></i>
@@ -215,7 +219,7 @@
                                                 <i class="bx bx-edit"></i>
                                             </button>
                                         </div>
-                                    </td>
+                                    </td> --}}
                                 </tr>
                                 @empty
                                 <tr>
@@ -233,11 +237,11 @@
                     </div>
                 </div>
                 <div class="card-footer bg-white border-top p-3">
-                    <div class="d-flex justify-content-between align-items-center">
+                    {{-- <div class="d-flex justify-content-between align-items-center">
                         <div>
                             <small class="text-muted">Showing {{ $employees->count() }} employees</small>
-                        </div>
-                        <nav aria-label="Page navigation">
+                        </div> --}}
+                        {{-- <nav aria-label="Page navigation">
                             <ul class="pagination pagination-sm mb-0">
                                 <li class="page-item disabled">
                                     <a class="page-link" href="#"><i class="bx bx-chevron-left"></i></a>
@@ -249,8 +253,8 @@
                                     <a class="page-link" href="#"><i class="bx bx-chevron-right"></i></a>
                                 </li>
                             </ul>
-                        </nav>
-                    </div>
+                        </nav> --}}
+                    {{-- </div> --}}
                 </div>
             </div>
         </div>
@@ -352,4 +356,21 @@
         });
     });
 </script>
+
+<script>
+        $(document).ready(function() {
+            $('#example').DataTable();
+        });
+    </script>
+    <script>
+        $(document).ready(function() {
+            var table = $('#example2').DataTable({
+                lengthChange: false,
+                buttons: ['copy', 'excel', 'pdf', 'print']
+            });
+
+            table.buttons().container()
+                .appendTo('#example2_wrapper .col-md-6:eq(0)');
+        });
+    </script>
 @endsection

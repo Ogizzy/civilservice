@@ -15,6 +15,7 @@
                     <thead class="thead-dark">
             <tr>
                 <th>Employee</th>
+                <th>Query Title</th>
                 <th>Date Issued</th>
                 <th>Query Summary</th>
                 <th>Document</th>
@@ -25,15 +26,16 @@
             @forelse ($queries as $query)
                 <tr>
                     <td>{{ $query->employee->surname }}, {{ $query->employee->first_name }}</td>
+                    <td>{{ $query->query_title }}</td>
                     <td>{{ \Carbon\Carbon::parse($query->date_issued)->format('M d, Y') }}</td>
                     <td>{{ \Str::limit($query->query, 10) }}</td>
                     <td>
                         @if($query->document)
-                            <a href="{{ asset('storage/' . $query->document->document) }}" target="_blank">View Document</a>
+                            <a href="{{ asset('storage/' . $query->document->document) }}" target="_blank"><i class="bx bx-file"></i>View Document</a>
                         @endif
                     </td>
                     <td>
-                        <a href="{{ route('queries.show', $query->id) }}" class="btn btn-info btn-sm" title="View Query"><i class="lni lni-eye"></i></a>
+                        <a href="{{ route('queries.show', $query->id) }}" class="btn btn-info btn-sm" title="View Query"><i class="fadeIn animated bx bx-list-ul"></i></a>
                         <a href="{{ route('queries.edit', $query->id) }}" class="btn btn-warning btn-sm" title="Edit Query"> <i class="bx bx-edit"></i></a>
                         <form action="{{ route('queries.destroy', $query->id) }}" method="POST" style="display:inline-block;">
                             @csrf @method('DELETE')

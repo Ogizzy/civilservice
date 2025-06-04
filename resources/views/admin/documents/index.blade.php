@@ -20,13 +20,23 @@
         <!--end breadcrumb-->
 
     <div class="container">
-    <div class="d-flex justify-content-between align-items-center mb-3">
+        @if (auth()->user()->role->role === 'Employee')
+        <div class="d-flex justify-content-between align-items-center mb-3">
+        <h5>Documents for: <span style="color: royalblue"> {{ $employee->surname }} {{ $employee->first_name }} {{ $employee->middle_name }}</span></h5>
+        <a href="{{ route('employee.dashboard') }}" class="btn btn-primary btn-sm">
+            <i class="fadeIn animated bx bx-chevrons-left"></i> Go Back
+        </a>
+    </div>
+
+        @else
+        <div class="d-flex justify-content-between align-items-center mb-3">
         <h5>Documents for: <span style="color: royalblue"> {{ $employee->surname }} {{ $employee->first_name }} {{ $employee->middle_name }}</span></h5>
         <a href="{{ route('employees.documents.create', $employee->id) }}" class="btn btn-primary btn-sm">
             <i class="lni lni-upload"></i> Upload Document
         </a>
     </div>
-
+    @endif
+ 
     @if (session('success')) <div class="alert alert-success">{{ session('success') }}</div> @endif
     @if (session('error')) <div class="alert alert-danger">{{ session('error') }}</div> @endif
 
@@ -40,7 +50,9 @@
                         <th>Uploaded On</th>
                         <th>Uploaded By</th>
                         <th>View</th>
+                        @if(auth()->user()->role->role != 'Employee')
                         <th>Actions</th>
+                        @endif
                     </tr>
                 </thead>
                 <tbody>
@@ -52,6 +64,8 @@
                             <td>
                                 <a href="{{ asset('storage/' . $doc->document) }}" target="_blank" class="btn btn-sm btn-info"><i class="lni lni-eye" title="View This Document"></i> View</a>
                             </td>
+
+                             @if(auth()->user()->role->role != 'Employee')
                             <td>
                                 <a href="{{ route('employees.documents.edit', [$employee->id, $doc->id]) }}" class="btn btn-warning btn-sm"><i class="bx bxs-edit" title="Edit This Document"></i></a>
                                 <form action="{{ route('employees.documents.destroy', [$employee->id, $doc->id]) }}" method="POST" class="d-inline">
@@ -59,6 +73,7 @@
                                     <button class="btn btn-danger btn-sm delete-btn"><i class="bx bxs-trash" title="Delete This Document"></i></button>
                                 </form>
                             </td>
+                             @endif
                         </tr>
                     @empty
                         <tr><td colspan="5" class="text-center">No documents found.</td></tr>

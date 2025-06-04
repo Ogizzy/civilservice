@@ -11,8 +11,9 @@ use App\Models\Employee;
 use App\Models\PayGroup;
 use App\Models\GradeLevel;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Hash;
 use Maatwebsite\Excel\Concerns\ToModel;
 use PhpOffice\PhpSpreadsheet\Shared\Date;
 use Maatwebsite\Excel\Concerns\Importable;
@@ -21,87 +22,170 @@ use Maatwebsite\Excel\Concerns\SkipsFailures;
 use Maatwebsite\Excel\Concerns\SkipsOnFailure;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use Maatwebsite\Excel\Concerns\WithValidation;
+use Maatwebsite\Excel\Concerns\WithBatchInserts;
+use Maatwebsite\Excel\Concerns\WithChunkReading;
 
-class EmployeeImport implements ToModel, WithValidation, SkipsOnFailure, WithHeadingRow
+class EmployeeImport implements ToCollection, WithValidation, SkipsOnFailure, WithHeadingRow, WithChunkReading
 {
     use Importable, SkipsFailures;
 
+    // Cache for lookup data to avoid repeated database queries
+    private static $mdaCache = [];
+    private static $paygroupCache = [];
+    private static $gradeLevelCache = [];
+    private static $stepCache = [];
+    private static $stateCache = [];
+    private static $cacheLoaded = false;
+
     /**
-     * Create a model from the imported row
+     * Process the collection in batches
      *
-     * @param array $row
-     * @return \App\Models\Employee
+     * @param Collection $collection
      */
-    public function model(array $row)
+    public function collection(Collection $collection)
     {
-        $user = User::create([
-            'surname' => $row['surname'],
-            'first_name' => $row['first_name'],
-            'email' => $row['email'],
-            'password' => bcrypt('password'), // Or generate one
-            'role_id' => 6, // 'employee' role
-            'status' => 'active',
-        ]);
+        // Load cache once
+        if (!self::$cacheLoaded) {
+            $this->preloadLookupData();
+            self::$cacheLoaded = true;
+        }
+
+        DB::transaction(function () use ($collection) {
+            foreach ($collection as $index => $row) {
+                $row = $row->toArray();
+                
+                // Generate unique email
+                $email = $this->generateUniqueEmail($row);
+                
+                $user = User::create([
+                    'surname' => $row['surname'],
+                    'first_name' => $row['first_name'],
+                    'email' => $email,
+                    'password' => bcrypt('password'),
+                    'role_id' => 6,
+                    'status' => 'active',
+                ]);
+
+                // Convert dates for calculation
+                $dob = $this->safelyConvertDate($row['dob']);
+                $firstAppointmentDate = $this->safelyConvertDate($row['first_appointment_date'] ?? null);
+                
+                // Calculate retirement date
+                $retirementDate = $this->calculateRetirementDate($dob, $firstAppointmentDate);
+
+                Employee::create([
+                    'user_id' => $user->id,
+                    'employee_number' => $row['employee_number'],
+                    'surname' => $row['surname'],
+                    'first_name' => $row['first_name'],
+                    'middle_name' => $row['middle_name'] ?? null,
+                    'gender' => $row['gender'],
+                    'dob' => $dob,
+                    'marital_status' => $row['marital_status'] ?? null,
+                    'religion' => $row['religion'] ?? null,
+                    'lga' => $row['lga'] ?? null,
+                    'contact_address' => $row['contact_address'] ?? null,
+                    'phone' => $row['phone'] ?? null,
+                    'email' => $row['email'] ?? null,
+                    'first_appointment_date' => $firstAppointmentDate,
+                    'confirmation_date' => $this->safelyConvertDate($row['confirmation_date'] ?? null),
+                    'present_appointment_date' => $this->safelyConvertDate($row['present_appointment_date'] ?? null),
+                    'retirement_date' => $retirementDate,
+                    'mda_id' => $this->findMdaId($row['mda']),
+                    'paygroup_id' => isset($row['paygroup']) ? $this->findPaygroupId($row['paygroup']) : null,
+                    'level_id' => $this->findGradeLevelId($row['level']),
+                    'step_id' => $this->findStepId($row['step']),
+                    'rank' => $row['rank'] ?? null,
+                    'qualifications' => $row['qualifications'] ?? null,
+                    'net_pay' => $row['net_pay'] ?? null,
+                    'state_id' => $this->findStateId($row['state'] ?? ''), 
+                    'password' => bcrypt('password'),
+                ]);
+            }
+        });
+    }
+
+    /**
+     * Generate unique email for user
+     */
+    private function generateUniqueEmail($row)
+    {
+        // If email is provided and not empty, use it
+        if (!empty($row['email'])) {
+            return $row['email'];
+        }
         
-        // Convert dates for calculation
-        $dob = $this->safelyConvertDate($row['dob']);
-        $firstAppointmentDate = $this->safelyConvertDate($row['first_appointment_date'] ?? null);
+        // Generate email from employee data
+        $baseEmail = $row['employee_number'] . '@gmail.com';
         
-        // Calculate retirement date
-        $retirementDate = $this->calculateRetirementDate($dob, $firstAppointmentDate);
-    
-        return new Employee([
-            'user_id' => $user->id,
-            'employee_number' => $row['employee_number'],
-            'surname' => $row['surname'],
-            'first_name' => $row['first_name'],
-            'middle_name' => $row['middle_name'] ?? null,
-            'gender' => $row['gender'],
-            'dob' => $dob,
-            'marital_status' => $row['marital_status'] ?? null,
-            'religion' => $row['religion'] ?? null,
-            'lga' => $row['lga'] ?? null,
-            'contact_address' => $row['contact_address'] ?? null,
-            'phone' => $row['phone'] ?? null,
-            'email' => $row['email'] ?? null,
-            'first_appointment_date' => $firstAppointmentDate,
-            'confirmation_date' => $this->safelyConvertDate($row['confirmation_date'] ?? null),
-            'present_appointment_date' => $this->safelyConvertDate($row['present_appointment_date'] ?? null),
-            'retirement_date' => $retirementDate, // Add retirement date
-            'mda_id' => $this->findMdaId($row['mda']),
-            'paygroup_id' => isset($row['paygroup']) ? $this->findPaygroupId($row['paygroup']) : null,
-            'level_id' => $this->findGradeLevelId($row['level']),
-            'step_id' => $this->findStepId($row['step']),
-            'rank' => $row['rank'] ?? null,
-            'qualifications' => $row['qualifications'] ?? null,
-            'net_pay' => $row['net_pay'] ?? null,
-            'state_id' => $this->findStateId($row['state'] ?? ''), 
-            'password' => bcrypt('password'), // Default password
-        ]);
+        // Check if this email already exists
+        $counter = 0;
+        $email = $baseEmail;
+        
+        while (User::where('email', $email)->exists()) {
+            $counter++;
+            $email = $row['employee_number'] . '_' . $counter . '@gmail.com';
+        }
+        
+        return $email;
+    }
+
+    /**
+     * Set chunk size for reading large files
+     */
+    public function chunkSize(): int
+    {
+        return 50; 
+    }
+
+    /**
+     * Preload all lookup data to cache (called once)
+     */
+    private function preloadLookupData()
+    {
+        // Cache all MDAs
+        $mdas = Mda::all(['id', 'mda']);
+        foreach ($mdas as $mda) {
+            self::$mdaCache[strtolower($mda->mda)] = $mda->id;
+        }
+
+        // Cache all PayGroups
+        $paygroups = PayGroup::all(['id', 'paygroup']);
+        foreach ($paygroups as $paygroup) {
+            self::$paygroupCache[strtolower($paygroup->paygroup)] = $paygroup->id;
+        }
+
+        // Cache all Grade Levels
+        $gradeLevels = GradeLevel::all(['id', 'level']);
+        foreach ($gradeLevels as $level) {
+            self::$gradeLevelCache[$level->level] = $level->id;
+        }
+
+        // Cache all Steps
+        $steps = Step::all(['id', 'step']);
+        foreach ($steps as $step) {
+            self::$stepCache[$step->step] = $step->id;
+        }
+
+        // Cache all States
+        $states = State::all(['id', 'state']);
+        foreach ($states as $state) {
+            self::$stateCache[strtolower($state->state)] = $state->id;
+        }
     }
 
     /**
      * Calculate retirement date based on DOB or first appointment date
-     * 
-     * @param \DateTime|null $dob Date of birth
-     * @param \DateTime|null $firstAppointmentDate First appointment date
-     * @return \DateTime|null Retirement date
      */
     private function calculateRetirementDate($dob, $firstAppointmentDate)
     {
         try {
-            // If DOB is provided, retirement age is 65 years
             if ($dob) {
                 return (clone $dob)->modify('+65 years');
-            } 
-            // If DOB not available but first appointment date is, use 35 years of service
-            elseif ($firstAppointmentDate) {
+            } elseif ($firstAppointmentDate) {
                 return (clone $firstAppointmentDate)->modify('+35 years');
             }
-            
-            // Return null if neither date is available
             return null;
-            
         } catch (\Exception $e) {
             Log::error('Error calculating retirement date: ' . $e->getMessage());
             return null;
@@ -109,94 +193,63 @@ class EmployeeImport implements ToModel, WithValidation, SkipsOnFailure, WithHea
     }
 
     /**
-     * Find MDA ID by MDA name, log an error if not found
-     *
-     * @param string $mdaName
-     * @return int|null
+     * Find MDA ID using cache
      */
     private function findMdaId($mdaName)
     {
-        $mda = Mda::where('mda', $mdaName)->first();
+        $key = strtolower($mdaName);
         
-        if (!$mda) {
-            // Try case-insensitive search
-            $mda = Mda::whereRaw('LOWER(mda) = ?', [strtolower($mdaName)])->first();
+        if (isset(self::$mdaCache[$key])) {
+            return self::$mdaCache[$key];
         }
         
-        if (!$mda) {
-            Log::warning("MDA not found: {$mdaName}");
-            // You might want to create a new MDA here if appropriate
-            // $mda = Mda::create(['mda' => $mdaName]);
-            return 1; // Default to a specific MDA ID if you have one
-        }
-        
-        return $mda->id;
+        Log::warning("MDA not found: {$mdaName}");
+        return 1; // Default MDA ID
     }
     
     /**
-     * Find PayGroup ID by name, log an error if not found
-     *
-     * @param string $paygroupName
-     * @return int|null
+     * Find PayGroup ID using cache
      */
     private function findPaygroupId($paygroupName)
     {
-        $paygroup = PayGroup::where('paygroup', $paygroupName)->first();
+        $key = strtolower($paygroupName);
         
-        if (!$paygroup) {
-            // Try case-insensitive search
-            $paygroup = PayGroup::whereRaw('LOWER(paygroup) = ?', [strtolower($paygroupName)])->first();
+        if (isset(self::$paygroupCache[$key])) {
+            return self::$paygroupCache[$key];
         }
         
-        if (!$paygroup) {
-            Log::warning("PayGroup not found: {$paygroupName}");
-            return 1; // Default to a specific PayGroup ID if you have one
-        }
-        
-        return $paygroup->id;
+        Log::warning("PayGroup not found: {$paygroupName}");
+        return 1; // Default PayGroup ID
     }
     
     /**
-     * Find GradeLevel ID by level, log an error if not found
-     *
-     * @param string|int $level
-     * @return int|null
+     * Find GradeLevel ID using cache
      */
     private function findGradeLevelId($level)
     {
-        $gradeLevel = GradeLevel::where('level', $level)->first();
-        
-        if (!$gradeLevel) {
-            Log::warning("Grade Level not found: {$level}");
-            return 1; // Default to a specific Grade Level ID if you have one
+        if (isset(self::$gradeLevelCache[$level])) {
+            return self::$gradeLevelCache[$level];
         }
         
-        return $gradeLevel->id;
+        Log::warning("Grade Level not found: {$level}");
+        return 1; // Default Grade Level ID
     }
     
     /**
-     * Find Step ID by step, log an error if not found
-     *
-     * @param string|int $step
-     * @return int|null
+     * Find Step ID using cache
      */
     private function findStepId($step)
     {
-        $stepModel = Step::where('step', $step)->first();
-        
-        if (!$stepModel) {
-            Log::warning("Step not found: {$step}");
-            return 1; // Default to a specific Step ID if you have one
+        if (isset(self::$stepCache[$step])) {
+            return self::$stepCache[$step];
         }
         
-        return $stepModel->id;
+        Log::warning("Step not found: {$step}");
+        return 1; // Default Step ID
     }
 
     /**
-     * Find State ID by state state, log an error if not found
-     *
-     * @param string $stateName
-     * @return int|null
+     * Find State ID using cache
      */
     private function findStateId($stateName)
     {
@@ -204,36 +257,18 @@ class EmployeeImport implements ToModel, WithValidation, SkipsOnFailure, WithHea
             return null;
         }
         
-        // First try exact match
-        $state = State::where('state', $stateName)->first();
+        $key = strtolower($stateName);
         
-        // If not found, try with 'state' column
-        if (!$state) {
-            $state = State::where('state', $stateName)->first();
+        if (isset(self::$stateCache[$key])) {
+            return self::$stateCache[$key];
         }
         
-        // If still not found, try case-insensitive search on both columns
-        if (!$state) {
-            $state = State::whereRaw('LOWER(state) = ?', [strtolower($stateName)])->first();
-        }
-        
-        if (!$state) {
-            $state = State::whereRaw('LOWER(state) = ?', [strtolower($stateName)])->first();
-        }
-        
-        if (!$state) {
-            Log::warning("State not found: {$stateName}");
-            return null; // Return null for state if not found
-        }
-        
-        return $state->id;
+        Log::warning("State not found: {$stateName}");
+        return null;
     }
 
     /**
      * Transform date value from Excel to DateTime object safely
-     *
-     * @param mixed $value The date value from Excel
-     * @return \DateTime|null
      */
     private function safelyConvertDate($value)
     {
@@ -242,16 +277,12 @@ class EmployeeImport implements ToModel, WithValidation, SkipsOnFailure, WithHea
         }
 
         try {
-            // If it's a numeric value (Excel date format)
             if (is_numeric($value)) {
                 return Date::excelToDateTimeObject($value);
-            }
-            // If it's a string date format
-            else {
+            } else {
                 return new \DateTime($value);
             }
         } catch (\Exception $e) {
-            // Log the error
             Log::warning('Failed to convert date value: ' . $value . '. Error: ' . $e->getMessage());
             return null;
         }
@@ -259,8 +290,6 @@ class EmployeeImport implements ToModel, WithValidation, SkipsOnFailure, WithHea
 
     /**
      * Define validation rules
-     *
-     * @return array
      */
     public function rules(): array
     {
@@ -269,17 +298,18 @@ class EmployeeImport implements ToModel, WithValidation, SkipsOnFailure, WithHea
             'surname' => 'required',
             'first_name' => 'required',
             'gender' => 'required',
-            'dob' => 'required',  // Removed date validation as we'll handle conversion ourselves
+            'dob' => 'required',
             'phone' => 'nullable',
             'email' => 'nullable|email',
-            'first_appointment_date' => 'nullable',  // Removed date validation
-            'confirmation_date' => 'nullable',  // Removed date validation
-            'present_appointment_date' => 'nullable',  // Removed date validation
+            'first_appointment_date' => 'nullable',
+            'confirmation_date' => 'nullable',
+            'present_appointment_date' => 'nullable',
             'net_pay' => 'nullable|numeric',
             'level' => 'required',
             'step' => 'required',
             'mda' => 'required',
-            'state' => 'nullable',  // Added validation rule for state
+            'state' => 'nullable',
         ];
     }
+
 }

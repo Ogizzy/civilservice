@@ -36,6 +36,7 @@ class QueriesMisconductController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'employee_id' => 'required|exists:employees,id',
+            'query_title' => 'required|string|max:255',
             'query' => 'required|string',
             'date_issued' => 'required|date',
             'supporting_document' => 'nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png|max:10240',
@@ -53,7 +54,7 @@ class QueriesMisconductController extends Controller
 
             $document = Document::create([
                 'employee_id' => $request->employee_id,
-                'document_type' => 'Query Letter',
+                'document_type' => 'Query/Misconduct Letter',
                 'document' => $path,
                 'user_id' => Auth::id(),
             ]);
@@ -63,6 +64,7 @@ class QueriesMisconductController extends Controller
 
         QueriesMisconduct::create([
             'employee_id' => $request->employee_id,
+            'query_title' => $request->query_title,
             'query' => $request->input('query'),
             'date_issued' => $request->date_issued,
             'supporting_document' => $documentId,
@@ -102,6 +104,7 @@ class QueriesMisconductController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'employee_id' => 'required|exists:employees,id',
+            'query_title' => $request->query_title,
             'query' => 'required|string',
             'date_issued' => 'required|date',
             'supporting_document' => 'nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png|max:10240',
@@ -132,6 +135,7 @@ class QueriesMisconductController extends Controller
 
         $queriesMisconduct->update([
             'employee_id' => $request->employee_id,
+            'query_title' => $request->query_title,
             'query' => $request->input('query'),
             'date_issued' => $request->date_issued,
             'user_id' => Auth::id()

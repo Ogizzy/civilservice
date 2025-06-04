@@ -9,15 +9,24 @@ use Illuminate\Validation\Rule;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 
 class UserController extends Controller
 {
+    // public function __construct()
+    // {
+    //     // Apply middleware - only active users can manage other users
+    //     $this->middleware('user.status:active')->except(['profile', 'updateProfile']);
+        
+    //     // Allow suspended users to view/update their own profile
+    //     $this->middleware('user.status:active,suspended')->only(['profile', 'updateProfile']);
+    // }
+
     /**
      * Display a listing of the users.
      */
     public function index()
     {
-        // $users = User::with('role')->paginate(15);
         $employeeRoleId = UserRole::where('role', 'Employee')->value('id');
 
         $users = User::where('role_id', '!=', $employeeRoleId)
@@ -53,15 +62,22 @@ class UserController extends Controller
 
         $validated['password'] = Hash::make($validated['password']);
 
-        User::create($validated);
+        $user = User::create($validated);
+
+        // Log user creation
+        Log::info('User created', [
+            'created_user_id' => $user->id,
+            'created_user_email' => $user->email,
+            'created_by' => Auth::id(),
+            'status' => $user->status
+        ]);
         
         $notification = array(
             'message' => 'User created successfully',
             'alert-type' => 'success'
         );
 
-        return redirect()->route('users.index')
-            ->with($notification);
+        return redirect()->route('users.index')->with($notification);
     }
 
     /**
@@ -86,6 +102,15 @@ class UserController extends Controller
      */
     public function update(Request $request, User $user)
     {
+        // Prevent users from changing their own status to avoid lockout
+        if ($user->id === Auth::id() && $request->has('status') && $request->status !== $user->status) {
+            $notification = array(
+                'message' => 'You cannot change your own status.',
+                'alert-type' => 'error'
+            );
+            return redirect()->back()->with($notification);
+        }
+
         $validated = $request->validate([
             'surname' => 'required|string|max:255',
             'first_name' => 'required|string|max:255',
@@ -105,15 +130,26 @@ class UserController extends Controller
             $validated['password'] = Hash::make($request->password);
         }
 
+        $oldStatus = $user->status;
         $user->update($validated);
+
+        // Log status change if status was modified
+        if ($oldStatus !== $validated['status']) {
+            Log::info('User status changed', [
+                'user_id' => $user->id,
+                'user_email' => $user->email,
+                'old_status' => $oldStatus,
+                'new_status' => $validated['status'],
+                'changed_by' => Auth::id()
+            ]);
+        }
 
         $notification = array(
             'message' => 'User updated successfully',
             'alert-type' => 'success'
         );
 
-        return redirect()->route('users.index')
-            ->with($notification);
+        return redirect()->route('users.index')->with($notification);
     }
 
     /**
@@ -121,6 +157,21 @@ class UserController extends Controller
      */
     public function destroy(User $user)
     {
+        // Prevent users from deleting themselves
+        if ($user->id === Auth::id()) {
+            $notification = array(
+                'message' => 'You cannot delete your own account.',
+                'alert-type' => 'error'
+            );
+            return redirect()->back()->with($notification);
+        }
+
+        Log::info('User deleted', [
+            'deleted_user_id' => $user->id,
+            'deleted_user_email' => $user->email,
+            'deleted_by' => Auth::id()
+        ]);
+
         $user->delete();
 
         $notification = array(
@@ -128,8 +179,7 @@ class UserController extends Controller
             'alert-type' => 'success'
         );
 
-        return redirect()->route('users.index')
-            ->with($notification);
+        return redirect()->route('users.index')->with($notification);
     }
 
     /**
@@ -151,7 +201,7 @@ class UserController extends Controller
         $validated = $request->validate([
             'surname' => 'required|string|max:255',
             'first_name' => 'required|string|max:255',
-            'other_names' => 'nullable|string|max:255',
+            'other_names' => 'nullable|string|max:255',  
             'email' => [
                 'required',
                 'string',
@@ -159,7 +209,7 @@ class UserController extends Controller
                 'max:255',
                 Rule::unique('users')->ignore($user->id),
             ],
-            'current_password' => 'nullable|required_with:password|password',
+            'current_password' => 'nullable|required_with:password|current_password',
             'password' => 'nullable|string|min:8|confirmed',
         ]);
 
@@ -169,7 +219,43 @@ class UserController extends Controller
 
         $user->update($validated);
 
-        return redirect()->route('profile')
-            ->with('success', 'Profile updated successfully.');
+        $notification = array(
+            'message' => 'Profile updated successfully',
+            'alert-type' => 'success'
+        );
+
+        return redirect()->route('profile')->with($notification);
+    }
+
+    /**
+     * Quick status change method
+     */
+    public function changeStatus(Request $request, User $user)
+    {
+        $request->validate([
+            'status' => 'required|in:active,suspended,banned'
+        ]);
+
+        // Prevent users from changing their own status
+        if ($user->id === Auth::id()) {
+            return response()->json(['error' => 'You cannot change your own status.'], 403);
+        }
+
+        $oldStatus = $user->status;
+        $user->update(['status' => $request->status]);
+
+        Log::info('User status changed via quick action', [
+            'user_id' => $user->id,
+            'user_email' => $user->email,
+            'old_status' => $oldStatus,
+            'new_status' => $request->status,
+            'changed_by' => Auth::id()
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => "User status changed to {$request->status}",
+            'new_status' => $request->status
+        ]);
     }
 }

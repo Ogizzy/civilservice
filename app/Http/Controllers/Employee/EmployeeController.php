@@ -22,6 +22,7 @@ use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Storage;
 use Maatwebsite\Excel\Concerns\FromArray;
 use Maatwebsite\Excel\Concerns\WithHeadings;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Maatwebsite\Excel\Validators\ValidationException;
 
 class EmployeeController extends Controller
@@ -149,7 +150,8 @@ class EmployeeController extends Controller
         $gradeLevels = GradeLevel::all();
         $steps = Step::all();
         $lgas = LGA::all();
-        return view('admin.employee.edit', compact('employee', 'mdas', 'payGroups', 'gradeLevels', 'steps', 'lgas'));
+        $states = State::all();
+        return view('admin.employee.edit', compact('employee', 'mdas', 'payGroups', 'gradeLevels', 'steps', 'lgas', 'states'));
     }
 
     /**
@@ -293,11 +295,24 @@ public function employeesPerLga(Request $request)
     if ($request->filled('gender')) {
         $query->where('gender', $request->gender);
     }
-    $lgaCounts = $query
-        ->select('lga', DB::raw('count(*) as total'))
-        ->groupBy('lga')
-        ->orderBy('total', 'desc')
-        ->get();
+   
+    $grouped = $query
+    ->select('lga', DB::raw('count(*) as total'))
+    ->groupBy('lga')
+    ->orderBy('total', 'desc')
+    ->get();
+
+    // Manual Pagination
+    $perPage = 10;
+    $currentPage = LengthAwarePaginator::resolveCurrentPage();
+    $currentItems = $grouped->slice(($currentPage - 1) * $perPage, $perPage)->values();
+    $lgaCounts = new LengthAwarePaginator(
+        $currentItems,
+        $grouped->count(),
+        $perPage,
+        $currentPage,
+        ['path' => $request->url(), 'query' => $request->query()]
+    );
 
     $mdas = \App\Models\MDA::all();
     $genders = ['Male', 'Female'];
@@ -310,23 +325,46 @@ public function employeesPerLga(Request $request)
      */
     public function byMda(Request $request)
     {
-        $mdas = MDA::all();
-        $selectedMdaId = $request->input('mda_id');
+        // Get all MDAs for the filter dropdown
+        $mdas = Mda::orderBy('mda')->get();
+        
+        // Get the selected MDA ID from request
+        $selectedMdaId = $request->get('mda_id');
+        
+        // Get items per page (default to 25)
+        $perPage = $request->get('per_page', 10);
+        
+        // Initialize variables
         $employees = collect();
         $genderStats = [];
-    
+        $totalGradeLevels = 0;
+        
         if ($selectedMdaId) {
-            $employees = Employee::where('mda_id', $selectedMdaId)
-                ->with(['mda', 'payGroup', 'gradeLevel', 'step'])
-                ->get();
-    
-            $genderStats = [
-                'Male' => $employees->where('gender', 'Male')->count(),
-                'Female' => $employees->where('gender', 'Female')->count()
-            ];
+            // Get paginated employees for the selected MDA
+            $employees = Employee::with(['mda', 'payGroup', 'gradeLevel'])
+                ->where('mda_id', $selectedMdaId)
+                ->orderBy('surname')
+                ->orderBy('first_name')
+                ->paginate($perPage);
+            
+            // Append query parameters to pagination links
+            $employees->appends($request->query());
+            
+            // Get gender statistics for all employees in this MDA
+            $allEmployees = Employee::where('mda_id', $selectedMdaId)->get();
+            $genderStats = $allEmployees->groupBy('gender')->map->count()->toArray();
+            
+            // Get total unique grade levels for this MDA
+            $totalGradeLevels = $allEmployees->pluck('grade_level_id')->unique()->count();
         }
-    
-        return view('admin.reports.employees-by-mda', compact('mdas', 'selectedMdaId', 'employees', 'genderStats'));
+        
+        return view('admin.reports.employees-by-mda', compact(
+            'mdas',
+            'employees', 
+            'selectedMdaId',
+            'genderStats',
+            'totalGradeLevels'
+        ));
     }
     
 
@@ -461,7 +499,7 @@ public function employeesByPayStructure(Request $request)
  // Show Import Form
  public function showImportForm()
  {
-     return view('admin.employee.importemployee'); // This matches your blade.
+     return view('admin.employee.importemployee');
  }
 
  // Handle Excel Import

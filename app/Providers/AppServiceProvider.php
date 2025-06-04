@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\Models\UserPermission;
+use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\ServiceProvider;
 
@@ -31,6 +32,24 @@ class AppServiceProvider extends ServiceProvider
                 ->first();
     
             return $permission && $permission->{$ability};
+            
         });
+
+        Blade::if('userActive', function () {
+            return auth()->check() && auth()->user()->isActive();
+        });
+    
+        Blade::if('userSuspended', function () {
+            return auth()->check() && auth()->user()->isSuspended();
+        });
+    
+        Blade::if('userBanned', function () {
+            return auth()->check() && auth()->user()->isBanned();
+        });
+        
+        Paginator::useBootstrap();
     }
+
+    
+    
 }

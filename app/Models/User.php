@@ -110,6 +110,55 @@ public function getPassportUrlAttribute()
     return asset('backend/assets/images/avatars/avatar-1.jpg');
 }
 
+// Start User Trait
+public function isActive()
+{
+    return $this->status === 'active';
+}
+
+public function isSuspended()
+{
+    return $this->status === 'suspended';
+}
+
+public function isBanned()
+{
+    return $this->status === 'banned';
+}
+
+public function canPerformAction($action = null)
+{
+    // Define actions that suspended users can still do
+    $allowedForSuspended = ['view_profile', 'logout', 'change_password'];
+    
+    if ($this->isBanned()) {
+        return false;
+    }
+
+    if ($this->isSuspended()) {
+        return $action && in_array($action, $allowedForSuspended);
+    }
+
+    return $this->isActive();
+}
+
+public function scopeActive($query)
+{
+    return $query->where('status', 'active');
+}
+
+public function scopeSuspended($query)
+{
+    return $query->where('status', 'suspended');
+}
+
+public function scopeBanned($query)
+{
+    return $query->where('status', 'banned');
+}
+//End User Status Trait
+
+
     /**
      * The attributes that should be hidden for serialization.
      *
@@ -132,4 +181,6 @@ public function getPassportUrlAttribute()
             'password' => 'hashed',
         ];
     }
+
+    
 }

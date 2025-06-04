@@ -29,8 +29,6 @@ class StepSeeder extends Seeder
             ['step' => '13'],
             ['step' => '14'],
             ['step' => '15'],
-            ['step' => '16'],
-            ['step' => '17'],
         ];
 
         foreach ($steps as $step) {

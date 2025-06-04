@@ -50,8 +50,15 @@
                 
                 <div class="row mb-3">
                     <div class="col-12">
+                        <label for="query_title" class="form-label">Query/Misconduct Title <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="query_title" name="query_title" value="{{ old('query_title') }}" placeholder="e.g., Late Arrival, Unauthorized Absence, Policy Violation" required>
+                    </div>
+                </div>
+                
+                <div class="row mb-3">
+                    <div class="col-12">
                         <label for="query" class="form-label">Query/Misconduct Details <span class="text-danger">*</span></label>
-                        <textarea class="form-control"  name="query" rows="5" required>{{ old('query') }}</textarea>
+                        <textarea class="form-control" id="query" name="query" rows="5" placeholder="Provide detailed description of the query or misconduct..." required>{{ old('query') }}</textarea>
                     </div>
                 </div>
                 

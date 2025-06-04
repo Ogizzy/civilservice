@@ -40,6 +40,7 @@ class Employee extends Model implements Auditable
         'passport',
         'user_id',
         'state_id',
+        'password',
     ];
 
     protected $hidden = [

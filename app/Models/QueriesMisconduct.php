@@ -17,6 +17,7 @@ class QueriesMisconduct extends Model implements Auditable
         'date_issued',
         'supporting_document',
         'user_id',
+        'query_title',
     ];
 
     protected $casts = [

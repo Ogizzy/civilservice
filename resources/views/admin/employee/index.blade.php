@@ -24,6 +24,7 @@
                     {{ session('success') }}
                 </div>
             @endif
+            
 
             <div class="row align-items-center justify-content-end">
                 <div class="col-auto">
@@ -44,8 +45,8 @@
                                     <th>S/N</th>
                                     <th>Employee No.</th>
                                     <th>Name</th>
-                                    <th>MDA</th>
-                                    <th>Pay Group</th>
+                                    {{-- <th>MDA</th> --}}
+                                    {{-- <th>Pay Group</th> --}}
                                     <th>Grade Level</th>
                                     <th>Actions</th>
                                 </tr>
@@ -56,8 +57,8 @@
                                         <td>{{ $og + 1 }}</td>
                                         <td>{{ $employee->employee_number }}</td>
                                         <td>{{ $employee->surname }} {{ $employee->first_name }}</td>
-                                        <td>{{ $employee->mda->mda ?? 'N/A' }}</td>
-                                        <td>{{ $employee->paygroup->paygroup ?? 'N/A' }}</td>
+                                        {{-- <td>{{ $employee->mda->mda ?? 'N/A' }}</td> --}}
+                                        {{-- <td>{{ $employee->paygroup->paygroup ?? 'N/A' }}</td> --}}
                                         <td>GL{{ $employee->gradeLevel->level ?? 'N/A' }}/Step {{ $employee->step->step ?? 'N/A' }}
                                         </td>
                                         
@@ -65,7 +66,7 @@
                                             <!-- View Profile -->
                                             <a href="{{ route('employees.show', $employee->id) }}"
                                                 class="btn btn-sm btn-info" title="View Employee">
-                                                <i class="lni lni-eye"></i>
+                                                <i class="fadeIn animated bx bx-list-ul"></i>
                                             </a>
 
                                             <!-- Edit -->
@@ -101,14 +102,14 @@
                     </div>
                 </div>
             </div>
-
-
         </div>
+
         <script>
             $(document).ready(function() {
                 $('#example').DataTable();
             });
         </script>
+
         <script>
             $(document).ready(function() {
                 var table = $('#example2').DataTable({
@@ -120,4 +121,5 @@
                     .appendTo('#example2_wrapper .col-md-6:eq(0)');
             });
         </script>
+
     @endsection

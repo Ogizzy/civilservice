@@ -50,7 +50,7 @@
 
 	<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.css" >
 
-	<title>Benue State Civil Service Admin App</title>
+	<title>Benue State Civil Service Commission</title>
 </head>
 
 {{-- <body style="font-weight:bold"><div style="width:300px;margin:auto auto;"><img src="/resources/images/loading.gif" width="300px"/></div> --}}
@@ -79,7 +79,6 @@
 		@include('admin.body.footer')
 	</div>
 	<!--end wrapper-->
-
  
 	<!--end switcher-->
 	<!-- Bootstrap JS -->
@@ -115,8 +114,9 @@
 	</script>
 
 	<!--Datatable-->
-<script src="{{ asset('backend/assets/plugins/datatable/js/jquery.dataTables.min.js') }}"></script>
+	<script src="{{ asset('backend/assets/plugins/datatable/js/jquery.dataTables.min.js') }}"></script>
 	<script src="{{ asset('backend/assets/plugins/datatable/js/dataTables.bootstrap5.min.js') }}"></script>
+	
 	<script>
 		$(document).ready(function() {
 			$('#example').DataTable();
@@ -170,57 +170,6 @@
 			]
 		});
 	});
-</script>
-<style> 
-/* CSS */
-body.page-loading {
-    overflow: auto !important;
-}
-.page-loader-wrapper, 
-#preloader, 
-.preloader, 
-.loader-wrapper, 
-.page-loader {
-    display: none !important;
-    opacity: 0 !important;
-    visibility: hidden !important;
-    pointer-events: none !important;
-}
-</style>
-
-<script>
-	// JavaScript
-document.addEventListener('DOMContentLoaded', function() {
-    // Remove loading classes
-    document.body.classList.remove('page-loading', 'page-loader-open');
-    
-    // Hide all possible loader elements
-    const loaderElements = [
-        '.page-loader-wrapper',
-        '#preloader',
-        '.preloader',
-        '.loader-wrapper',
-        '.page-loader',
-        '.loading-overlay'
-    ];
-    
-    loaderElements.forEach(selector => {
-        const el = document.querySelector(selector);
-        if (el) el.style.display = 'none';
-    });
-    
-    // Force show content
-    const mainContent = document.querySelector('.page-wrapper, #main-wrapper, .main-wrapper');
-    if (mainContent) {
-        mainContent.style.opacity = '1';
-        mainContent.style.visibility = 'visible';
-    }
-});
-
-// Prevent loader from showing on page transitions
-window.addEventListener('load', function() {
-    document.body.classList.remove('page-loading');
-});
 </script>
 
 </body>
