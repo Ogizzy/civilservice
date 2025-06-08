@@ -78,16 +78,6 @@
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <h5 class="card-title mb-0">Retirement Timeline</h5>
-                    <div class="dropdown">
-                        <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
-                            View As
-                        </button>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="#" onclick="changeChartType('bar')">Bar Chart</a></li>
-                            <li><a class="dropdown-item" href="#" onclick="changeChartType('line')">Line Chart</a></li>
-                            <li><a class="dropdown-item" href="#" onclick="changeChartType('pie')">Pie Chart</a></li>
-                        </ul>
-                    </div>
                 </div>
                 <div class="chart-container" style="height: 300px;">
                     <canvas id="retiringChart"></canvas>
@@ -100,7 +90,7 @@
             <div class="card-body">
                 <div class="table-responsive">
                     <table id="example2" class="table table-striped table-bordered">
-                        <thead class="table-light">
+                        <thead class="thead-dark">
                             <tr>
                                 <th>S/N</th>
                                 <th>Employee Name</th>
@@ -113,7 +103,7 @@
                         <tbody>
                             @foreach($employees as $index => $emp)
                             <tr>
-                                <td>{{ $index + 1 }}</td>
+                                <td>{{ ($employees->currentPage() - 1) * $employees->perPage() + $index + 1 }}</td>
                                 <td>
                                     <div class="d-flex align-items-center">
                                         <div class="avatar bg-light-primary rounded-circle me-3">
@@ -121,7 +111,7 @@
                                         </div>
                                         <div>
                                             <h6 class="mb-0">{{ $emp->surname }} {{ $emp->first_name }}</h6>
-                                            <small class="text-muted">Emp.No: {{ $emp->employee_number }}</small>
+                                            <small class="text-muted">Employee No: {{ $emp->employee_number }}</small>
                                         </div>
                                     </div>
                                 </td>
@@ -145,6 +135,7 @@
                             @endforeach
                         </tbody>
                     </table>
+                  
                 </div>
                 
                 @if($employees instanceof \Illuminate\Pagination\LengthAwarePaginator && $employees->total() > $employees->perPage())

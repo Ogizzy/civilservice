@@ -431,7 +431,7 @@ public function employeesByPayStructure(Request $request)
     if ($level_id) $query->where('level_id', $level_id);
     if ($step_id) $query->where('step_id', $step_id);
 
-    $employees = $query->with(['mda', 'payGroup', 'gradeLevel', 'step'])->get();
+    $employees = $query->with(['mda', 'payGroup', 'gradeLevel', 'step'])->paginate(10);
 
     $payGroups = \App\Models\PayGroup::all();
     $levels = \App\Models\GradeLevel::all();
@@ -453,7 +453,7 @@ public function employeesByPayStructure(Request $request)
         $query->whereBetween('retirement_date', [$startDate, $endDate]);
     }
 
-    $employees = $query->get();
+    $employees = $query->paginate(5);
     return view('admin.reports.retired-employees', compact('employees', 'startDate', 'endDate'));
 }
 
@@ -464,10 +464,24 @@ public function employeesByPayStructure(Request $request)
     {
         $startDate = $request->input('start_date') ?? now();
         $endDate = $request->input('end_date') ?? now()->addMonths(6);
+        $search = $request->input('search');
     
-        $employees = Employee::whereBetween('retirement_date', [$startDate, $endDate])->get();
-        return view('admin.reports.retiring-employees', compact('employees', 'startDate', 'endDate'));
+        $employees = Employee::with('mda')
+            ->whereBetween('retirement_date', [$startDate, $endDate])
+            ->when($search, function ($query, $search) {
+                $query->where(function ($q) use ($search) {
+                    $q->where('first_name', 'like', "%$search%")
+                      ->orWhere('surname', 'like', "%$search%")
+                      ->orWhere('employee_number', 'like', "%$search%");
+                });
+            })
+            ->orderBy('retirement_date', 'asc')
+            ->paginate(10)
+            ->appends($request->only(['start_date', 'end_date', 'search']));
+    
+        return view('admin.reports.retiring-employees', compact('employees', 'startDate', 'endDate', 'search'));
     }
+    
 
     
     // Stat on main Dashboard
@@ -531,5 +545,22 @@ public function employeesByPayStructure(Request $request)
          return redirect()->back()->withErrors('An error occurred during import: ' . $e->getMessage());
      }
  }
+
+ public function downloadSampleTemplate()
+    {
+        $filePath = public_path('backend/excel-template/main-template.xlsx');
+        
+        // Check if file exists
+        if (!file_exists($filePath)) {
+            abort(404, 'Template file not found.');
+        }
+        
+        $fileName = 'employee_import_template.xlsx';
+        
+        return response()->download($filePath, $fileName, [
+            'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        ]);
+    }
+
 
 }

@@ -168,8 +168,7 @@
                 </div>
                 <div class="card-body p-0">
                     <div class="table-responsive">
-                        {{-- <table class="table table-hover mb-0 align-middle"> --}}
-                            <table id="example2" class="table table-striped table-bordered">
+                        <table  class="table table-striped table-bordered">
                             <thead class="table-light">
                                 <tr>
                                     <th class="ps-3">S/N</th>
@@ -177,7 +176,6 @@
                                     <th>Pay Group</th>
                                     <th>Grade Level</th>
                                     <th>Step</th>
-                                    {{-- <th class="text-end pe-3">Actions</th> --}}
                                 </tr>
                             </thead>
                             <tbody>
@@ -186,12 +184,9 @@
                                     <td class="ps-3">{{ $index + 1 }}</td>
                                     <td>
                                         <div class="d-flex align-items-center">
-                                            {{-- <div class="avatar avatar-sm me-2 bg-light-primary rounded-circle">
-                                                <span class="avatar-initial">{{ substr($emp->first_name, 0, 1) }}</span>
-                                            </div> --}}
                                             <div>
                                                 <span class="fw-medium">{{ $emp->surname }} {{ $emp->first_name }}</span>
-                                                <small class="d-block text-muted">Emp. No: {{ $emp->employee_number }}</small>
+                                                <small class="d-block text-muted">Employee No: {{ $emp->employee_number }}</small>
                                             </div>
                                         </div>
                                     </td>
@@ -210,20 +205,10 @@
                                             {{ $emp->step->step ?? 'N/A' }}
                                         </span>
                                     </td>
-                                    {{-- <td class="text-end pe-3">
-                                        <div class="d-flex justify-content-end">
-                                            <button class="btn btn-sm btn-outline-primary me-1" title="View Details">
-                                                <i class="bx bx-show"></i>
-                                            </button>
-                                            <button class="btn btn-sm btn-outline-secondary" title="Edit">
-                                                <i class="bx bx-edit"></i>
-                                            </button>
-                                        </div>
-                                    </td> --}}
                                 </tr>
                                 @empty
                                 <tr>
-                                    <td colspan="6" class="text-center py-4">
+                                    <td colspan="5" class="text-center py-4">
                                         <div class="d-flex flex-column align-items-center">
                                             <i class="bx bx-folder-open text-muted mb-2" style="font-size: 2rem;"></i>
                                             <h6 class="text-muted">No employees found</h6>
@@ -235,7 +220,11 @@
                             </tbody>
                         </table>
                     </div>
+                    <div class="d-flex justify-content-center">
+                        {{ $employees->links() }}
+                    </div>
                 </div>
+                
                 <div class="card-footer bg-white border-top p-3">
                     {{-- <div class="d-flex justify-content-between align-items-center">
                         <div>

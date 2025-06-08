@@ -50,7 +50,7 @@
                                         <td>GL {{ $level->level }}</td>
                                         <td>
                                             <a href="{{ route('grade-levels.show', $level->id) }}"
-                                                class="btn btn-info btn-sm"><i class="lni lni-eye"></i></a>
+                                                class="btn btn-info btn-sm"><i class="fadeIn animated bx bx-list-ul"></i></a>
                                             <button type="button" 
                                                 class="btn btn-warning btn-sm" 
                                                 onclick="editGradeLevel({{ $level->id }}, '{{ $level->level }}')">

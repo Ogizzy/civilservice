@@ -100,7 +100,7 @@
                                             <div class="col-md-6 text-end"> <a href="#">Forgot Password ?</a>
                                             </div>
                                             
-                                            {{-- {!! NoCaptcha::display() !!} --}}
+                                             {{-- {!! NoCaptcha::display() !!}  --}}
                                         <div class="g-recaptcha" data-sitekey="6LdWMVUrAAAAAKjvTH4nZ2G3yvuEU_50jR-wRFQB"></div>
                                         @error('g-recaptcha-response')
                                                 <span class="text-danger">{{ $message }}</span>

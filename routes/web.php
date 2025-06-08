@@ -288,4 +288,5 @@ Route::post('/users/{user}/status', [UserController::class, 'changeStatus'])
     //     Route::get('/dashboard', [UserController::class, 'index'])->name('dashboard');
     //     // Other routes...
     // });
-    
+   
+Route::get('/download-sample-template', [EmployeeController::class, 'downloadSampleTemplate'])->name('download.sample.template');

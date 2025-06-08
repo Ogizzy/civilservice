@@ -215,7 +215,7 @@
                             <tbody>
                                 @forelse($employees as $index => $emp)
                                 <tr>
-                                    <td class="ps-3">{{ $index + 1 }}</td>
+                                    <td class="ps-3">{{ ($employees->currentPage() - 1) * $employees->perPage() + $index + 1 }}</td>
                                     <td>
                                         <div class="d-flex align-items-center">
                                             <div class="avatar avatar-sm me-2 bg-light-danger rounded-circle">
@@ -223,7 +223,7 @@
                                             </div>
                                             <div>
                                                 <span class="fw-medium">{{ $emp->surname }} {{ $emp->first_name }}</span>
-                                                <small class="d-block text-muted">Emp. No: {{ $emp->employee_number }}</small>
+                                                <small class="d-block text-muted">Employee No: {{ $emp->employee_number }}</small>
                                             </div>
                                         </div>
                                     </td>
@@ -260,27 +260,12 @@
                             </tbody>
                         </table>
                     </div>
-                </div>
-                <div class="card-footer bg-white border-top p-3">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <small class="text-muted">Showing {{ $employees->count() }} retirees</small>
-                        </div>
-                        <nav aria-label="Page navigation">
-                            <ul class="pagination pagination-sm mb-0">
-                                <li class="page-item disabled">
-                                    <a class="page-link" href="#"><i class="bx bx-chevron-left"></i></a>
-                                </li>
-                                <li class="page-item active"><a class="page-link" href="#">1</a></li>
-                                <li class="page-item"><a class="page-link" href="#">2</a></li>
-                                <li class="page-item"><a class="page-link" href="#">3</a></li>
-                                <li class="page-item">
-                                    <a class="page-link" href="#"><i class="bx bx-chevron-right"></i></a>
-                                </li>
-                            </ul>
-                        </nav>
+                    <div class="d-flex justify-content-center">
+                        {{ $employees->links() }}
                     </div>
                 </div>
+
+               
             </div>
         </div>
     </div>

@@ -28,6 +28,7 @@
 	<link href="{{ asset('backend/assets/css/employee-form.css') }}" rel="stylesheet"/>
 	<link href="{{ asset('backend/assets/css/service-account.css') }}" rel="stylesheet"/>
 	<link href="{{ asset('backend/assets/css/mda.css') }}" rel="stylesheet"/>
+	<link href="{{ asset('backend/assets/css/import-excel.css') }}" rel="stylesheet"/>
 
 
 	<!-- loader-->
@@ -45,8 +46,10 @@
 	<link rel="stylesheet" href="{{ asset('backend/assets/css/header-colors.css') }}"/>
 	<!-- Datatable -->
 	<link href="{{ asset('backend/assets/plugins/datatable/css/dataTables.bootstrap5.min.css') }}" rel="stylesheet" />
-	<!-- End Datatable -->
+	{{-- <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css"> --}}
+	{{-- <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.3.6/css/buttons.dataTables.min.css"> --}}
 
+	<!-- End Datatable -->
 
 	<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.css" >
 
@@ -96,6 +99,7 @@
 	{{-- Custom JS --}}
 	<script src="{{ asset('backend/assets/js/employee-form.js') }}"></script>
 	<script src="{{ asset('backend/assets/js/service-account.js') }}"></script>
+	<script src="{{ asset('backend/assets/js/import-excel.js') }}"></script>
 
 	<!--tagsinput-->
 	<script src="{{ asset('backend/assets/plugins/input-tags/js/tagsinput.js') }}"></script>
@@ -117,11 +121,11 @@
 	<script src="{{ asset('backend/assets/plugins/datatable/js/jquery.dataTables.min.js') }}"></script>
 	<script src="{{ asset('backend/assets/plugins/datatable/js/dataTables.bootstrap5.min.js') }}"></script>
 	
-	<script>
+	{{-- <script>
 		$(document).ready(function() {
 			$('#example').DataTable();
 		  } );
-	</script>
+	</script> --}}
 	<!--End Datatable-->
 
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>

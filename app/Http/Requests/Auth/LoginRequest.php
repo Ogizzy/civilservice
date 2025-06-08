@@ -2,13 +2,14 @@
 
 namespace App\Http\Requests\Auth;
 
-use Illuminate\Auth\Events\Lockout;
-use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\RateLimiter;
+use Log;
 use Illuminate\Support\Str;
+use Illuminate\Auth\Events\Lockout;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Validation\ValidationException;
-
+use App\Rules\Recaptcha;
 class LoginRequest extends FormRequest
 {
     /**
@@ -26,9 +27,11 @@ class LoginRequest extends FormRequest
      */
     public function rules(): array
     {
+    \Log::debug('Form request data:', $this->all());
         return [
             'email' => ['required', 'string', 'email'],
             'password' => ['required', 'string'],
+            'g-recaptcha-response' => ['required', new Recaptcha],
         ];
     }
 

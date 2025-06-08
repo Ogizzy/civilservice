@@ -53,56 +53,63 @@ class EmployeeImport implements ToCollection, WithValidation, SkipsOnFailure, Wi
         DB::transaction(function () use ($collection) {
             foreach ($collection as $index => $row) {
                 $row = $row->toArray();
-                
+        
                 // Generate unique email
                 $email = $this->generateUniqueEmail($row);
-                
+        
+                // Create user
                 $user = User::create([
-                    'surname' => $row['surname'],
-                    'first_name' => $row['first_name'],
-                    'email' => $email,
-                    'password' => bcrypt('password'),
-                    'role_id' => 6,
-                    'status' => 'active',
+                    'surname'     => $row['surname'],
+                    'first_name'  => $row['first_name'],
+                    'email'       => $email,
+                    'password'    => bcrypt('password'),
+                    'role_id'     => 6,
+                    'status'      => 'active',
                 ]);
-
-                // Convert dates for calculation
+        
+                // Convert relevant dates
                 $dob = $this->safelyConvertDate($row['dob']);
                 $firstAppointmentDate = $this->safelyConvertDate($row['first_appointment_date'] ?? null);
-                
+                $confirmationDate = $this->safelyConvertDate($row['confirmation_date'] ?? null);
+                $presentAppointmentDate = $this->safelyConvertDate($row['present_appointment_date'] ?? null);
+        
                 // Calculate retirement date
                 $retirementDate = $this->calculateRetirementDate($dob, $firstAppointmentDate);
-
+        
+                // Create employee record
                 Employee::create([
-                    'user_id' => $user->id,
-                    'employee_number' => $row['employee_number'],
-                    'surname' => $row['surname'],
-                    'first_name' => $row['first_name'],
-                    'middle_name' => $row['middle_name'] ?? null,
-                    'gender' => $row['gender'],
-                    'dob' => $dob,
-                    'marital_status' => $row['marital_status'] ?? null,
-                    'religion' => $row['religion'] ?? null,
-                    'lga' => $row['lga'] ?? null,
-                    'contact_address' => $row['contact_address'] ?? null,
-                    'phone' => $row['phone'] ?? null,
-                    'email' => $row['email'] ?? null,
-                    'first_appointment_date' => $firstAppointmentDate,
-                    'confirmation_date' => $this->safelyConvertDate($row['confirmation_date'] ?? null),
-                    'present_appointment_date' => $this->safelyConvertDate($row['present_appointment_date'] ?? null),
-                    'retirement_date' => $retirementDate,
-                    'mda_id' => $this->findMdaId($row['mda']),
-                    'paygroup_id' => isset($row['paygroup']) ? $this->findPaygroupId($row['paygroup']) : null,
-                    'level_id' => $this->findGradeLevelId($row['level']),
-                    'step_id' => $this->findStepId($row['step']),
-                    'rank' => $row['rank'] ?? null,
-                    'qualifications' => $row['qualifications'] ?? null,
-                    'net_pay' => $row['net_pay'] ?? null,
-                    'state_id' => $this->findStateId($row['state'] ?? ''), 
-                    'password' => bcrypt('password'),
+                    'user_id'                  => $user->id,
+                    'employee_number'          => $row['employee_number'],
+                    'surname'                  => $row['surname'],
+                    'first_name'               => $row['first_name'],
+                    'middle_name'              => $row['middle_name'] ?? null,
+                    'gender'                   => $row['gender'] ?? null,
+                    'dob'                      => $dob,
+                    'marital_status'           => $row['marital_status'] ?? null,
+                    'religion'                 => $row['religion'] ?? null,
+                    'lga'                      => $row['lga'] ?? null,
+                    'contact_address'          => $row['contact_address'] ?? null,
+                    'phone'                    => $row['phone'] ?? null,
+                    'email'                    => $row['email'] ?? null,
+                    'first_appointment_date'   => $firstAppointmentDate,
+                    'confirmation_date'        => $confirmationDate,
+                    'present_appointment_date' => $presentAppointmentDate,
+                    'retirement_date'          => $retirementDate,
+                    'mda_id'                   => $this->findMdaId($row['mda'] ?? ''),
+                    'paygroup_id'              => isset($row['paygroup']) ? $this->findPaygroupId($row['paygroup']) : null,
+                    'level_id'                 => $this->findGradeLevelId($row['level'] ?? ''),
+                    'step_id'                  => $this->findStepId($row['step'] ?? ''),
+                    'rank'                     => $row['rank'] ?? null,
+                    'qualifications'           => $row['qualifications'] ?? null,
+                    'net_pay'                  => $row['net_pay'] ?? null,
+                    'state_id'                 => $this->findStateId($row['state'] ?? ''),
+                    'password'                 => bcrypt('password'),
                 ]);
             }
         });
+        
+        
+
     }
 
     /**
@@ -135,7 +142,7 @@ class EmployeeImport implements ToCollection, WithValidation, SkipsOnFailure, Wi
      */
     public function chunkSize(): int
     {
-        return 50; 
+        return 100; 
     }
 
     /**
