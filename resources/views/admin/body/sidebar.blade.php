@@ -28,20 +28,20 @@
     @endif
 
         <!-- Employee Management Group -->
-        {{-- @usercan('Employee Management', 'can_edit') --}}
+        @usercan('Employee Management', 'can_edit')
         <li>
             <a href="javascript:;" class="has-arrow">
                 <div class="parent-icon"><i class="bx bx-user-circle"></i></div>
                 <div class="menu-title">Employee Management</div>
             </a>
             <ul>
-                {{-- @usercan('Employee Management', 'can_create') --}}
+                @usercan('Employee Management', 'can_create')
                 <li> 
                     <a href="{{ route('employees.create') }}">
                         <i class='bx bx-radio-circle'></i>Create Employee
                     </a>
                 </li>
-                {{-- @endusercan --}}
+                @endusercan
 
                 <li>
                     <a href="{{ route('employees.index') }}">
@@ -65,11 +65,11 @@
                 </li>
             </ul>
         </li>
-        {{-- @endusercan --}}
+        @endusercan
 
 		<li class="menu-label">Organization Structure</li>
         <!-- HR Management -->
-        {{-- @usercan('Employee Management', 'can_create') --}}
+        @usercan('Employee Management', 'can_create')
         <li>
             <a href="javascript:;" class="has-arrow">
                 <div class="parent-icon"><i class="bx bx-comment-check"></i></div>
@@ -93,24 +93,24 @@
                 </li>
             </ul>
         </li>
-        {{-- @endusercan --}}
+        @endusercan
 
         
         <!-- Organization Structure -->
-        {{-- @usercan('Employee Management', 'can_create') --}}
+        @usercan('Employee Management', 'can_create')
         <li>
             <a href="javascript:;" class="has-arrow">
                 <div class="parent-icon"><i class="bx bx-building"></i></div>
                 <div class="menu-title">Organization</div>
             </a>
             <ul>
-                {{-- @usercan('MDA Management', 'can_edit') --}}
+                @usercan('MDA Management', 'can_edit')
                 <li>
                     <a href="{{ route('mdas.index') }}">
                         <i class='bx bx-radio-circle'></i>Manage MDAs
                     </a>
                 </li>
-                {{-- @endusercan --}}
+                @endusercan
                 <li>
                     <a href="{{ route('grade-levels.index') }}">
                         <i class='bx bx-radio-circle'></i>Grade Levels
@@ -121,19 +121,19 @@
                         <i class='bx bx-radio-circle'></i>Steps
                     </a>
                 </li>
-                {{-- @usercan('Manage Pay Group', 'can_edit') --}}
+                @usercan('Manage Pay Group', 'can_edit')
                 <li>
                     <a href="{{ route('pay-groups.index') }}">
                         <i class='bx bx-radio-circle'></i>Pay Groups
                     </a>
                 </li>
-                {{-- @endusercan --}}
+                @endusercan
             </ul>
         </li>
-        {{-- @endusercan --}}
+        @endusercan
 
         <!-- System Administration -->
-        {{-- @usercan('Employee Management', 'can_create') --}}
+        @usercan('Employee Management', 'can_create')
         <li>
             <a href="javascript:;" class="has-arrow">
                 <div class="parent-icon"><i class="bx bx-cog"></i></div>
@@ -167,11 +167,12 @@
                 </li>
             </ul>
         </li>
-        {{-- @endusercan --}}
+        @endusercan
 
- <li class="menu-label">Reports</li>
+
         <!-- Reports -->
-        {{-- @usercan('Employee Management', 'can_create') --}}
+        @usercan('Employee Management', 'can_create')
+         <li class="menu-label">Reports</li>
         <li>
             <a href="javascript:;" class="has-arrow">
                 <div class="parent-icon"><i class="bx bx-bar-chart-alt-2"></i></div>
@@ -213,10 +214,13 @@
                         <i class='bx bx-radio-circle'></i>Retiring Soon
                     </a>
                 </li>
+
             </ul>
         </li>
-        {{-- @endusercan --}}
+        @endusercan
     </ul>
+   
+   
     <!--end navigation-->
 </div>
 

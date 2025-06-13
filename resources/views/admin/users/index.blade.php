@@ -105,7 +105,7 @@
 
                                         <td>
                                             <a href="{{ route('users.show', $user->id) }}" class="btn btn-sm btn-info">
-                                                <i class="lni lni-eye" title="View User Details"></i>
+                                                <i class="fadeIn animated bx bx-list-ul" title="View User Details"></i>
                                             </a>
 
                                             @if(auth()->user()->isActive() && $user->id !== auth()->id())

@@ -23,7 +23,6 @@ use App\Http\Controllers\ServiceAccount\ServiceAccountController;
 use App\Http\Controllers\UserPermission\UserPermissionController;
 use App\Http\Controllers\Platformfeatures\PlatformFeatureController;
 
-
 Route::get('/', function () {
     return view('welcome');
 });
@@ -64,9 +63,6 @@ Route::get('/platform-features/{platform_feature}/edit', [PlatformFeatureControl
 Route::put('/platform-features/{platform_feature}', [PlatformFeatureController::class, 'update'])->name('platform-features.update');
 Route::patch('/platform-features/{platform_feature}', [PlatformFeatureController::class, 'update']);
 Route::delete('/platform-features/{platform_feature}', [PlatformFeatureController::class, 'destroy'])->name('platform-features.destroy');
-
-
-
 
 Route::prefix('users')->middleware(['auth'])->group(function () {
     Route::get('/', [UserController::class, 'index'])->name('users.index');

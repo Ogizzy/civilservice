@@ -26,7 +26,7 @@
     {{-- recaptcha Script --}}
     <script src="https://www.google.com/recaptcha/api.js"></script>
 
-    <title>Benue State Civil Service Admin App</title>
+    <title>Benue State Civil Service Commission</title>
 </head>
 
 <body class="">
@@ -68,14 +68,16 @@
 
 
                                             <div class="col-12">
-                                                <label for="inputEmailAddress" class="form-label">Email</label>
-                                                <input type="email" id="email" name="email"
-                                                    class="form-control @error('email') is-invalid @enderror"
-                                                    id="inputEmailAddress" placeholder="marcel@gmail.com">
-                                                @error('email')
+                                                <label for="inputEmailAddress" class="form-label">Email / Employee No</label>
+                                                <input type="text" id="login" name="login"
+                                                    class="form-control @error('login') is-invalid @enderror"
+                                                    id="login" placeholder="Use Your Email or Employee No">
+                                                @error('login')
                                                     <span class="text-danger">{{ $message }}</span>
                                                 @enderror
                                             </div>
+
+                                    
                                             <div class="col-12">
                                                 <label for="inputChoosePassword" class="form-label">Password</label>
                                                 <div class="input-group" id="show_hide_password">
@@ -89,6 +91,8 @@
                                                     @enderror
                                                 </div>
                                             </div>
+
+
                                             <div class="col-md-6">
                                                 <div class="form-check form-switch">
                                                     <input class="form-check-input" type="checkbox"

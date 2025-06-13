@@ -27,6 +27,7 @@ class User extends Authenticatable implements Auditable
         'password',
         'role_id',
         'status',
+        'employee_number',
     ];
 
     public function role()

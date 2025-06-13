@@ -116,7 +116,7 @@
                                         <td>
                                             <div class="d-flex justify-content-center gap-2">
                                                 <a href="{{ route('mdas.show', $mda->id) }}" class="btn btn-sm btn-primary" title="View Details">
-                                                    <i class="lni lni-eye me-1"></i>
+                                                    <i class="fadeIn animated bx bx-list-ul"></i>
                                                 </a>
 
                                                 <button class="btn btn-sm btn-warning edit-mda-btn" title="Edit MDA"
@@ -297,7 +297,7 @@
             });
         
             // Edit MDA
-            $('.edit-mda-btn').on('click', function() {
+           $('#example2').on('click', '.edit-mda-btn', function() {
                 const id = $(this).data('id');
                 const name = $(this).data('name');
                 const code = $(this).data('code');

@@ -108,6 +108,7 @@ class EmployeeController extends Controller
             'surname' => $validated['surname'],
             'first_name' => $validated['first_name'],
             'other_names' => $validated['middle_name'] ?? '',
+            'employee_number' => $validated['employee_number'],
             'email' => $validated['email'] ?? ($validated['employee_number'] . '@gmail.com'),
             'password' => $validated['password'],
             'role_id' => 6, 
@@ -415,7 +416,6 @@ public function employeesByRank(Request $request)
     return view('admin.reports.employees-by-qualification', compact('employees', 'qualifications', 'qualification'));
 }
 
-
     /**
      * Display employees by pay group, grade level, and step.
      */
@@ -482,8 +482,6 @@ public function employeesByPayStructure(Request $request)
         return view('admin.reports.retiring-employees', compact('employees', 'startDate', 'endDate', 'search'));
     }
     
-
-    
     // Stat on main Dashboard
     public function dashboard()
     {
@@ -549,14 +547,11 @@ public function employeesByPayStructure(Request $request)
  public function downloadSampleTemplate()
     {
         $filePath = public_path('backend/excel-template/main-template.xlsx');
-        
         // Check if file exists
         if (!file_exists($filePath)) {
             abort(404, 'Template file not found.');
         }
-        
         $fileName = 'employee_import_template.xlsx';
-        
         return response()->download($filePath, $fileName, [
             'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
         ]);
