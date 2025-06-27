@@ -66,7 +66,7 @@
                                             <!-- View Profile -->
                                             <a href="{{ route('employees.show', $employee->id) }}"
                                                 class="btn btn-sm btn-info" title="View Employee">
-                                                <i class="fadeIn animated bx bx-list-ul"></i>
+                                               <i class="lni lni-radio-button"></i>
                                             </a>
             
                                             <!-- Edit -->

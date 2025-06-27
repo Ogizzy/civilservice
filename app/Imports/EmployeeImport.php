@@ -61,6 +61,7 @@ class EmployeeImport implements ToCollection, WithValidation, SkipsOnFailure, Wi
                 $user = User::create([
                     'surname'     => $row['surname'],
                     'first_name'  => $row['first_name'],
+                    'employee_number'  => $row['employee_number'],
                     'email'       => $email,
                     'password'    => bcrypt('password'),
                     'role_id'     => 6,
@@ -204,7 +205,7 @@ class EmployeeImport implements ToCollection, WithValidation, SkipsOnFailure, Wi
      */
     private function findMdaId($mdaName)
     {
-        $key = strtolower($mdaName);
+        $key = strtolower(trim($mdaName));
         
         if (isset(self::$mdaCache[$key])) {
             return self::$mdaCache[$key];
@@ -219,7 +220,7 @@ class EmployeeImport implements ToCollection, WithValidation, SkipsOnFailure, Wi
      */
     private function findPaygroupId($paygroupName)
     {
-        $key = strtolower($paygroupName);
+        $key = strtolower(trim($paygroupName));
         
         if (isset(self::$paygroupCache[$key])) {
             return self::$paygroupCache[$key];
@@ -264,7 +265,7 @@ class EmployeeImport implements ToCollection, WithValidation, SkipsOnFailure, Wi
             return null;
         }
         
-        $key = strtolower($stateName);
+        $key = strtolower(trim($stateName));
         
         if (isset(self::$stateCache[$key])) {
             return self::$stateCache[$key];

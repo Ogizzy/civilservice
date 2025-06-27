@@ -53,7 +53,7 @@
                    <div>
                        <p class="mb-0 text-secondary">Retiring Soon</p>
                        <h4 class="my-1 text-success">{{ $retiring }}</h4>
-                       <p class="mb-0 font-13">(In 6 Months)</p>
+                       <p class="mb-0 font-13 text-success">(In 6 Months)</p>
                    </div>
                    <div class="widgets-icons-2 rounded-circle bg-gradient-ohhappiness text-white ms-auto"><i class="fadeIn animated bx bx-user-minus"></i>
                    </div>

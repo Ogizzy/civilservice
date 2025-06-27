@@ -15,7 +15,7 @@
     <ul class="metismenu" id="menu">
         <!-- Dashboard -->
         <li>
-    @if(auth()->user()->role->role === 'Employee')
+    {{-- @if(auth()->user()->role->role === 'Employee')
         <a href="{{ route('employee.dashboard') }}">
             <div class="parent-icon"><i class='bx bx-home-alt'></i></div>
             <div class="menu-title">Dashboard</div>
@@ -25,7 +25,20 @@
             <div class="parent-icon"><i class='bx bx-home-alt'></i></div>
             <div class="menu-title">Dashboard</div>
         </a>
-    @endif
+    @endif --}}
+
+    @if(auth()->check() && auth()->user()->role->role === 'Employee')
+    <a href="{{ route('employee.dashboard') }}">
+        <div class="parent-icon"><i class='bx bx-home-alt'></i></div>
+        <div class="menu-title">Dashboard</div>
+    </a>
+@elseif(auth()->check())
+    <a href="{{ route('dashboard') }}">
+        <div class="parent-icon"><i class='bx bx-home-alt'></i></div>
+        <div class="menu-title">Dashboard</div>
+    </a>
+@endif
+
 
         <!-- Employee Management Group -->
         @usercan('Employee Management', 'can_edit')
@@ -111,17 +124,24 @@
                     </a>
                 </li>
                 @endusercan
+                
+                @usercan('MDA Management', 'can_create')
                 <li>
                     <a href="{{ route('grade-levels.index') }}">
                         <i class='bx bx-radio-circle'></i>Grade Levels
                     </a>
                 </li>
+                @endusercan
+
+                @usercan('MDA Management', 'can_create')
                 <li>
                     <a href="{{ route('steps.index') }}">
                         <i class='bx bx-radio-circle'></i>Steps
                     </a>
                 </li>
-                @usercan('Manage Pay Group', 'can_edit')
+                @endusercan
+                
+                @usercan('Manage Pay Group', 'can_create')
                 <li>
                     <a href="{{ route('pay-groups.index') }}">
                         <i class='bx bx-radio-circle'></i>Pay Groups
@@ -168,6 +188,39 @@
             </ul>
         </li>
         @endusercan
+
+        <!-- Leave Management -->
+        {{-- @usercan('Employee Management', 'can_create') --}}
+        <li>
+    <a href="javascript:;" class="has-arrow">
+        <div class="parent-icon"><i class="lni lni-timer"></i></div>
+        <div class="menu-title">Manage Leaves</div>
+    </a>
+    <ul>
+        <li>
+            <a href="{{ route('leaves.index') }}">
+                <i class='bx bx-radio-circle'></i>View Leaves
+            </a>
+        </li>
+        <li>
+            <a href="{{ route('leaves.create') }}">
+                <i class='bx bx-radio-circle'></i>Apply for Leave
+            </a>
+        </li>
+        <li>
+            <a href="{{ route('dashboard.my_leave_balance') }}">
+                <i class='bx bx-radio-circle'></i>Leave Balance
+            </a>
+        </li>
+        <li>
+            <a href="{{ route('employee_leaves.history') }}">
+                <i class='bx bx-radio-circle'></i>Leave History
+            </a>
+        </li>
+    </ul>
+</li>
+
+        {{-- @endusercan --}}
 
 
         <!-- Reports -->

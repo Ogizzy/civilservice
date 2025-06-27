@@ -65,14 +65,25 @@ class User extends Authenticatable implements Auditable
         return $this->hasMany(QueriesMisconduct::class, 'user_id');
     }
 
-//     public function hasFeaturePermission($featureName)
-// {
-//     return $this->permissions()
-//         ->whereHas('platform_feature', function($query) use ($featureName) {
-//             $query->where('feature', $featureName);
-//         })
-//         ->exists();
-// }
+// Leave Approvals
+public function canApproveLeaves()
+{
+    return $this->role && in_array($this->role->role, ['BDIC Super Admin', 'Director', 'Commissioner', 'Head of Service']);
+}
+
+public function canManageOwnLeave($leave)
+{
+    return $this->employee && $this->employee->id == $leave->employee_id;
+}
+
+// For backward compatibility
+public function userRole()
+{
+    return $this->role;
+}
+// End Leave Approvals
+
+
 
 public function hasFeaturePermission($featureId, $permission = null)
 {

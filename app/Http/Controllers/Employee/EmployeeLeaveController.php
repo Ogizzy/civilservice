@@ -1,0 +1,431 @@
+<?php
+
+namespace App\Http\Controllers\Employee;
+
+use App\Models\Employee;
+use App\Models\LeaveType;
+use Illuminate\Http\Request;
+use App\Models\EmployeeLeave;
+use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\Controller;
+use App\Models\EmployeeLeaveBalance;
+use Illuminate\Support\Facades\Auth;
+use App\Notifications\LeaveStatusNotification;
+
+class EmployeeLeaveController extends Controller
+{
+    /**
+     * Display a listing of leave applications
+     */
+    public function index(Request $request)
+    {
+        $query = EmployeeLeave::with(['employee', 'leaveType', 'approvedBy', 'createdBy']);
+
+        // Filter by status
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+
+        // Filter by employee (for admin view)
+        if ($request->filled('employee_id')) {
+            $query->where('employee_id', $request->employee_id);
+        }
+
+        // Filter by leave type
+        if ($request->filled('leave_type_id')) {
+            $query->where('leave_type_id', $request->leave_type_id);
+        }
+
+        // Filter by date range
+        if ($request->filled('start_date') && $request->filled('end_date')) {
+            $query->whereBetween('start_date', [$request->start_date, $request->end_date]);
+        }
+
+        // If employee is viewing their own leaves
+        if (Auth::user()->employee) {
+            $query->where('employee_id', Auth::user()->employee->id);
+        }
+
+        $leaves = $query->orderBy('created_at', 'desc')->paginate(15);
+        $leaveTypes = LeaveType::where('is_active', true)->get();
+        $employees = Employee::select('id', 'employee_number', 'surname', 'first_name')->get();
+
+        return view('admin.leaves.index', compact('leaves', 'leaveTypes', 'employees'));
+    }
+
+    /**
+     * Show the form for creating a new leave application
+     */
+    public function create()
+    {
+        $leaveTypes = LeaveType::where('is_active', true)->get();
+        $employee = Auth::user()->employee;
+
+        if (!$employee) {
+            return redirect()->route('leaves.index')->with('error', 'Employee profile not found.');
+        }
+
+        // Get leave balances for current year
+        $currentYear = date('Y');
+        $leaveBalances = EmployeeLeaveBalance::where('employee_id', $employee->id)
+            ->where('year', $currentYear)->with('leaveType')->get()->keyBy('leave_type_id');
+
+        return view('admin.leaves.create', compact('leaveTypes', 'employee', 'leaveBalances'));
+    }
+
+    /**
+     * Store a newly created leave application
+     */
+    public function store(Request $request)
+    {
+        $request->validate([
+            'leave_type_id' => 'required|exists:leave_types,id',
+            'start_date' => 'required|date|after_or_equal:today',
+            'end_date' => 'required|date|after_or_equal:start_date',
+            'reason' => 'required|string|max:1000',
+            'contact_address' => 'nullable|string|max:255',
+            'contact_phone' => 'nullable|string|max:20',
+            'emergency_contact' => 'nullable|string|max:100',
+            'emergency_phone' => 'nullable|string|max:20',
+            'supporting_document' => 'nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png|max:5120', // 5MB max
+        ]);
+
+        $employee = Auth::user()->employee;
+        if (!$employee) {
+            return redirect()->back()->with('error', 'Employee profile not found.');
+        }
+
+        // Check if employee has sufficient leave balance
+        $totalDays = EmployeeLeave::calculateTotalDays($request->start_date, $request->end_date);
+        $currentYear = date('Y');
+
+        $leaveBalance = EmployeeLeaveBalance::where('employee_id', $employee->id)
+            ->where('leave_type_id', $request->leave_type_id)
+            ->where('year', $currentYear)
+            ->first();
+
+        if ($leaveBalance && $leaveBalance->remaining_days < $totalDays) {
+            return redirect()->back()->with('error', 'Insufficient leave balance. You have ' . $leaveBalance->remaining_days . ' days remaining.');
+        }
+
+        // Check for overlapping leave applications
+        $overlapping = EmployeeLeave::where('employee_id', $employee->id)
+            ->where('status', '!=', 'rejected')
+            ->where(function ($query) use ($request) {
+                $query->whereBetween('start_date', [$request->start_date, $request->end_date])
+                    ->orWhereBetween('end_date', [$request->start_date, $request->end_date])
+                    ->orWhere(function ($q) use ($request) {
+                        $q->where('start_date', '<=', $request->start_date)
+                            ->where('end_date', '>=', $request->end_date);
+                    });
+            })
+            ->exists();
+
+        if ($overlapping) {
+            return redirect()->back()->with('error', 'You have overlapping leave applications for the selected dates.');
+        }
+
+        DB::transaction(function () use ($request, $employee, $totalDays) {
+            $documentUrl = null;
+            $documentName = null;
+
+            // Handle file upload if provided
+            if ($request->hasFile('supporting_document')) {
+                $file = $request->file('supporting_document');
+                $filename = time() . '_' . $file->getClientOriginalName();
+                $path = $file->storeAs('leave-documents', $filename, 'public');
+                $documentUrl = 'storage/' . $path;
+                $documentName = $file->getClientOriginalName();
+            }
+
+            // Create leave application
+            EmployeeLeave::create([
+                'employee_id' => $employee->id,
+                'leave_type_id' => $request->leave_type_id,
+                'start_date' => $request->start_date,
+                'end_date' => $request->end_date,
+                'total_days' => $totalDays,
+                'reason' => $request->reason,
+                'contact_address' => $request->contact_address,
+                'contact_phone' => $request->contact_phone,
+                'emergency_contact' => $request->emergency_contact,
+                'emergency_phone' => $request->emergency_phone,
+                'supporting_document_url' => $documentUrl,
+                'supporting_document_name' => $documentName,
+                'created_by' => Auth::id(),
+            ]);
+        });
+
+         $notification = array(
+            'message' => 'Leave application submitted successfully.',
+            'alert-type' => 'success'
+        );
+
+        return redirect()->route('leaves.index')->with($notification);
+    }
+
+    /**
+     * Display the specified leave application
+     */
+    public function show(EmployeeLeave $leave)
+    {
+        $leave->load(['employee.mda', 'employee.paygroup', 'leaveType', 'approvedBy', 'createdBy']);
+
+        $employee = $leave->employee;
+
+        // Check if user can view this leave
+        if (Auth::user()->employee && Auth::user()->employee->id !== $leave->employee_id) {
+            abort(403, 'Unauthorized access to leave application.');
+        }
+
+        return view('admin.leaves.show', compact('leave', 'employee'));
+    }
+
+    /**
+     * Show the form for editing the specified leave application
+     */
+    public function edit(EmployeeLeave $leave)
+    {
+        // Only allow editing pending applications
+        if ($leave->status !== 'pending') {
+            return redirect()->route('leaves.show', $leave)->with('error', 'Cannot edit non-pending leave applications.');
+        }
+
+        // Check if user can edit this leave
+        if (Auth::user()->employee && Auth::user()->employee->id !== $leave->employee_id) {
+            abort(403, 'Unauthorized access to leave application.');
+        }
+
+        $leaveTypes = LeaveType::where('is_active', true)->get();
+        $employee = $leave->employee;
+
+        // Get leave balances for current year
+        $currentYear = date('Y');
+        $leaveBalances = EmployeeLeaveBalance::where('employee_id', $employee->id)
+            ->where('year', $currentYear)
+            ->with('leaveType')->get()
+            ->keyBy('leave_type_id');
+
+        return view('admin.leaves.edit', compact('leave', 'leaveTypes', 'employee', 'leaveBalances'));
+    }
+
+    /**
+     * Update the specified leave application
+     */
+    public function update(Request $request, EmployeeLeave $leave)
+    {
+        // Only allow updating pending applications
+        if ($leave->status !== 'pending') {
+            return redirect()->route('leaves.show', $leave)->with('error', 'Cannot update non-pending leave applications.');
+        }
+
+        $request->validate([
+            'leave_type_id' => 'required|exists:leave_types,id',
+            'start_date' => 'required|date|after_or_equal:today',
+            'end_date' => 'required|date|after_or_equal:start_date',
+            'reason' => 'required|string|max:1000',
+            'contact_address' => 'nullable|string|max:255',
+            'contact_phone' => 'nullable|string|max:20',
+            'emergency_contact' => 'nullable|string|max:100',
+            'emergency_phone' => 'nullable|string|max:20',
+            'supporting_document' => 'nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png|max:5120', // 5MB max
+        ]);
+
+        // Check if employee has sufficient leave balance
+        $totalDays = EmployeeLeave::calculateTotalDays($request->start_date, $request->end_date);
+        $currentYear = date('Y');
+
+        $leaveBalance = EmployeeLeaveBalance::where('employee_id', $leave->employee_id)
+            ->where('leave_type_id', $request->leave_type_id)
+            ->where('year', $currentYear)->first();
+
+        if ($leaveBalance && $leaveBalance->remaining_days < $totalDays) {
+            return redirect()->back()->with('error', 'Insufficient leave balance. You have ' . $leaveBalance->remaining_days . ' days remaining.');
+        }
+
+        // Check for overlapping leave applications (excluding current application)
+        $overlapping = EmployeeLeave::where('employee_id', $leave->employee_id)
+            ->where('id', '!=', $leave->id)
+            ->where('status', '!=', 'rejected')
+            ->where(function ($query) use ($request) {
+                $query->whereBetween('start_date', [$request->start_date, $request->end_date])
+                    ->orWhereBetween('end_date', [$request->start_date, $request->end_date])
+                    ->orWhere(function ($q) use ($request) {
+                        $q->where('start_date', '<=', $request->start_date)
+                            ->where('end_date', '>=', $request->end_date);
+                    });
+            })
+            ->exists();
+
+        if ($overlapping) {
+            return redirect()->back()->with('error', 'You have overlapping leave applications for the selected dates.');
+        }
+
+        $updateData = [
+            'leave_type_id' => $request->leave_type_id,
+            'start_date' => $request->start_date,
+            'end_date' => $request->end_date,
+            'total_days' => $totalDays,
+            'reason' => $request->reason,
+            'contact_address' => $request->contact_address,
+            'contact_phone' => $request->contact_phone,
+            'emergency_contact' => $request->emergency_contact,
+            'emergency_phone' => $request->emergency_phone,
+        ];
+
+        // Handle file upload if provided
+        if ($request->hasFile('supporting_document')) {
+            try {
+                // Delete old document if exists
+                if ($leave->supporting_document_url) {
+                    FileUploadService::deleteDocument($leave->supporting_document_url);
+                }
+
+                // Upload new document
+                $uploadResult = FileUploadService::uploadDocument(
+                    $request->file('supporting_document'),
+                    'leave-documents'
+                );
+                $updateData['supporting_document_url'] = $uploadResult['url'];
+                $updateData['supporting_document_name'] = $uploadResult['original_name'];
+            } catch (\Exception $e) {
+                return redirect()->back()->with('error', 'Document upload failed: ' . $e->getMessage());
+            }
+        }
+
+        $leave->update($updateData);
+
+        $notification = array(
+            'message' => 'Leave application updated successfully.',
+            'alert-type' => 'success'
+        );
+
+        return redirect()->route('leaves.show', $leave)->with($notification);
+    }
+
+    /**
+     * Cancel the specified leave application
+     */
+    public function cancel(EmployeeLeave $leave)
+    {
+        if ($leave->status !== 'pending') {
+            return redirect()->route('leaves.show', $leave)->with('error', 'Cannot cancel non-pending leave applications.');
+        }
+
+        $leave->update(['status' => 'cancelled']);
+
+         $notification = array(
+            'message' => 'Leave application cancelled successfully.',
+            'alert-type' => 'success'
+        );
+
+        return redirect()->route('leaves.index')->with($notification);
+    }
+
+    /**
+     * Approve leave application (Admin function)
+     */
+    public function approve(Request $request, EmployeeLeave $leave)
+    {
+        $request->validate([
+            'remarks' => 'nullable|string|max:500',
+        ]);
+
+        if ($leave->status !== 'pending') {
+            return redirect()->back()->with('error', 'Leave application is not pending.');
+        }
+
+        DB::transaction(function () use ($request, $leave) {
+            // Update leave status
+            $leave->update([
+                'status' => 'approved',
+                'remarks' => $request->remarks,
+                'approved_by' => Auth::id(),
+                'approved_at' => now(),
+            ]);
+
+            // Update leave balance
+            $currentYear = date('Y');
+            $leaveBalance = EmployeeLeaveBalance::where('employee_id', $leave->employee_id)
+                ->where('leave_type_id', $leave->leave_type_id)
+                ->where('year', $currentYear)
+                ->first();
+
+            if ($leaveBalance) {
+                $leaveBalance->increment('used_days', $leave->total_days);
+            }
+        });
+
+         $notification = array(
+            'message' => 'Leave application approved successfully.',
+            'alert-type' => 'success'
+        );
+
+         $leave->creator->notify(new LeaveStatusNotification($leave));
+
+        return redirect()->back()->with($notification);
+    }
+
+    /**
+     * Reject leave application (Admin function)
+     */
+    public function reject(Request $request, EmployeeLeave $leave)
+    {
+        $request->validate([
+            'remarks' => 'required|string|max:500',
+        ]);
+
+        if ($leave->status !== 'pending') {
+            return redirect()->back()->with('error', 'Leave application is not pending.');
+        }
+
+        $leave->update([
+            'status' => 'rejected',
+            'remarks' => $request->remarks,
+            'approved_by' => Auth::id(),
+            'approved_at' => now(),
+        ]);
+
+         $notification = array(
+            'message' => 'Leave application rejected.',
+            'alert-type' => 'success'
+        );
+
+        return redirect()->back()->with($notification);
+    }
+
+    /**
+     * Get leave balance for AJAX request
+     */
+    public function getLeaveBalance(Request $request)
+    {
+        $employee = Auth::user()->employee;
+        if (!$employee) {
+            return response()->json(['error' => 'Employee not found'], 404);
+        }
+
+        $currentYear = date('Y');
+        $leaveBalance = EmployeeLeaveBalance::where('employee_id', $employee->id)
+            ->where('leave_type_id', $request->leave_type_id)
+            ->where('year', $currentYear)->first();
+
+        return response()->json([
+            'entitled_days' => $leaveBalance ? $leaveBalance->entitled_days : 0,
+            'used_days' => $leaveBalance ? $leaveBalance->used_days : 0,
+            'remaining_days' => $leaveBalance ? $leaveBalance->remaining_days : 0,
+        ]);
+    }
+
+    public function history()
+{
+    $leaves = \App\Models\EmployeeLeave::join('employees', 'employee_leaves.employee_id', '=', 'employees.id')
+        ->where('employees.user_id', auth()->user()->id)
+        ->with('leaveType')
+        ->select('employee_leaves.*') // Select only leave columns
+        ->orderBy('applied_date', 'desc')
+        ->get();
+    
+    return view('admin.leaves.history', compact('leaves'));
+}
+
+}

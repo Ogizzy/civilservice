@@ -15,6 +15,7 @@ use App\Http\Controllers\Paygroup\PayGroupController;
 use App\Http\Controllers\UserRole\UserRoleController;
 use App\Http\Controllers\Gradelevel\GradeLevelController;
 use SebastianBergmann\CodeCoverage\Report\Html\Dashboard;
+use App\Http\Controllers\Employee\EmployeeLeaveController;
 use App\Http\Controllers\Transfer\TransferHistoryController;
 use App\Http\Controllers\Commendation\CommendationController;
 use App\Http\Controllers\Queries\QueriesMisconductController;
@@ -285,4 +286,27 @@ Route::post('/users/{user}/status', [UserController::class, 'changeStatus'])
     //     // Other routes...
     // });
    
+    // Excel Template Download Route
 Route::get('/download-sample-template', [EmployeeController::class, 'downloadSampleTemplate'])->name('download.sample.template');
+
+// Leave Management Routes
+Route::middleware(['auth'])->group(function () {
+    Route::get('/leaves', [EmployeeLeaveController::class, 'index'])->name('leaves.index');
+    Route::get('/leaves/create', [EmployeeLeaveController::class, 'create'])->name('leaves.create');
+    Route::post('/leaves', [EmployeeLeaveController::class, 'store'])->name('leaves.store');
+    Route::get('/leaves/{leave}', [EmployeeLeaveController::class, 'show'])->name('leaves.show');
+    Route::get('/leaves/{leave}/edit', [EmployeeLeaveController::class, 'edit'])->name('leaves.edit');
+    Route::put('/leaves/{leave}', [EmployeeLeaveController::class, 'update'])->name('leaves.update');
+    Route::post('/leaves/{leave}/cancel', [EmployeeLeaveController::class, 'cancel'])->name('leaves.cancel');
+    Route::post('/leaves/{leave}/approve', [EmployeeLeaveController::class, 'approve'])->name('leaves.approve');
+    Route::post('/leaves/{leave}/reject', [EmployeeLeaveController::class, 'reject'])->name('leaves.reject');
+
+       // Add this route with your other leave routes
+Route::get('/leaves/balance', [EmployeeLeaveController::class, 'getLeaveBalance'])->name('leaves.balance');
+
+Route::get('/dashboard/my-leave-balance', [EmployeeLeaveController::class, 'getLeaveBalance'])->name('dashboard.my_leave_balance');
+Route::get('/leaves/history', [EmployeeLeaveController::class, 'history'])->name('leaves.history');
+Route::get('/employee-leaves/history', [EmployeeLeaveController::class, 'history'])->name('employee_leaves.history');
+
+});
+

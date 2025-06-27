@@ -101,7 +101,7 @@
                                                         for="flexSwitchCheckChecked">Remember Me</label>
                                                 </div>
                                             </div>
-                                            <div class="col-md-6 text-end"> <a href="#">Forgot Password ?</a>
+                                            <div class="col-md-6 text-end"> <a href="{{ route('password.request') }}">Forgot Password ?</a>
                                             </div>
                                             
                                              {{-- {!! NoCaptcha::display() !!}  --}}
