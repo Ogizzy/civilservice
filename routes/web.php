@@ -13,6 +13,7 @@ use App\Http\Controllers\Document\DocumentController;
 use App\Http\Controllers\Employee\EmployeeController;
 use App\Http\Controllers\Paygroup\PayGroupController;
 use App\Http\Controllers\UserRole\UserRoleController;
+use App\Http\Controllers\Employee\LeaveTypeController;
 use App\Http\Controllers\Gradelevel\GradeLevelController;
 use SebastianBergmann\CodeCoverage\Report\Html\Dashboard;
 use App\Http\Controllers\Employee\EmployeeLeaveController;
@@ -307,6 +308,25 @@ Route::get('/leaves/balance', [EmployeeLeaveController::class, 'getLeaveBalance'
 Route::get('/dashboard/my-leave-balance', [EmployeeLeaveController::class, 'getLeaveBalance'])->name('dashboard.my_leave_balance');
 Route::get('/leaves/history', [EmployeeLeaveController::class, 'history'])->name('leaves.history');
 Route::get('/employee-leaves/history', [EmployeeLeaveController::class, 'history'])->name('employee_leaves.history');
+// Download routes file
+Route::get('/leaves/{id}/document', [EmployeeLeaveController::class, 'viewDocument'])->name('leaves.document.view')
+     ->middleware('auth');
+
+     // Leave Type Controller
+Route::prefix('leave-types')->group(function () {
+    Route::get('/', [LeaveTypeController::class, 'index'])->name('leave-types.index'); // List all
+    Route::get('/create', [LeaveTypeController::class, 'create'])->name('leave-types.create'); // Show create form
+    Route::post('/', [LeaveTypeController::class, 'store'])->name('leave-types.store'); // Handle form submit
+
+    Route::get('/{leaveType}/edit', [LeaveTypeController::class, 'edit'])->name('leave-types.edit'); // Show edit form
+    Route::put('/{leaveType}', [LeaveTypeController::class, 'update'])->name('leave-types.update'); // Handle update
+
+    Route::patch('/{leaveType}/toggle-status', [LeaveTypeController::class, 'toggleStatus'])->name('leave-types.toggle-status'); // Toggle active status
+
+    Route::get('/{leaveType}', [LeaveTypeController::class, 'show'])->name('leave-types.show'); // Optional: View single record
+    Route::delete('/{leaveType}', [LeaveTypeController::class, 'destroy'])->name('leave-types.destroy'); // Optional: Delete
+});
+
 
 });
 

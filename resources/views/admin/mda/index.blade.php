@@ -190,7 +190,7 @@
                         <label class="form-label fw-medium">MDA Code</label>
                         <div class="input-group">
                             <span class="input-group-text bg-light border-0">
-                                <i class="fas fa-hashtag text-primary"></i>
+                                <i class="fadeIn animated bx bx-hash text-primary"></i>
                             </span>
                             <input type="text" name="mda_code" class="form-control border-0 bg-light" 
                                 placeholder="e.g., MOH" required>
@@ -227,7 +227,7 @@
                     <label class="form-label fw-medium">MDA Name</label>
                     <div class="input-group">
                         <span class="input-group-text bg-light border-0">
-                            <i class="fas fa-building text-primary"></i>
+                            <i class="fadeIn animated bx bx-home text-primary"></i>
                         </span>
                         <input type="text" name="mda" class="form-control border-0 bg-light" id="editMdaName" required>
                     </div>

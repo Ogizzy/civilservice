@@ -122,4 +122,9 @@ public function lga()
     return $this->belongsTo(LGA::class);
 }
 
+public function leaves()
+{
+    return $this->hasMany(\App\Models\EmployeeLeave::class);
+}
+
 }

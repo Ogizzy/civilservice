@@ -2,95 +2,182 @@
 @extends('admin.admin_dashboard')
 @section('admin')
 
-{{-- resources/views/leaves/create.blade.php --}}
-
 <div class="container-fluid">
     <div class="row">
-        <div class="col-12">
-            <div class="card">
-                <div class="card-header">
-                    <h3 class="card-title">Apply for Leave</h3>
-                    <div class="card-tools">
-                        <a href="{{ route('leaves.index') }}" class="btn btn-secondary">
-                            <i class="fas fa-arrow-left"></i> Back to List
+        <div class="col-lg-12 mx-auto">
+            <div class="card card-primary card-outline">
+                <div class="card-header border-0">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h4 class="card-title">
+                            <i class="bx bx-plus me-2"></i> Apply for Leave
+                        </h4>
+                        <a href="{{ route('leaves.index') }}" class="btn btn-sm btn-secondary">
+                            <i class="fadeIn animated bx bx-chevrons-left"></i> Back to List
                         </a>
                     </div>
                 </div>
+                
 
                 <form method="POST" action="{{ route('leaves.store') }}" enctype="multipart/form-data">
                     @csrf
+
                     <div class="card-body">
+                        <!-- Employee Information -->
+                        <div class="card card-info mb-4">
+                            <div class="card-header">
+                                <h4 class="card-title">
+                                    <i class="fadeIn animated bx bx-user-check "></i> Employee Information
+                                </h4>
+                            </div>
+                            
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <div class="info-box bg-light">
+                                            <span class="info-box-icon bg-info"><i class="fadeIn animated bx bx-bookmark-minus"></i></span>
+                                            <div class="info-box-content">
+                                                <span class="info-box-text">Employee Number</span>
+                                                <span class="info-box-number">{{ $employee->employee_number }}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="info-box bg-light">
+                                            <span class="info-box-icon bg-success"><i class="lni lni-user"></i></span>
+                                            <div class="info-box-content">
+                                                <span class="info-box-text">Full Name</span>
+                                                <span class="info-box-number">{{ $employee->surname }}, {{ $employee->first_name }} {{ $employee->middle_name }}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="info-box bg-light">
+                                            <span class="info-box-icon bg-primary"><i class="fadeIn animated bx bx-home-alt"></i></span>
+                                            <div class="info-box-content">
+                                                <span class="info-box-text">MDA</span>
+                                                <span class="info-box-number">{{ $employee->mda->mda ?? 'N/A' }}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                         <div class="row">
-                            {{-- Employee Information --}}
+                            <!-- Leave Type Selection -->
                             <div class="col-md-6">
-                                <div class="card">
+                                <div class="card card-primary">
                                     <div class="card-header">
-                                        <h4>Employee Information</h4>
+                                        <h4 class="card-title">
+                                            <i class="fadeIn animated bx bx-calendar-check mr-2"></i>Leave Details
+                                        </h4>
                                     </div>
                                     <div class="card-body">
                                         <div class="form-group">
-                                            <label>Employee Number</label>
-                                            <input type="text" value="{{ $employee->employee_number }}" class="form-control" readonly disabled>
+                                            <label for="leave_type_id">Leave Type <span class="text-danger">*</span></label>
+                                            <select name="leave_type_id" id="leave_type_id" class="form-select @error('leave_type_id') is-invalid @enderror" required>
+                                                <option value="">Select Leave Type</option>
+                                                @foreach($leaveTypes as $type)
+                                                    <option value="{{ $type->id }}" {{ old('leave_type_id') == $type->id ? 'selected' : '' }}>
+                                                        {{ $type->name }} ({{ $type->max_days_per_year }} days/year)
+                                                    </option>
+                                                @endforeach
+                                            </select>
+                                            @error('leave_type_id')
+                                                <div class="invalid-feedback">{{ $message }}</div>
+                                            @enderror
                                         </div>
+
                                         <div class="form-group">
-                                            <label>Full Name</label>
-                                            <input type="text" value="{{ $employee->surname }}, {{ $employee->first_name }} {{ $employee->middle_name }}" class="form-control" readonly disabled>
+                                            <label for="start_date">Start Date <span class="text-danger">*</span></label>
+                                            <input type="date" name="start_date" id="start_date" class="form-control @error('start_date') is-invalid @enderror" 
+                                                   value="{{ old('start_date') }}" min="{{ date('Y-m-d') }}" required>
+                                            @error('start_date')
+                                                <div class="invalid-feedback">{{ $message }}</div>
+                                            @enderror
                                         </div>
+
                                         <div class="form-group">
-                                            <label>MDA</label>
-                                            <input type="text" value="{{ $employee->mda->mda ?? 'N/A' }}" class="form-control" readonly disabled>
+                                            <label for="end_date">End Date <span class="text-danger">*</span></label>
+                                            <input type="date" name="end_date" id="end_date" class="form-control @error('end_date') is-invalid @enderror" 
+                                                   value="{{ old('end_date') }}" min="{{ date('Y-m-d') }}" required>
+                                            @error('end_date')
+                                                <div class="invalid-feedback">{{ $message }}</div>
+                                            @enderror
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label>Total Days</label>
+                                            <input type="text" id="total_days" name="total_days" class="form-control" readonly>
+                                            <small class="form-text text-muted" id="days_breakdown"></small>
+                                            <div id="balance_validation" style="display: none;" class="mt-2">
+                                                <div class="alert alert-warning" id="balance_warning" style="display: none;">
+                                                    <i class="fas fa-exclamation-triangle"></i>
+                                                    <span id="warning_message"></span>
+                                                </div>
+                                                <div class="alert alert-danger" id="balance_error" style="display: none;">
+                                                    <i class="fas fa-times-circle"></i>
+                                                    <span id="error_message"></span>
+                                                </div>
+                                                <div class="alert alert-success" id="balance_success" style="display: none;">
+                                                    <i class="fas fa-check-circle"></i>
+                                                    <span id="success_message"></span>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
 
-                            {{-- Leave Balance Information --}}
+                            <!-- Leave Balance Information -->
                             <div class="col-md-6">
-                                <div class="card">
+                                <div class="card card-primary">
                                     <div class="card-header">
-                                        <h4>Leave Balance ({{ date('Y') }})</h4>
+                                        <h4 class="card-title">
+                                            <i class="fadeIn animated bx bx-bar-chart-square"></i>Leave Balance ({{ date('Y') }})
+                                        </h4>
                                     </div>
                                     <div class="card-body">
                                         <div id="leave-balance-info">
-                                            <p class="text-muted">Select a leave type to view balance</p>
+                                            <div class="no-selection text-center py-3">
+                                                <i class="fas fa-info-circle fa-2x text-muted mb-2"></i>
+                                                <p class="text-muted">Select a leave type to view balance</p>
+                                            </div>
                                         </div>
                                         <div id="balance-details" style="display: none;">
-                                            <div class="row">
-                                                <div class="col-6">
-                                                    <div class="info-box bg-info">
-                                                        <span class="info-box-icon"><i class="fas fa-calendar-alt"></i></span>
-                                                        <div class="info-box-content">
-                                                            <span class="info-box-text">Allocated</span>
-                                                            <span class="info-box-number" id="allocated-days">0</span>
-                                                        </div>
-                                                    </div>
+                                            <div class="progress-group">
+                                                <div class="progress-label">
+                                                    <span>Available Days</span>
+                                                    <span class="float-right" id="available-days-display">0</span>
                                                 </div>
-                                                <div class="col-6">
-                                                    <div class="info-box bg-success">
-                                                        <span class="info-box-icon"><i class="fas fa-check-circle"></i></span>
-                                                        <div class="info-box-content">
-                                                            <span class="info-box-text">Available</span>
-                                                            <span class="info-box-number" id="available-days">0</span>
-                                                        </div>
-                                                    </div>
+                                                <div class="progress progress-sm">
+                                                    <div class="progress-bar bg-success" id="available-progress" style="width: 0%"></div>
                                                 </div>
                                             </div>
-                                            <div class="row mt-2">
-                                                <div class="col-6">
-                                                    <div class="info-box bg-warning">
-                                                        <span class="info-box-icon"><i class="fas fa-clock"></i></span>
-                                                        <div class="info-box-content">
-                                                            <span class="info-box-text">Used</span>
-                                                            <span class="info-box-number" id="used-days">0</span>
+                                            <div class="balance-stats mt-3">
+                                                <div class="row">
+                                                    <div class="col-6">
+                                                        <div class="stat-item">
+                                                            <span class="stat-label">Allocated:</span>
+                                                            <span class="stat-value" id="allocated-days">0</span>
                                                         </div>
                                                     </div>
-                                                </div>
-                                                <div class="col-6">
-                                                    <div class="info-box bg-secondary">
-                                                        <span class="info-box-icon"><i class="fas fa-hourglass-half"></i></span>
-                                                        <div class="info-box-content">
-                                                            <span class="info-box-text">Pending</span>
-                                                            <span class="info-box-number" id="pending-days">0</span>
+                                                    <div class="col-6">
+                                                        <div class="stat-item">
+                                                            <span class="stat-label">Used:</span>
+                                                            <span class="stat-value" id="used-days">0</span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-6">
+                                                        <div class="stat-item">
+                                                            <span class="stat-label">Pending:</span>
+                                                            <span class="stat-value" id="pending-days">0</span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-6">
+                                                        <div class="stat-item">
+                                                            <span class="stat-label">Remaining:</span>
+                                                            <span class="stat-value" id="remaining-days">0</span>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -101,150 +188,105 @@
                             </div>
                         </div>
 
-                        <hr>
-
-                        {{-- Leave Application Form --}}
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="leave_type_id">Leave Type <span class="text-danger">*</span></label>
-                                    <select name="leave_type_id" id="leave_type_id" class="form-select @error('leave_type_id') is-invalid @enderror" required>
-                                        <option value="">Select Leave Type</option>
-                                        @foreach($leaveTypes as $type)
-                                            <option value="{{ $type->id }}" {{ old('leave_type_id') == $type->id ? 'selected' : '' }}>
-                                                {{ $type->name }} ({{ $type->max_days_per_year }} days/year)
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                    @error('leave_type_id')
-                                        <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
-                                </div>
-
-                                <div class="form-group">
-                                    <label for="start_date">Start Date <span class="text-danger">*</span></label>
-                                    <input type="date" name="start_date" id="start_date" class="form-control @error('start_date') is-invalid @enderror" 
-                                           value="{{ old('start_date') }}" min="{{ date('Y-m-d') }}" required>
-                                    @error('start_date')
-                                        <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
-                                </div>
-
-                                <div class="form-group">
-                                    <label for="end_date">End Date <span class="text-danger">*</span></label>
-                                    <input type="date" name="end_date" id="end_date" class="form-control @error('end_date') is-invalid @enderror" 
-                                           value="{{ old('end_date') }}" min="{{ date('Y-m-d') }}" required>
-                                    @error('end_date')
-                                        <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
-                                </div>
-
-                                <div class="form-group">
-                                    <label>Total Days</label>
-                                    <input type="text" id="total_days" name="total_days" class="form-control" readonly>
-                                    <small class="form-text text-muted" id="days_breakdown"></small>
-                                    <div id="balance_validation" style="display: none;" class="mt-2">
-                                        <div class="alert alert-warning" id="balance_warning" style="display: none;">
-                                            <i class="fas fa-exclamation-triangle"></i>
-                                            <span id="warning_message"></span>
-                                        </div>
-                                        <div class="alert alert-danger" id="balance_error" style="display: none;">
-                                            <i class="fas fa-times-circle"></i>
-                                            <span id="error_message"></span>
-                                        </div>
-                                        <div class="alert alert-success" id="balance_success" style="display: none;">
-                                            <i class="fas fa-check-circle"></i>
-                                            <span id="success_message"></span>
-                                        </div>
-                                    </div>
-                                </div>
+                        <!-- Leave Details Section -->
+                        <div class="card card-primary mt-4">
+                            <div class="card-header">
+                                <h4 class="card-title">
+                                    <i class="fadeIn animated bx bx-info-circle mr-2"></i> Additional Information
+                                </h4>
                             </div>
-
-                            <div class="col-md-6">
+                            <div class="card-body">
                                 <div class="form-group">
                                     <label for="reason">Reason for Leave <span class="text-danger">*</span></label>
-                                    <textarea name="reason" id="reason" rows="4" class="form-control @error('reason') is-invalid @enderror" 
-                                              placeholder="Enter reason for leave" required>{{ old('reason') }}</textarea>
+                                    <textarea name="reason" id="reason" rows="3" class="form-control @error('reason') is-invalid @enderror" 
+                                              placeholder="Please provide a detailed reason for your leave application" required>{{ old('reason') }}</textarea>
                                     @error('reason')
                                         <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
                                 </div>
-
-                                <div class="form-group">
-                                    <label for="contact_address">Contact Address (While on Leave)</label>
-                                    <textarea name="contact_address" id="contact_address" rows="2" class="form-control @error('contact_address') is-invalid @enderror" 
-                                              placeholder="Enter your contact address while on leave">{{ old('contact_address') }}</textarea>
-                                    @error('contact_address')
-                                        <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
+                                
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="contact_address">Contact Address (While on Leave)</label>
+                                            <textarea name="contact_address" id="contact_address" rows="2" class="form-control @error('contact_address') is-invalid @enderror" 
+                                                      placeholder="Where can you be reached during your leave?">{{ old('contact_address') }}</textarea>
+                                            @error('contact_address')
+                                                <div class="invalid-feedback">{{ $message }}</div>
+                                            @enderror
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="contact_phone">Contact Phone (While on Leave)</label>
+                                            <input type="tel" name="contact_phone" id="contact_phone" class="form-control @error('contact_phone') is-invalid @enderror" 
+                                                   value="{{ old('contact_phone') }}" placeholder="Phone number during leave">
+                                            @error('contact_phone')
+                                                <div class="invalid-feedback">{{ $message }}</div>
+                                            @enderror
+                                        </div>
+                                    </div>
                                 </div>
-
-                                <div class="form-group">
-                                    <label for="contact_phone">Contact Phone (While on Leave)</label>
-                                    <input type="tel" name="contact_phone" id="contact_phone" class="form-control @error('contact_phone') is-invalid @enderror" 
-                                           value="{{ old('contact_phone') }}" placeholder="Enter your contact phone number">
-                                    @error('contact_phone')
-                                        <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
+                                
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="emergency_contact">Emergency Contact Name</label>
+                                            <input type="text" name="emergency_contact" id="emergency_contact" class="form-control @error('emergency_contact') is-invalid @enderror" 
+                                                   value="{{ old('emergency_contact') }}" placeholder="Person to contact in case of emergency">
+                                            @error('emergency_contact')
+                                                <div class="invalid-feedback">{{ $message }}</div>
+                                            @enderror
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="emergency_phone">Emergency Contact Phone</label>
+                                            <input type="tel" name="emergency_phone" id="emergency_phone" class="form-control @error('emergency_phone') is-invalid @enderror" 
+                                                   value="{{ old('emergency_phone') }}" placeholder="Emergency contact phone number">
+                                            @error('emergency_phone')
+                                                <div class="invalid-feedback">{{ $message }}</div>
+                                            @enderror
+                                        </div>
+                                    </div>
                                 </div>
-
                             </div>
                         </div>
-                        
-                        <hr>
 
-                        {{-- Emergency Contact Information --}}
-                        <div class="row">
-                            <div class="col-md-6">
-                                <h5>Emergency Contact Information</h5>
-                                <div class="form-group">
-                                    <label for="emergency_contact">Emergency Contact Name</label>
-                                    <input type="text" name="emergency_contact" id="emergency_contact" class="form-control @error('emergency_contact') is-invalid @enderror" 
-                                           value="{{ old('emergency_contact') }}" placeholder="Enter emergency contact name">
-                                    @error('emergency_contact')
-                                        <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
-                                </div>
-
-                                <div class="form-group">
-                                    <label for="emergency_phone">Emergency Contact Phone</label>
-                                    <input type="tel" name="emergency_phone" id="emergency_phone" class="form-control @error('emergency_phone') is-invalid @enderror" 
-                                           value="{{ old('emergency_phone') }}" placeholder="Enter emergency contact phone number">
-                                    @error('emergency_phone')
-                                        <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
-                                </div>
+                        <!-- Supporting Documents -->
+                        <div class="card card-primary mt-4">
+                            <div class="card-header">
+                                <h4 class="card-title">
+                                    <i class="fadeIn animated bx bx-paperclip mr-2"></i> Supporting Documents
+                                </h4>
                             </div>
-
-                            <div class="col-md-6">
-                                <h5>Supporting Document</h5>
+                            <div class="card-body">
                                 <div class="form-group">
-                                    <label for="supporting_document">Supporting Document (Optional)</label>
-                                    <input type="file" name="supporting_document" id="supporting_document" 
-                                           class="form-control-file @error('supporting_document') is-invalid @enderror"
-                                           accept=".pdf,.doc,.docx,.jpg,.jpeg,.png">
+                                    <label for="supporting_document">Upload Supporting Document (Optional)</label>
+                                    <div class="custom-file">
+                                        <input type="file" name="supporting_document" id="supporting_document" 
+                                               class="custom-file-input @error('supporting_document') is-invalid @enderror"
+                                               accept=".pdf,.doc,.docx,.jpg,.jpeg,.png">
+                                        <label class="custom-file-label" for="supporting_document">Choose file</label>
+                                        @error('supporting_document')
+                                            <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
+                                    </div>
                                     <small class="form-text text-muted">
-                                        Accepted formats: PDF, DOC, DOCX, JPG, JPEG, PNG. Maximum size: 5MB
+                                        Maximum file size: 5MB. Accepted formats: PDF, DOC, DOCX, JPG, JPEG, PNG
                                     </small>
-                                    @error('supporting_document')
-                                        <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <div class="card-footer">
-                        <div class="row">
-                            <div class="col-md-12">
-                                <button type="submit" class="btn btn-primary">
-                                    <i class="fas fa-paper-plane"></i> Submit Leave Application
-                                </button>
-                                <a href="{{ route('leaves.index') }}" class="btn btn-secondary">
-                                    <i class="fas fa-times"></i> Cancel
-                                </a>
-                            </div>
-                        </div>
+                    <div class="card-footer text-right">
+                        <button type="submit" class="btn btn-primary">
+                           <i class="fadeIn animated bx bx-paper-plane"></i> Submit Application
+                        </button>
+                        <a href="{{ route('leaves.index') }}" class="btn btn-secondary ml-2">
+                            <i class="fadeIn animated bx bx-x-circle"></i> Cancel
+                        </a>
                     </div>
                 </form>
             </div>
@@ -252,7 +294,135 @@
     </div>
 </div>
 
-{{-- JavaScript for Auto Day Calculation and Leave Balance Checking --}}
+<style>
+    /* Card styling */
+    .card {
+        box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+        border: none;
+    }
+    
+    .card-header {
+        background-color: #f8f9fa;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.125);
+    }
+    
+    .card-title {
+        font-weight: 600;
+        color: #495057;
+    }
+    
+    /* Info box styling */
+    .info-box {
+        border-radius: 0.25rem;
+        padding: 0.5rem;
+        margin-bottom: 1rem;
+    }
+    
+    .info-box-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+    }
+    
+    .info-box-content {
+        padding-left: 0.5rem;
+    }
+    
+    .info-box-text {
+        font-size: 0.875rem;
+        color: #6c757d;
+    }
+    
+    .info-box-number {
+        font-weight: 600;
+        font-size: 1.1rem;
+    }
+    
+    /* Leave balance styling */
+    .no-selection {
+        padding: 1rem;
+        text-align: center;
+    }
+    
+    .no-selection i {
+        font-size: 1.5rem;
+        color: #adb5bd;
+        margin-bottom: 0.5rem;
+    }
+    
+    .progress-group {
+        margin-bottom: 1rem;
+    }
+    
+    .progress-label {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 0.25rem;
+    }
+    
+    .balance-stats {
+        background-color: #f8f9fa;
+        padding: 1rem;
+        border-radius: 0.25rem;
+    }
+    
+    .stat-item {
+        margin-bottom: 0.5rem;
+    }
+    
+    .stat-label {
+        font-weight: 600;
+        color: #495057;
+    }
+    
+    .stat-value {
+        float: right;
+        font-weight: 600;
+    }
+    
+    /* Form styling */
+    .form-control {
+        border-radius: 0.25rem;
+    }
+    
+    .custom-file-label::after {
+        content: "Browse";
+    }
+    
+    /* Alert styling */
+    .alert {
+        border-radius: 0.25rem;
+        padding: 0.75rem 1.25rem;
+    }
+    
+    /* Button styling */
+    .btn {
+        border-radius: 0.25rem;
+        font-weight: 500;
+    }
+    
+    .btn-primary {
+        background-color: #3f80ea;
+        border-color: #3f80ea;
+    }
+    
+    .btn-secondary {
+        background-color: #6c757d;
+        border-color: #6c757d;
+    }
+    
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+        .info-box {
+            margin-bottom: 0.5rem;
+        }
+    }
+</style>
+
+<!-- Original JavaScript code remains unchanged -->
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const startDateInput = document.getElementById('start_date');
@@ -262,10 +432,10 @@ document.addEventListener('DOMContentLoaded', function() {
     const leaveTypeSelect = document.getElementById('leave_type_id');
     const submitButton = document.querySelector('button[type="submit"]');
 
-    // Leave balance data (this would normally come from your backend)
+    // Leave balance data this is normally coming from backend)
     const leaveBalances = @json($leaveBalances ?? []);
     
-    // Example leave balance structure - replace with actual data from your controller
+    // Example leave balance structure - actual data from controller
     // const leaveBalances = {
     //     '1': { // leave_type_id
     //         allocated: 21,
@@ -281,7 +451,6 @@ document.addEventListener('DOMContentLoaded', function() {
     //     }
     // };
 
-    
     // Function to display leave balance
     function displayLeaveBalance(leaveTypeId) {
         const balanceInfo = document.getElementById('leave-balance-info');
@@ -299,7 +468,12 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('allocated-days').textContent = balance.allocated;
         document.getElementById('used-days').textContent = balance.used;
         document.getElementById('pending-days').textContent = balance.pending;
-        document.getElementById('available-days').textContent = balance.available;
+        document.getElementById('available-days-display').textContent = balance.available;
+        document.getElementById('remaining-days').textContent = balance.available - (document.getElementById('total_days')?.value || 0);
+        
+        // Calculate progress
+        const progressPercent = (balance.available / balance.allocated) * 100;
+        document.getElementById('available-progress').style.width = `${progressPercent}%`;
         
         // Show balance details
         balanceInfo.style.display = 'none';

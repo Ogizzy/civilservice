@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Employee;
 
+use Log;
 use App\Models\Employee;
 use App\Models\LeaveType;
 use Illuminate\Http\Request;
@@ -10,6 +11,7 @@ use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use App\Models\EmployeeLeaveBalance;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 use App\Notifications\LeaveStatusNotification;
 
 class EmployeeLeaveController extends Controller
@@ -46,7 +48,7 @@ class EmployeeLeaveController extends Controller
             $query->where('employee_id', Auth::user()->employee->id);
         }
 
-        $leaves = $query->orderBy('created_at', 'desc')->paginate(15);
+        $leaves = $query->orderBy('created_at', 'desc')->paginate(5);
         $leaveTypes = LeaveType::where('is_active', true)->get();
         $employees = Employee::select('id', 'employee_number', 'surname', 'first_name')->get();
 
@@ -56,112 +58,145 @@ class EmployeeLeaveController extends Controller
     /**
      * Show the form for creating a new leave application
      */
-    public function create()
-    {
-        $leaveTypes = LeaveType::where('is_active', true)->get();
-        $employee = Auth::user()->employee;
+    // public function create()
+    // {
+    //     $leaveTypes = LeaveType::where('is_active', true)->get();
+    //     $employee = Auth::user()->employee;
 
-        if (!$employee) {
-            return redirect()->route('leaves.index')->with('error', 'Employee profile not found.');
-        }
+    //     if (!$employee) {
+    //         return redirect()->route('leaves.index')->with('error', 'Employee profile not found.');
+    //     }
 
-        // Get leave balances for current year
-        $currentYear = date('Y');
-        $leaveBalances = EmployeeLeaveBalance::where('employee_id', $employee->id)
-            ->where('year', $currentYear)->with('leaveType')->get()->keyBy('leave_type_id');
+    //     // Get leave balances for current year
+    //     $currentYear = date('Y');
+    //     $leaveBalances = EmployeeLeaveBalance::where('employee_id', $employee->id)
+    //         ->where('year', $currentYear)->with('leaveType')->get()->keyBy('leave_type_id');
 
-        return view('admin.leaves.create', compact('leaveTypes', 'employee', 'leaveBalances'));
+    //     return view('admin.leaves.create', compact('leaveTypes', 'employee', 'leaveBalances'));
+    // }
+
+public function create()
+{
+    // $employee = auth()->user()->employee; 
+    $employee = Auth::user()->employee; // or however you get the employee
+    $leaveTypes = LeaveType::where('is_active', true)->get();
+    // Calculate leave balances for current year
+    $leaveBalances = [];
+    foreach($leaveTypes as $type) {
+        $used = $employee->leaves()
+            ->where('leave_type_id', $type->id)
+            ->whereYear('start_date', date('Y'))
+            ->where('status', 'approved')
+            ->sum('total_days');
+            
+        $pending = $employee->leaves()
+            ->where('leave_type_id', $type->id)
+            ->whereYear('start_date', date('Y'))
+            ->where('status', 'pending')
+            ->sum('total_days');
+            
+        $leaveBalances[$type->id] = [
+            'allocated' => $type->max_days_per_year,
+            'used' => $used,
+            'pending' => $pending,
+            'available' => $type->max_days_per_year - $used - $pending
+        ];
     }
-
+    
+    return view('admin.leaves.create', compact('employee', 'leaveTypes', 'leaveBalances'));
+}
     /**
      * Store a newly created leave application
      */
     public function store(Request $request)
     {
-        $request->validate([
-            'leave_type_id' => 'required|exists:leave_types,id',
-            'start_date' => 'required|date|after_or_equal:today',
-            'end_date' => 'required|date|after_or_equal:start_date',
-            'reason' => 'required|string|max:1000',
-            'contact_address' => 'nullable|string|max:255',
-            'contact_phone' => 'nullable|string|max:20',
-            'emergency_contact' => 'nullable|string|max:100',
-            'emergency_phone' => 'nullable|string|max:20',
-            'supporting_document' => 'nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png|max:5120', // 5MB max
-        ]);
+       // Validate request data
+    $validated = $request->validate([
+        'leave_type_id' => 'required|exists:leave_types,id',
+        'start_date' => 'required|date|after_or_equal:today',
+        'end_date' => 'required|date|after_or_equal:start_date',
+        'reason' => 'required|string|max:1000',
+        'contact_address' => 'nullable|string|max:255',
+        'contact_phone' => 'nullable|string|max:20',
+        'emergency_contact' => 'nullable|string|max:100',
+        'emergency_phone' => 'nullable|string|max:20',
+        'supporting_document' => 'nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png|max:5120',
+    ]);
 
-        $employee = Auth::user()->employee;
-        if (!$employee) {
-            return redirect()->back()->with('error', 'Employee profile not found.');
-        }
+    $employee = Auth::user()->employee;
+    if (!$employee) {
+        return back()->with('error', 'Employee profile not found.');
+    }
 
-        // Check if employee has sufficient leave balance
-        $totalDays = EmployeeLeave::calculateTotalDays($request->start_date, $request->end_date);
-        $currentYear = date('Y');
+    // Calculate leave days
+    $totalDays = EmployeeLeave::calculateTotalDays($validated['start_date'], $validated['end_date']);
 
-        $leaveBalance = EmployeeLeaveBalance::where('employee_id', $employee->id)
-            ->where('leave_type_id', $request->leave_type_id)
-            ->where('year', $currentYear)
-            ->first();
+    // Check leave balance
+    $leaveBalance = EmployeeLeaveBalance::where([
+        'employee_id' => $employee->id,
+        'leave_type_id' => $validated['leave_type_id'],
+        'year' => date('Y')
+    ])->first();
 
-        if ($leaveBalance && $leaveBalance->remaining_days < $totalDays) {
-            return redirect()->back()->with('error', 'Insufficient leave balance. You have ' . $leaveBalance->remaining_days . ' days remaining.');
-        }
+    if ($leaveBalance && $leaveBalance->remaining_days < $totalDays) {
+        return back()->with('error', "Insufficient leave balance. You have {$leaveBalance->remaining_days} days remaining.");
+    }
 
-        // Check for overlapping leave applications
-        $overlapping = EmployeeLeave::where('employee_id', $employee->id)
-            ->where('status', '!=', 'rejected')
-            ->where(function ($query) use ($request) {
-                $query->whereBetween('start_date', [$request->start_date, $request->end_date])
-                    ->orWhereBetween('end_date', [$request->start_date, $request->end_date])
-                    ->orWhere(function ($q) use ($request) {
-                        $q->where('start_date', '<=', $request->start_date)
-                            ->where('end_date', '>=', $request->end_date);
-                    });
-            })
-            ->exists();
+    // Check for overlapping leaves
+    $overlapping = EmployeeLeave::where('employee_id', $employee->id)
+        ->where('status', '!=', 'rejected')
+        ->where(function($query) use ($validated) {
+            $query->whereBetween('start_date', [$validated['start_date'], $validated['end_date']])
+                ->orWhereBetween('end_date', [$validated['start_date'], $validated['end_date']])
+                ->orWhere(function($q) use ($validated) {
+                    $q->where('start_date', '<=', $validated['start_date'])
+                      ->where('end_date', '>=', $validated['end_date']);
+                });
+        })->exists();
 
-        if ($overlapping) {
-            return redirect()->back()->with('error', 'You have overlapping leave applications for the selected dates.');
-        }
+    if ($overlapping) {
+        return back()->with('error', 'You have overlapping leave applications.');
+    }
 
-        DB::transaction(function () use ($request, $employee, $totalDays) {
-            $documentUrl = null;
+    try {
+        DB::transaction(function () use ($validated, $employee, $totalDays, $request) {
+            $documentPath = null;
             $documentName = null;
 
-            // Handle file upload if provided
             if ($request->hasFile('supporting_document')) {
                 $file = $request->file('supporting_document');
-                $filename = time() . '_' . $file->getClientOriginalName();
-                $path = $file->storeAs('leave-documents', $filename, 'public');
-                $documentUrl = 'storage/' . $path;
                 $documentName = $file->getClientOriginalName();
+                $documentPath = $file->store('leave-documents', 'public');
             }
 
-            // Create leave application
             EmployeeLeave::create([
                 'employee_id' => $employee->id,
-                'leave_type_id' => $request->leave_type_id,
-                'start_date' => $request->start_date,
-                'end_date' => $request->end_date,
+                'leave_type_id' => $validated['leave_type_id'],
+                'start_date' => $validated['start_date'],
+                'end_date' => $validated['end_date'],
                 'total_days' => $totalDays,
-                'reason' => $request->reason,
-                'contact_address' => $request->contact_address,
-                'contact_phone' => $request->contact_phone,
-                'emergency_contact' => $request->emergency_contact,
-                'emergency_phone' => $request->emergency_phone,
-                'supporting_document_url' => $documentUrl,
+                'reason' => $validated['reason'],
+                'contact_address' => $validated['contact_address'],
+                'contact_phone' => $validated['contact_phone'],
+                'emergency_contact' => $validated['emergency_contact'],
+                'emergency_phone' => $validated['emergency_phone'],
+                'supporting_document_url' => $documentPath ? 'storage/'.$documentPath : null,
                 'supporting_document_name' => $documentName,
+                'status' => 'pending',
                 'created_by' => Auth::id(),
+                'applied_date' => now(),
             ]);
         });
 
-         $notification = array(
-            'message' => 'Leave application submitted successfully.',
+        return redirect()->route('leaves.index')->with([
+            'message' => 'Leave application submitted successfully',
             'alert-type' => 'success'
-        );
+        ]);
 
-        return redirect()->route('leaves.index')->with($notification);
+    } catch (\Exception $e) {
+        return back()->with('error', 'Error submitting application: '.$e->getMessage());
+    }
+    
     }
 
     /**
@@ -426,6 +461,24 @@ class EmployeeLeaveController extends Controller
         ->get();
     
     return view('admin.leaves.history', compact('leaves'));
+}
+
+
+public function viewDocument($leave)
+{
+    $leave = EmployeeLeave::findOrFail($leave);
+    
+    // Check if document exists
+    if (!$leave->supporting_document_url || !Storage::exists($leave->supporting_document_url)) {
+        abort(404, 'Document not found');
+    }
+
+    // Check if user is authorized
+    if (!auth()->user()->canApproveLeaves() && auth()->user()->id != $leave->employee->user_id) {
+        abort(403);
+    }
+
+    return response()->file(storage_path('app/' . $leave->supporting_document_url));
 }
 
 }

@@ -198,6 +198,12 @@
     </a>
     <ul>
         <li>
+            <a href="{{ route('leave-types.index') }}">
+                <i class='bx bx-radio-circle'></i>Add Leave Type
+            </a>
+        </li>
+
+        <li>
             <a href="{{ route('leaves.index') }}">
                 <i class='bx bx-radio-circle'></i>View Leaves
             </a>
