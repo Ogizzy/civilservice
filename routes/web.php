@@ -229,29 +229,42 @@ Route::prefix('permissions')->name('permissions.')->group(function () {
     Route::delete('/{permission}', [UserPermissionController::class, 'destroy'])->name('destroy');
 });
 
-
-Route::prefix('commendations')->name('commendations.')->middleware(['web', 'auth'])->group(function () {
+// All Commendations/Awards Routes
+Route::prefix('employees/{employee}/commendations')->name('employees.commendations.')->group(function () {
     Route::get('/', [CommendationController::class, 'index'])->name('index');
     Route::get('/create', [CommendationController::class, 'create'])->name('create');
     Route::post('/', [CommendationController::class, 'store'])->name('store');
-    Route::get('/{commendationAward}', [CommendationController::class, 'show'])->name('show');
-    Route::get('/{commendationAward}/edit', [CommendationController::class, 'edit'])->name('edit');
-    Route::put('/{commendationAward}', [CommendationController::class, 'update'])->name('update');
-    Route::delete('/{commendationAward}', [CommendationController::class, 'destroy'])->name('destroy');
-    // For employee-specific commendation records
-    Route::get('/employee/{employee}', [CommendationController::class, 'employeeCommendations'])->name('employee');
+    Route::get('/{commendation}', [CommendationController::class, 'show'])->name('show');
+    Route::get('/{commendation}/edit', [CommendationController::class, 'edit'])->name('edit');
+    Route::put('/{commendation}', [CommendationController::class, 'update'])->name('update');
+    Route::delete('/{commendation}', [CommendationController::class, 'destroy'])->name('destroy');
 });
 
-Route::prefix('queries')->middleware(['auth'])->group(function () {
-    Route::get('/', [QueriesMisconductController::class, 'index'])->name('queries.index');
-    Route::get('/create', [QueriesMisconductController::class, 'create'])->name('queries.create');
-    Route::post('/', [QueriesMisconductController::class, 'store'])->name('queries.store');
-    Route::get('/{queriesMisconduct}', [QueriesMisconductController::class, 'show'])->name('queries.show');
-    Route::get('/{queriesMisconduct}/edit', [QueriesMisconductController::class, 'edit'])->name('queries.edit');
-    Route::put('/{queriesMisconduct}', [QueriesMisconductController::class, 'update'])->name('queries.update');
-    Route::delete('/{queriesMisconduct}', [QueriesMisconductController::class, 'destroy'])->name('queries.destroy');
-    Route::get('/employee/{employee}/queries', [QueriesMisconductController::class, 'employeeQueries'])->name('queries.employee');
+
+// All Queries Routes (Nested under Employee)
+Route::prefix('employees/{employee}/queries')->middleware(['auth'])->group(function () {
+    Route::get('/', [QueriesMisconductController::class, 'index'])->name('employees.queries.index');
+    Route::get('/create', [QueriesMisconductController::class, 'create'])->name('employees.queries.create');
+    Route::post('/', [QueriesMisconductController::class, 'store'])->name('employees.queries.store');
+    Route::get('/{queriesMisconduct}', [QueriesMisconductController::class, 'show'])->name('employees.queries.show');
+    Route::get('/{queriesMisconduct}/edit', [QueriesMisconductController::class, 'edit'])->name('employees.queries.edit');
+    Route::put('/{queriesMisconduct}', [QueriesMisconductController::class, 'update'])->name('employees.queries.update');
+    Route::delete('/{queriesMisconduct}', [QueriesMisconductController::class, 'destroy'])->name('employees.queries.destroy');
 });
+
+
+
+//All Queries Routes 
+// Route::prefix('queries')->middleware(['auth'])->group(function () {
+//     Route::get('/', [QueriesMisconductController::class, 'index'])->name('queries.index');
+//     Route::get('/create', [QueriesMisconductController::class, 'create'])->name('queries.create');
+//     Route::post('/', [QueriesMisconductController::class, 'store'])->name('queries.store');
+//     Route::get('/{queriesMisconduct}', [QueriesMisconductController::class, 'show'])->name('queries.show');
+//     Route::get('/{queriesMisconduct}/edit', [QueriesMisconductController::class, 'edit'])->name('queries.edit');
+//     Route::put('/{queriesMisconduct}', [QueriesMisconductController::class, 'update'])->name('queries.update');
+//     Route::delete('/{queriesMisconduct}', [QueriesMisconductController::class, 'destroy'])->name('queries.destroy');
+//     Route::get('/employee/{employee}/queries', [QueriesMisconductController::class, 'employeeQueries'])->name('queries.employee');
+// });
 
 // Report Routes
 Route::prefix('reports')->name('reports.')->group(function () {
@@ -297,14 +310,14 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/leaves', [EmployeeLeaveController::class, 'store'])->name('leaves.store');
     Route::get('/leaves/{leave}', [EmployeeLeaveController::class, 'show'])->name('leaves.show');
     Route::get('/leaves/{leave}/edit', [EmployeeLeaveController::class, 'edit'])->name('leaves.edit');
-    Route::put('/leaves/{leave}', [EmployeeLeaveController::class, 'update'])->name('leaves.update');
-    Route::post('/leaves/{leave}/cancel', [EmployeeLeaveController::class, 'cancel'])->name('leaves.cancel');
+    Route::match(['put', 'patch'], '/leaves/{leave}', [EmployeeLeaveController::class, 'update'])->name('leaves.update');
+    // Route::put('/leaves/{leave}', [EmployeeLeaveController::class, 'update'])->name('leaves.update');
+    Route::put('/leaves/{leave}/cancel', [EmployeeLeaveController::class, 'cancel'])->name('leaves.cancel');
     Route::post('/leaves/{leave}/approve', [EmployeeLeaveController::class, 'approve'])->name('leaves.approve');
     Route::post('/leaves/{leave}/reject', [EmployeeLeaveController::class, 'reject'])->name('leaves.reject');
 
-       // Add this route with your other leave routes
-Route::get('/leaves/balance', [EmployeeLeaveController::class, 'getLeaveBalance'])->name('leaves.balance');
-
+       // Routes for Leave Balance
+Route::get('/leave-balance', [EmployeeLeaveController::class, 'showLeaveBalance'])->name('leave.balance.show');
 Route::get('/dashboard/my-leave-balance', [EmployeeLeaveController::class, 'getLeaveBalance'])->name('dashboard.my_leave_balance');
 Route::get('/leaves/history', [EmployeeLeaveController::class, 'history'])->name('leaves.history');
 Route::get('/employee-leaves/history', [EmployeeLeaveController::class, 'history'])->name('employee_leaves.history');

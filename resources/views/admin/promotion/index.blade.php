@@ -70,9 +70,9 @@
                                         <td>{{ $promotion->effective_date->format('d M, Y') }}</td>
                                         <td>{{ $promotion->user->surname ?? 'N/A' }} {{ $promotion->user->first_name ?? 'N/A' }}</td>
                                         <td>
-                                            <a href="{{ $promotion->document->document }}" target="_blank"
-                                                class="btn btn-sm btn-info">
-                                                <i class="lni lni-eye"></i>
+                                            <a href="{{ asset('storage/' . $promotion->document->document) }}" target="_blank"
+                                                class="btn btn-sm btn-secondary" title="View Document">
+                                                <i class="lni lni-files"></i>
                                             </a>
                                         </td>
                                         <td>

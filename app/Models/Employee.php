@@ -127,4 +127,5 @@ public function leaves()
     return $this->hasMany(\App\Models\EmployeeLeave::class);
 }
 
+
 }

@@ -74,7 +74,7 @@
                     </div>
 
                     <!-- Document Upload -->
-                    <div class="col-12">
+                    {{-- <div class="col-12">
                         <label for="document_file" class="form-label">Upload Transfer Letter (PDF, max 10MB) <span class="text-danger">*</span></label>
                         <div class="input-group">
                             <span class="input-group-text bg-transparent"><i class="bx bx-upload"></i></span>
@@ -84,7 +84,29 @@
                         @error('document_file') 
                             <div class="text-danger small mt-1">{{ $message }}</div>
                         @enderror
+                    </div> --}}
+
+                         <!-- Document Upload -->
+                    <div class="form-group mb-4">
+                        <label class="form-label">
+                            <i class="fas fa-file-upload me-2"></i> Upload Promotion Letter <span class="required">*</span>
+                        </label>
+                        <div class="file-upload-wrapper">
+                            <div class="file-upload-area" id="fileUploadArea">
+                                <div class="file-upload-content">
+                                    <i class="fas fa-cloud-upload-alt file-upload-icon"></i>
+                                    <h6>Drop files here or click to browse</h6>
+                                    <p>Max size: 10MB | Formats: PDF, DOCX, JPEG</p>
+                                </div>
+                                <input type="file" name="document_file" class="file-input @error('document_file') is-invalid @enderror" id="documentFile" accept=".pdf,.docx,.jpeg,.jpg">
+                            </div>
+                            <div class="file-preview" id="filePreview" style="display: none;"></div>
+                        </div>
+                        @error('document_file') 
+                            <div class="invalid-feedback">{{ $message }}</div> 
+                        @enderror
                     </div>
+                    {{-- End Document Upload --}}
 
                     <!-- Form Actions -->
                     <div class="col-12 mt-4">
@@ -121,6 +143,68 @@
         box-shadow: none;
         border-color: #86b7fe;
     }
+
+
+    /* File Upload */
+    .file-upload-wrapper {
+        position: relative;
+    }
+
+    .file-upload-area {
+        border: 2px dashed #d1ecf1;
+        border-radius: var(--border-radius);
+        padding: 3rem 2rem;
+        text-align: center;
+        background: #f8f9fa;
+        transition: var(--transition);
+        cursor: pointer;
+    }
+
+    .file-upload-area:hover {
+        border-color: var(--primary-color);
+        background: #e3f2fd;
+    }
+
+    .file-upload-area.drag-over {
+        border-color: var(--success-color);
+        background: #d4edda;
+    }
+
+    .file-upload-icon {
+        font-size: 3rem;
+        color: var(--info-color);
+        margin-bottom: 1rem;
+    }
+
+    .file-upload-content h6 {
+        color: var(--dark-color);
+        margin-bottom: 0.5rem;
+    }
+
+    .file-upload-content p {
+        color: #6c757d;
+        margin: 0;
+        font-size: 0.9rem;
+    }
+
+    .file-input {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        opacity: 0;
+        cursor: pointer;
+    }
+
+    .file-preview {
+        margin-top: 1rem;
+        padding: 1rem;
+        background: #e8f5e8;
+        border-radius: 0%;
+        border: 1px solid #c3e6cb;
+    }
+
 </style>
 
 @endsection

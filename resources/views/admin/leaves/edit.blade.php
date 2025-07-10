@@ -1,6 +1,6 @@
 @extends('admin.admin_dashboard')
 @section('admin')
-
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 <div class="container-fluid">
     <div class="row">
         <div class="col-12">
@@ -9,7 +9,7 @@
                     <h3 class="card-title">Edit Leave Application</h3>
                     <div class="card-tools">
                         <a href="{{ route('leaves.show', $leave) }}" class="btn btn-secondary">
-                            <i class="fas fa-arrow-left"></i> Back to Details
+                            <i class="fa fa-arrow-circle-left" aria-hidden="true"></i> Back to Details
                         </a>
                         <a href="{{ route('leaves.index') }}" class="btn btn-outline-secondary">
                             <i class="fas fa-list"></i> Back to List
@@ -54,34 +54,59 @@
                                 </div>
                             </div>
 
-                            {{-- Leave Balance Information --}}
+                            <!-- Leave Balance Information -->
                             <div class="col-md-6">
-                                <div class="card">
+                                <div class="card card-primary">
                                     <div class="card-header">
-                                        <h4>Leave Balance ({{ date('Y') }})</h4>
+                                        <h4 class="card-title">
+                                            <i class="fadeIn animated bx bx-bar-chart-square"></i>Leave Balance ({{ date('Y') }})
+                                        </h4>
                                     </div>
                                     <div class="card-body">
                                         <div id="leave-balance-info">
-                                            @if(isset($leaveBalances[$leave->leave_type_id]))
-                                                @php $balance = $leaveBalances[$leave->leave_type_id] @endphp
+                                            <div class="no-selection text-center py-3">
+                                                <i class="fas fa-info-circle fa-2x text-muted mb-2"></i>
+                                                <p class="text-muted">Select a leave type to view balance</p>
+                                            </div>
+                                        </div>
+                                        <div id="balance-details" style="display: none;">
+                                            <div class="progress-group">
+                                                <div class="progress-label">
+                                                    <span>Available Days</span>
+                                                    <span class="float-right" id="available-days-display">0</span>
+                                                </div>
+                                                <div class="progress progress-sm">
+                                                    <div class="progress-bar bg-success" id="available-progress" style="width: 0%"></div>
+                                                </div>
+                                            </div>
+                                            <div class="balance-stats mt-3">
                                                 <div class="row">
-                                                    <div class="col-4 text-center">
-                                                        <h5 class="text-primary">{{ $balance->entitled_days }}</h5>
-                                                        <small>Entitled</small>
+                                                    <div class="col-6">
+                                                        <div class="stat-item">
+                                                            <span class="stat-label">Allocated:</span>
+                                                            <span class="stat-value" id="allocated-days">0</span>
+                                                        </div>
                                                     </div>
-                                                    <div class="col-4 text-center">
-                                                        <h5 class="text-warning">{{ $balance->used_days }}</h5>
-                                                        <small>Used</small>
+                                                    <div class="col-6">
+                                                        <div class="stat-item">
+                                                            <span class="stat-label">Used:</span>
+                                                            <span class="stat-value" id="used-days">0</span>
+                                                        </div>
                                                     </div>
-                                                    <div class="col-4 text-center">
-                                                        <h5 class="text-success">{{ $balance->remaining_days + $leave->total_days }}</h5>
-                                                        <small>Available*</small>
+                                                    <div class="col-6">
+                                                        <div class="stat-item">
+                                                            <span class="stat-label">Pending:</span>
+                                                            <span class="stat-value" id="pending-days">0</span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-6">
+                                                        <div class="stat-item">
+                                                            <span class="stat-label">Remaining:</span>
+                                                            <span class="stat-value" id="remaining-days">0</span>
+                                                        </div>
                                                     </div>
                                                 </div>
-                                                <small class="text-muted">*Including current application days</small>
-                                            @else
-                                                <p class="text-muted">Select a leave type to view balance</p>
-                                            @endif
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -97,6 +122,7 @@
                                     <div class="card-header">
                                         <h5>Original Application Details</h5>
                                     </div>
+
                                     <div class="card-body">
                                         <div class="row">
                                             <div class="col-md-3">
@@ -161,7 +187,22 @@
 
                                 <div class="form-group">
                                     <label>Total Days</label>
-                                    <input type="text" id="total_days" class="form-control" readonly>
+                                    <input type="text" id="total_days" name="total_days" class="form-control" readonly value="{{ old('total_days', $leave->total_days) }}">
+                                    <small class="form-text text-muted" id="days_breakdown"></small>
+                                    <div id="balance_validation" style="display: none;" class="mt-2">
+                                        <div class="alert alert-warning" id="balance_warning" style="display: none;">
+                                            <i class="fas fa-exclamation-triangle"></i>
+                                            <span id="warning_message"></span>
+                                        </div>
+                                        <div class="alert alert-danger" id="balance_error" style="display: none;">
+                                            <i class="fas fa-times-circle"></i>
+                                            <span id="error_message"></span>
+                                        </div>
+                                        <div class="alert alert-success" id="balance_success" style="display: none;">
+                                            <i class="fas fa-check-circle"></i>
+                                            <span id="success_message"></span>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
 
@@ -252,11 +293,11 @@
                     <div class="card-footer">
                         <div class="row">
                             <div class="col-md-12">
-                                <button type="submit" class="btn btn-primary">
+                                <button type="submit" class="btn btn-primary" id="submit-button" {{ $leave->status !== 'pending' ? 'disabled' : '' }}>
                                     <i class="fas fa-save"></i> Update Leave Application
                                 </button>
                                 <a href="{{ route('leaves.show', $leave) }}" class="btn btn-secondary">
-                                    <i class="fas fa-times"></i> Cancel
+                                    <i class="fa fa-arrow-circle-left" aria-hidden="true"></i> Go Back
                                 </a>
                                 
                                 @if($leave->status === 'pending')
@@ -280,136 +321,313 @@
     </div>
 </div>
 
+<style>
+    /* Card styling */
+    .card {
+        box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+        border: none;
+    }
+    
+    .card-header {
+        background-color: #f8f9fa;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.125);
+    }
+    
+    .card-title {
+        font-weight: 600;
+        color: #495057;
+    }
+    
+    /* Leave balance styling */
+    .no-selection {
+        padding: 1rem;
+        text-align: center;
+    }
+    
+    .no-selection i {
+        font-size: 1.5rem;
+        color: #adb5bd;
+        margin-bottom: 0.5rem;
+    }
+    
+    .progress-group {
+        margin-bottom: 1rem;
+    }
+    
+    .progress-label {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 0.25rem;
+    }
+    
+    .balance-stats {
+        background-color: #f8f9fa;
+        padding: 1rem;
+        border-radius: 0.25rem;
+    }
+    
+    .stat-item {
+        margin-bottom: 0.5rem;
+    }
+    
+    .stat-label {
+        font-weight: 600;
+        color: #495057;
+    }
+    
+    .stat-value {
+        float: right;
+        font-weight: 600;
+    }
+    
+    /* Form styling */
+    .form-control {
+        border-radius: 0.25rem;
+    }
+    
+    /* Alert styling */
+    .alert {
+        border-radius: 0.25rem;
+        padding: 0.75rem 1.25rem;
+    }
+    
+    /* Button styling */
+    .btn {
+        border-radius: 0.25rem;
+        font-weight: 500;
+    }
+    
+    .btn-primary {
+        background-color: #3f80ea;
+        border-color: #3f80ea;
+    }
+    
+    .btn-secondary {
+        background-color: #6c757d;
+        border-color: #6c757d;
+    }
+
+    .card-header h4, .card-header h5 {
+        margin: 0;
+        font-size: 1.1rem;
+    }
+
+    .form-group label {
+        font-weight: 600;
+    }
+
+    .text-danger {
+        font-weight: 500;
+    }
+
+    .bg-light {
+        background-color: #f8f9fa!important;
+    }
+</style>
 
 <script>
-$(document).ready(function() {
-    // Calculate total days when dates change
-    $('#start_date, #end_date').on('change', function() {
-        calculateTotalDays();
-    });
-
-    // Load leave balance when leave type changes
-    $('#leave_type_id').on('change', function() {
-        var leaveTypeId = $(this).val();
-        if (leaveTypeId) {
-            loadLeaveBalance(leaveTypeId);
-        } else {
-            $('#leave-balance-info').html('<p class="text-muted">Select a leave type to view balance</p>');
-        }
-    });
-
-    // Function to calculate total days
-    function calculateTotalDays() {
-        var startDate = $('#start_date').val();
-        var endDate = $('#end_date').val();
+    document.addEventListener('DOMContentLoaded', function() {
+        const startDateInput = document.getElementById('start_date');
+        const endDateInput = document.getElementById('end_date');
+        const totalDaysInput = document.getElementById('total_days');
+        const daysBreakdownElement = document.getElementById('days_breakdown');
+        const leaveTypeSelect = document.getElementById('leave_type_id');
+        const submitButton = document.querySelector('button[type="submit"]');
+    
+        // Leave balance data this is normally coming from backend)
+        const leaveBalances = @json($leaveBalances ?? []);
         
-        if (startDate && endDate) {
-            var start = new Date(startDate);
-            var end = new Date(endDate);
+        // Example leave balance structure - actual data from controller
+        // const leaveBalances = {
+        //     '1': { // leave_type_id
+        //         allocated: 21,
+        //         used: 5,
+        //         pending: 2,
+        //         available: 14
+        //     },
+        //     '2': {
+        //         allocated: 7,
+        //         used: 0,
+        //         pending: 0,
+        //         available: 7
+        //     }
+        // };
+    
+        // Function to display leave balance
+        function displayLeaveBalance(leaveTypeId) {
+            const balanceInfo = document.getElementById('leave-balance-info');
+            const balanceDetails = document.getElementById('balance-details');
             
-            if (end >= start) {
-                var timeDiff = end.getTime() - start.getTime();
-                var dayDiff = Math.ceil(timeDiff / (1000 * 3600 * 24)) + 1; // Include both start and end dates
-                $('#total_days').val(dayDiff + ' days');
-            } else {
-                $('#total_days').val('');
+            if (!leaveTypeId || !leaveBalances[leaveTypeId]) {
+                balanceInfo.style.display = 'block';
+                balanceDetails.style.display = 'none';
+                return;
             }
-        } else {
-            $('#total_days').val('');
+    
+            const balance = leaveBalances[leaveTypeId];
+            
+            // Update balance display
+            document.getElementById('allocated-days').textContent = balance.allocated;
+            document.getElementById('used-days').textContent = balance.used;
+            document.getElementById('pending-days').textContent = balance.pending;
+            document.getElementById('available-days-display').textContent = balance.available;
+            document.getElementById('remaining-days').textContent = balance.available - (document.getElementById('total_days')?.value || 0);
+            
+            // Calculate progress
+            const progressPercent = (balance.available / balance.allocated) * 100;
+            document.getElementById('available-progress').style.width = `${progressPercent}%`;
+            
+            // Show balance details
+            balanceInfo.style.display = 'none';
+            balanceDetails.style.display = 'block';
+            
+            // Re-validate current request
+            validateLeaveBalance();
         }
-    }
-
-    // Function to load leave balance via AJAX
-    function loadLeaveBalance(leaveTypeId) {
-        $.ajax({
-            url: "{{ url('/leaves/balance') }}",
-            method: 'GET',
-            data: { leave_type_id: leaveTypeId },
-            success: function(response) {
-                // Add current application days back to available balance for editing
-                var currentAppDays = {{ $leave->total_days }};
-                var availableDays = response.remaining_days + currentAppDays;
-                
-                var html = '<div class="row">';
-                html += '<div class="col-4 text-center">';
-                html += '<h5 class="text-primary">' + response.entitled_days + '</h5>';
-                html += '<small>Entitled</small>';
-                html += '</div>';
-                html += '<div class="col-4 text-center">';
-                html += '<h5 class="text-warning">' + response.used_days + '</h5>';
-                html += '<small>Used</small>';
-                html += '</div>';
-                html += '<div class="col-4 text-center">';
-                html += '<h5 class="text-success">' + availableDays + '</h5>';
-                html += '<small>Available*</small>';
-                html += '</div>';
-                html += '</div>';
-                html += '<small class="text-muted">*Including current application days</small>';
-                
-                $('#leave-balance-info').html(html);
-            },
-            error: function() {
-                $('#leave-balance-info').html('<p class="text-danger">Error loading leave balance</p>');
+    
+        // Function to validate leave balance
+        function validateLeaveBalance() {
+            const leaveTypeId = leaveTypeSelect.value;
+            const totalDays = parseInt(totalDaysInput.value) || 0;
+            
+            const validationDiv = document.getElementById('balance_validation');
+            const warningAlert = document.getElementById('balance_warning');
+            const errorAlert = document.getElementById('balance_error');
+            const successAlert = document.getElementById('balance_success');
+            
+            // Hide all alerts initially
+            warningAlert.style.display = 'none';
+            errorAlert.style.display = 'none';
+            successAlert.style.display = 'none';
+            validationDiv.style.display = 'none';
+            
+            if (!leaveTypeId || !totalDays || !leaveBalances[leaveTypeId]) {
+                submitButton.disabled = false;
+                return;
             }
+            
+            const balance = leaveBalances[leaveTypeId];
+            const availableDays = balance.available;
+            
+            validationDiv.style.display = 'block';
+            
+            if (totalDays > availableDays) {
+                // Insufficient balance
+                errorAlert.style.display = 'block';
+                document.getElementById('error_message').textContent = 
+                    `Insufficient leave balance! You requested ${totalDays} days but only have ${availableDays} days available.`;
+                submitButton.disabled = true;
+            } else if (totalDays === availableDays) {
+                // Using all available days
+                warningAlert.style.display = 'block';
+                document.getElementById('warning_message').textContent = 
+                    `You are using all your available leave days (${availableDays} days).`;
+                submitButton.disabled = false;
+            } else if (availableDays - totalDays <= 2) {
+                // Low balance warning
+                warningAlert.style.display = 'block';
+                document.getElementById('warning_message').textContent = 
+                    `After this leave, you will have ${availableDays - totalDays} days remaining.`;
+                submitButton.disabled = false;
+            } else {
+                // Sufficient balance
+                successAlert.style.display = 'block';
+                document.getElementById('success_message').textContent = 
+                    `Leave request valid. You will have ${availableDays - totalDays} days remaining after this leave.`;
+                submitButton.disabled = false;
+            }
+        }
+    
+        // Function to calculate total days
+        function calculateTotalDays() {
+            const startDate = startDateInput.value;
+            const endDate = endDateInput.value;
+    
+            if (startDate && endDate) {
+                const start = new Date(startDate);
+                const end = new Date(endDate);
+    
+                // Check if end date is before start date
+                if (end < start) {
+                    totalDaysInput.value = '';
+                    daysBreakdownElement.textContent = 'End date cannot be before start date';
+                    daysBreakdownElement.style.color = 'red';
+                    document.getElementById('balance_validation').style.display = 'none';
+                    return;
+                }
+    
+                // Calculate total days (inclusive)
+                const timeDiff = end.getTime() - start.getTime();
+                const totalDays = Math.ceil(timeDiff / (1000 * 3600 * 24)) + 1;
+    
+                // Calculate working days (excluding weekends)
+                let workingDays = 0;
+                let currentDate = new Date(start);
+                
+                while (currentDate <= end) {
+                    const dayOfWeek = currentDate.getDay();
+                    // 0 = Sunday, 6 = Saturday
+                    if (dayOfWeek !== 0 && dayOfWeek !== 6) {
+                        workingDays++;
+                    }
+                    currentDate.setDate(currentDate.getDate() + 1);
+                }
+    
+                // Display results
+                totalDaysInput.value = totalDays;
+                
+                if (totalDays === workingDays) {
+                    daysBreakdownElement.textContent = `${totalDays} total days (no weekends included)`;
+                } else {
+                    daysBreakdownElement.textContent = `${totalDays} total days (${workingDays} working days, ${totalDays - workingDays} weekend days)`;
+                }
+                daysBreakdownElement.style.color = '#6c757d';
+    
+                // Validate leave balance after calculating days
+                validateLeaveBalance();
+    
+            } else {
+                totalDaysInput.value = '';
+                daysBreakdownElement.textContent = '';
+                document.getElementById('balance_validation').style.display = 'none';
+            }
+        }
+    
+        // Function to update end date minimum value
+        function updateEndDateMin() {
+            const startDate = startDateInput.value;
+            if (startDate) {
+                endDateInput.min = startDate;
+                // If end date is before start date, clear it
+                if (endDateInput.value && endDateInput.value < startDate) {
+                    endDateInput.value = '';
+                }
+            }
+            calculateTotalDays();
+        }
+    
+        // Event listeners
+        leaveTypeSelect.addEventListener('change', function() {
+            displayLeaveBalance(this.value);
         });
-    }
-
-    // Set minimum end date when start date changes
-    $('#start_date').on('change', function() {
-        $('#end_date').attr('min', $(this).val());
+    
+        startDateInput.addEventListener('change', function() {
+            updateEndDateMin();
+        });
+    
+        endDateInput.addEventListener('change', function() {
+            calculateTotalDays();
+        });
+    
+        // Initialize on page load
+        if (leaveTypeSelect.value) {
+            displayLeaveBalance(leaveTypeSelect.value);
+        }
+        
+        if (startDateInput.value || endDateInput.value) {
+            updateEndDateMin();
+        }
     });
-
-    // Calculate total days on page load
-    calculateTotalDays();
-
-    // Set initial minimum end date
-    if ($('#start_date').val()) {
-        $('#end_date').attr('min', $('#start_date').val());
-    }
-});
-</script>
-
-
-
-<style>
-.card-header h4, .card-header h5 {
-    margin: 0;
-    font-size: 1.1rem;
-}
-
-#leave-balance-info h5 {
-    font-size: 1.5rem;
-    margin-bottom: 0;
-}
-
-#leave-balance-info small {
-    color: #6c757d;
-    font-weight: 500;
-}
-
-.form-group label {
-    font-weight: 600;
-}
-
-.text-danger {
-    font-weight: 500;
-}
-
-.card {
-    box-shadow: 0 0 1px rgba(0,0,0,.125), 0 1px 3px rgba(0,0,0,.2);
-}
-
-.btn {
-    border-radius: 4px;
-}
-
-.bg-light {
-    background-color: #f8f9fa!important;
-}
-
-.alert {
-    border-radius: 4px;
-}
-</style>
+    </script>
 
 @endsection

@@ -24,7 +24,7 @@ class EmployeeLeave extends Model implements Auditable
         'contact_phone',
         'emergency_contact',
         'emergency_phone',
-        'supporting_document',
+        'supporting_document_url',
         'supporting_document_name',
         'status',
         'remarks',
@@ -104,5 +104,10 @@ class EmployeeLeave extends Model implements Auditable
         return $query->where('status', 'rejected');
     }
 
-    
+        public function leave()
+    {
+        return $this->belongsTo(Leave::class);
+    }
+
+        
 }

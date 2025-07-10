@@ -1,5 +1,6 @@
 @extends('admin.admin_dashboard')
 @section('admin')
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         /* Light color scheme */
         :root {
@@ -248,8 +249,9 @@
                     <h1 class="page-title">
                         <i class="fas fa-calendar-alt"></i> Leave Management
                     </h1>
-                    <p class="page-description">View and manage employee leave applications</p>
+                    <p class="page-description">View and manage leave applications</p>
                 </div>
+
                 <div class="col-md-4 text-md-end">
                     <a href="{{ route('leaves.create') }}" class="btn btn-primary">
                         <i class="fadeIn animated bx bx-plus-circle"></i> Apply for Leave
@@ -391,20 +393,34 @@
                                 </td>
 
                                 <td>
-                                    @if ($leave->supporting_document_url)
+                                    @php
+                                        $documentPath = 'storage/' . $leave->supporting_document_url;
+                                        $fullPath = public_path($documentPath);
+                                    @endphp
+
+                                    @if (!empty($leave->supporting_document_url) && file_exists(public_path('storage/' . $leave->supporting_document_url)))
                                         <button
-                                            onclick="previewDocument('{{ Storage::url($leave->supporting_document_url) }}')"
-                                            class="btn btn-sm btn-outline-primary">
+                                            onclick="previewDocument('{{ asset('storage/' . $leave->supporting_document_url) }}')"
+                                            class="btn btn-sm btn-outline-primary" title="Preview Document">
                                             <i class="fadeIn animated bx bx-show"></i> Preview
                                         </button>
-                                        <a href="{{ route('leaves.document.view', $leave->id) }}"
-                                            class="btn btn-sm btn-outline-secondary" download>
-                                            <i class="lni lni-download"></i>
+
+                                        <a href="{{ asset('storage/' . $leave->supporting_document_url) }}"
+                                            class="btn btn-sm btn-outline-secondary"
+                                            download="{{ $leave->supporting_document_name }}">
+                                            <i class="lni lni-download"></i> 
                                         </a>
+                                    @elseif (!empty($leave->supporting_document_name))
+                                        <span class="text-muted">
+                                            {{ $leave->supporting_document_name }} <br>
+                                            <small class="text-warning">File not found or missing link</small>
+                                        </span>
                                     @else
                                         <span class="text-muted">None</span>
                                     @endif
+
                                 </td>
+
 
                                 <td>
                                     <div class="d-flex">
@@ -418,8 +434,9 @@
                                                 title="Edit">
                                                 <i class="fadeIn animated bx bx-edit"></i>
                                             </a>
-                                            <button type="button" class="action-btn btn-secondary" data-bs-toggle="modal"
-                                                data-bs-target="#cancelModal{{ $leave->id }}" title="Cancel">
+                                            <button type="button" class="action-btn btn-secondary"
+                                                data-bs-toggle="modal" data-bs-target="#cancelModal{{ $leave->id }}"
+                                                title="Cancel">
                                                 <i class="fadeIn animated bx bx-time"></i>
                                             </button>
                                         @endif
@@ -473,8 +490,9 @@
                                 @csrf
                                 @method('POST')
                                 <div class="modal-header">
-                                    <h5 class="modal-title fw-bold" id="cancelModalLabel{{ $leave->id }}" style="color: whitesmoke">
-                                        <i class="lni lni-times-circle me-2"></i>Cancel Leave Application
+                                    <h5 class="modal-title fw-bold" id="cancelModalLabel{{ $leave->id }}"
+                                        style="color: whitesmoke">
+                                        <i class="lni lni-alarm-clock me-2"></i>Cancel Leave Application
                                     </h5>
                                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
                                         aria-label="Close"></button>
@@ -507,7 +525,7 @@
                                 </div>
                                 <div class="modal-footer">
                                     <button type="button" class="btn btn-light" data-bs-dismiss="modal">
-                                        <i class="fadeIn animated bx bx-arrow-left me-1"></i> Keep Application
+                                        <i class="fadeIn animated bx bx-chevrons-left me-1"></i> Keep Application
                                     </button>
                                     <button type="submit" class="btn btn-danger">
                                         <i class="fadeIn animated bx bx-time me-1"></i> Cancel Application
@@ -629,54 +647,53 @@
         @endforeach
 
         <!-- Document Preview Modal -->
-<div class="modal fade" id="documentModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Supporting Document</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <div id="documentPreview"></div>
-            </div>
-            <div class="modal-footer">
-                <a href="#" id="downloadDocument" class="btn btn-primary">
-                    <i class="fas fa-download"></i> Download
-                </a>
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <div class="modal fade" id="documentModal" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" style="color: white">Supporting Document</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div id="documentPreview"></div>
+                    </div>
+                    <div class="modal-footer">
+                        <a href="#" id="downloadDocument" class="btn btn-primary">
+                            <i class="fas fa-download"></i> Download
+                        </a>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    </div>
+                </div>
             </div>
         </div>
-    </div>
-</div>
 
-<script>
-    // In your blade file's script section
-function previewDocument(url) {
-    const extension = url.split('.').pop().toLowerCase();
-    const previewDiv = $('#documentPreview');
-    const downloadBtn = $('#downloadDocument');
-    
-    downloadBtn.attr('href', url);
-    
-    if (['jpg', 'jpeg', 'png', 'gif'].includes(extension)) {
-        previewDiv.html(`<img src="${url}" class="img-fluid" alt="Document Preview">`);
-    } else if (extension === 'pdf') {
-        previewDiv.html(`
+        <script>
+            // In your blade file's script section
+            function previewDocument(url) {
+                const extension = url.split('.').pop().toLowerCase();
+                const previewDiv = $('#documentPreview');
+                const downloadBtn = $('#downloadDocument');
+
+                downloadBtn.attr('href', url);
+
+                if (['jpg', 'jpeg', 'png', 'gif'].includes(extension)) {
+                    previewDiv.html(`<img src="${url}" class="img-fluid" alt="Document Preview">`);
+                } else if (extension === 'pdf') {
+                    previewDiv.html(`
             <iframe src="${url}" 
                     style="width:100%; height:500px;" 
                     frameborder="0"></iframe>
         `);
-    } else {
-        previewDiv.html(`
+                } else {
+                    previewDiv.html(`
             <div class="alert alert-info">
                 <i class="fas fa-info-circle"></i> 
                 Document cannot be previewed. Please download to view.
             </div>
         `);
-    }
-    
-    $('#documentModal').modal('show');
-}
-    </script>
+                }
 
+                $('#documentModal').modal('show');
+            }
+        </script>
     @endsection

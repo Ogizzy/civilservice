@@ -24,7 +24,7 @@ return new class extends Migration
             $table->string('contact_phone')->nullable();
             $table->string('emergency_contact')->nullable();
             $table->string('emergency_phone')->nullable();
-            $table->text('supporting_document')->nullable();
+            $table->string('supporting_document_url')->nullable();
             $table->string('supporting_document_name')->nullable();
             $table->enum('status', ['pending', 'approved', 'rejected', 'cancelled'])->default('pending');
             $table->text('remarks')->nullable();

@@ -22,7 +22,7 @@
             <div class="col-xl-8 slide-up">
                 <div class="enhanced-card">
                     <div class="gradient-header">
-                        <h5>
+                        <h5 style="color: whitesmoke">
                             <i class="ri-upload-cloud-2-line header-icon"></i>
                             Import Employee Data from Excel
                         </h5>
@@ -92,7 +92,7 @@
             <div class="col-xl-4 slide-up" style="animation-delay: 0.2s;">
                 <div class="enhanced-card">
                     <div class="gradient-header">
-                        <h5>
+                        <h5 style="color: white">
                             <i class="ri-file-list-3-line header-icon"></i>
                             Import Guidelines
                         </h5>

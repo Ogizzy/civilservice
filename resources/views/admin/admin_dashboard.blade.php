@@ -13,6 +13,9 @@
 
 	<meta name="csrf-token" content="{{ csrf_token() }}">
 
+	<link rel="stylesheet" href="">
+	
+	<link href="backend/assets/plugins/input-tags/css/tagsinput.css'" rel="stylesheet" />
 <!--tagsinput-->
 	<link href="{{ asset('backend/assets/plugins/input-tags/css/tagsinput.css') }}" rel="stylesheet" />
 <!--tagsinput-->

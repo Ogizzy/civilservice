@@ -1,7 +1,7 @@
 {{-- resources/views/leaves/create.blade.php --}}
 @extends('admin.admin_dashboard')
 @section('admin')
-
+ <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 <div class="container-fluid">
     <div class="row">
         <div class="col-lg-12 mx-auto">
@@ -72,6 +72,8 @@
                                             <i class="fadeIn animated bx bx-calendar-check mr-2"></i>Leave Details
                                         </h4>
                                     </div>
+
+
                                     <div class="card-body">
                                         <div class="form-group">
                                             <label for="leave_type_id">Leave Type <span class="text-danger">*</span></label>
@@ -126,6 +128,8 @@
                                             </div>
                                         </div>
                                     </div>
+
+                                    
                                 </div>
                             </div>
 
@@ -219,7 +223,7 @@
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label for="contact_phone">Contact Phone (While on Leave)</label>
-                                            <input type="tel" name="contact_phone" id="contact_phone" class="form-control @error('contact_phone') is-invalid @enderror" 
+                                            <input type="number" name="contact_phone" id="contact_phone" maxlength="11" class="form-control @error('contact_phone') is-invalid @enderror" 
                                                    value="{{ old('contact_phone') }}" placeholder="Phone number during leave">
                                             @error('contact_phone')
                                                 <div class="invalid-feedback">{{ $message }}</div>
@@ -242,7 +246,7 @@
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label for="emergency_phone">Emergency Contact Phone</label>
-                                            <input type="tel" name="emergency_phone" id="emergency_phone" class="form-control @error('emergency_phone') is-invalid @enderror" 
+                                            <input type="number" name="emergency_phone" maxlength="11" id="emergency_phone" class="form-control @error('emergency_phone') is-invalid @enderror" 
                                                    value="{{ old('emergency_phone') }}" placeholder="Emergency contact phone number">
                                             @error('emergency_phone')
                                                 <div class="invalid-feedback">{{ $message }}</div>

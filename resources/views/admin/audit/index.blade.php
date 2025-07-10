@@ -93,6 +93,7 @@
         </div>
     </div>
 
+   @foreach($audits as $audit)
     <!-- Modal -->
     <div class="modal fade" id="auditModal" tabindex="-1" aria-labelledby="auditModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg">
@@ -101,18 +102,20 @@
                     <h5 class="modal-title" id="auditModalLabel">Audit Details</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
+
                 <div class="modal-body row">
                     <div class="col-md-6">
                         <h6 class="text-danger">Old Values</h6>
                         <ul>
+                         
                             @forelse($audit->old_values as $key => $val)
                                 @php
-                                    // Resolve user_id to user's name
-if ($key == 'user_id') {
-    $val = \App\Models\User::find($val)->full_name ?? 'Unknown User';
-}
+                                                                // Resolve user_id to user's name
+                            if ($key == 'user_id') {
+                                $val = \App\Models\User::find($val)->full_name ?? 'Unknown User';
+                            }
 
-// Resolve role_id to role's name
+                        // Resolve role_id to role's name
                                     if ($key == 'role_id') {
                                         $val = \App\Models\UserRole::find($val)->name ?? 'Unknown Role';
                                     }
@@ -129,11 +132,11 @@ if ($key == 'user_id') {
                             @forelse($audit->new_values as $key => $val)
                                 @php
                                     // Resolve user_id to user's name
-if ($key == 'user_id') {
-    $val = \App\Models\User::find($val)->first_name ?? 'Unknown User';
-}
+                            if ($key == 'user_id') {
+                                $val = \App\Models\User::find($val)->first_name ?? 'Unknown User';
+                            }
 
-// Resolve role_id to role's name
+                            // Resolve role_id to role's name
                                     if ($key == 'role_id') {
                                         $val = \App\Models\UserRole::find($val)->role ?? 'Unknown Role';
                                     }
@@ -145,7 +148,8 @@ if ($key == 'user_id') {
                         </ul>
                     </div>
                 </div>
-
+                @endforeach
+                
                 <div class="modal-footer">
                     <button class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                 </div>

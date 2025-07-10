@@ -90,12 +90,12 @@
             </a>
             <ul>
                 <li>
-                    <a href="{{ route('commendations.create') }}">
+                    <a href="{{ route('employees.index')}}">
                         <i class='bx bx-radio-circle'></i>Commendations/Awards
                     </a>
                 </li>
                 <li>
-                    <a href="{{ route('queries.create') }}">
+                    <a href="{{ route('employees.index')}}">
                         <i class='bx bx-radio-circle'></i>Queries/Misconduct
                     </a>
                 </li>
@@ -197,12 +197,13 @@
         <div class="menu-title">Manage Leaves</div>
     </a>
     <ul>
+           @usercan('Employee Management', 'can_create')
         <li>
             <a href="{{ route('leave-types.index') }}">
                 <i class='bx bx-radio-circle'></i>Add Leave Type
             </a>
         </li>
-
+   @endusercan
         <li>
             <a href="{{ route('leaves.index') }}">
                 <i class='bx bx-radio-circle'></i>View Leaves
@@ -214,7 +215,7 @@
             </a>
         </li>
         <li>
-            <a href="{{ route('dashboard.my_leave_balance') }}">
+            <a href="{{ route('leave.balance.show') }}">
                 <i class='bx bx-radio-circle'></i>Leave Balance
             </a>
         </li>

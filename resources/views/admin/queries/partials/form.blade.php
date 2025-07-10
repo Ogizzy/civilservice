@@ -7,22 +7,15 @@
             </div>
             <div class="card-body">
                 <div class="row">
-                    <div class="col-md-6">
-                        <div class="mb-3">
-                            <label for="employee_id" class="form-label">Employee <span class="text-danger">*</span></label>
-                            <select name="employee_id" id="employee_id" class="form-select select2" required>
-                                <option value="">Select Employee</option>
-                                @foreach($employees as $employee)
-                                    <option value="{{ $employee->id }}" {{ (old('employee_id', $queryData->employee_id ?? '') == $employee->id) ? 'selected' : '' }}>
-                                        {{ $employee->employee_number }} - {{ $employee->surname }}, {{ $employee->first_name }}
-                                    </option>
-                                @endforeach
-                            </select>
-                            @error('employee_id')
-                                <small class="text-danger">{{ $message }}</small>
-                            @enderror
-                        </div>
-                    </div>
+                       <div>
+                    <h5 class="card-title mb-0 fw-bold">Query/Miscounduct</h5>
+                    <p class="text-muted mb-0 small">For: 
+                        <span class="fw-bold text-primary">
+                            {{ $employee->surname }} {{ $employee->first_name }} {{ $employee->middle_name }}
+                        </span>
+                    </p>
+                </div>
+
                     
                     <div class="col-md-6">
                         <div class="mb-3">

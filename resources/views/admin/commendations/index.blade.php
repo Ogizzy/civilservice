@@ -16,7 +16,7 @@
         <div class="card-header">
             <i class="lni lni-trophy me-1"></i>
             Commendations / Awards
-            <a href="{{ route('commendations.create') }}" class="btn btn-primary btn-sm float-end">
+            <a href="{{ route('employees.index') }}" class="btn btn-primary btn-sm float-end">
                 <i class="lni lni-circle-plus"></i> Add New
             </a>
         </div>
@@ -51,19 +51,19 @@
                                 <td>{{ $commendation->award_date->format('M d, Y') }}</td>
                                 <td>
                                     <div class="btn-group" role="group">
-                                        <a href="{{ route('commendations.show', $commendation) }}" class="btn btn-sm btn-info">
-                                            <i class="lni lni-eye"></i>
+                                        <a href="{{ route('employees.commendations.show', ['employee' => $commendation->employee_id, 'commendation' => $commendation->id]) }}" class="btn btn-sm btn-info" title="View Details">
+                                           <i class="fadeIn animated bx bx-list-ul"></i>
                                         </a>
-                                        <a href="{{ route('commendations.edit', $commendation) }}" class="btn btn-sm btn-primary">
+                                       {{-- <a href="{{ route('employees.commendations.edit', ['employee' => $commendation->employee_id, 'commendation' => $commendation->id]) }}" class="btn btn-sm btn-warning" title="Edit Award">
                                             <i class="fadeIn animated bx bx-edit"></i>
-                                        </a>
-                                        <form action="{{ route('commendations.destroy', $commendation) }}" method="POST">
+                                        </a> --}}
+                                       {{-- <form action="{{ route('employees.commendations.destroy', ['employee' => $commendation->employee_id, 'commendation' => $commendation->id]) }}" method="POST">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit" class="btn btn-sm btn-danger delete-btn">
                                                 <i class="lni lni-trash"></i>
                                             </button>
-                                        </form>
+                                        </form> --}}
                                     </div>
                                 </td>
                             </tr>
