@@ -237,14 +237,6 @@
                             Showing {{ $employees->firstItem() ?? 0 }} to {{ $employees->lastItem() ?? 0 }} 
                             of {{ $employees->total() }} employees
                         </span>
-                        <div class="btn-group btn-group-sm me-3" role="group">
-                            <a href="#" class="btn btn-sm btn-outline-secondary me-2">
-                                <i class="bx bx-download me-1"></i> Export to Excel
-                            </a>
-                            <a href="#" class="btn btn-sm btn-outline-primary">
-                                <i class="bx bx-bar-chart-alt-2 me-1"></i> Advanced Analytics
-                            </a>
-                        </div>
                     </div>
                     
                     <!-- Custom Pagination -->

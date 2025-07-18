@@ -50,7 +50,7 @@
                                 </div>
                                 <div>
                                     <h6 class="text-muted mb-0">Total Retirees</h6>
-                                    <h4 class="mb-0">{{ $employees->count() }}</h4>
+                                    <h4 class="mb-0">{{ $employees->total() }}</h4>
                                 </div>
                             </div>
                         </div>
@@ -65,7 +65,7 @@
                                 </div>
                                 <div>
                                     <h6 class="text-muted mb-0">Current Year Retirements</h6>
-                                    <h4 class="mb-0">{{ $employees->where('retirement_date', '>=', now()->startOfYear())->count() }}</h4>
+                                    <h4 class="mb-0">{{ $employees->count() }} </h4><sm>Employees</sm>
                                 </div>
                             </div>
                         </div>
@@ -144,43 +144,9 @@
             </div>
         </div>
 
-        <!-- Chart Area -->
-        <div class="col-12 col-xl-5">
-            <div class="card border-0 shadow-sm h-100">
-                <div class="card-header bg-white d-flex justify-content-between align-items-center py-3">
-                    <h5 class="card-title mb-0">
-                        <i class="bx bx-bar-chart-alt-2 me-1"></i> Retirement Visualization
-                    </h5>
-                    <span class="badge bg-danger rounded-pill">
-                        {{ $employees->count() }} Retirees
-                    </span>
-                </div>
-                <div class="card-body">
-                    <div class="chart-container position-relative" style="height:350px;">
-                        <canvas id="retiredChart"></canvas>
-                    </div>
-                </div>
-                <div class="card-footer bg-white border-0 py-3">
-                    <div class="d-flex justify-content-around text-center">
-                        <div>
-                            <h6 class="text-muted mb-1 small">This Month</h6>
-                            <h5 class="mb-0 text-danger">{{ $employees->where('retirement_date', '>=', now()->startOfMonth())->count() }}</h5>
-                        </div>
-                        <div class="border-start border-end px-4">
-                            <h6 class="text-muted mb-1 small">This Quarter</h6>
-                            <h5 class="mb-0 text-danger">{{ $employees->where('retirement_date', '>=', now()->startOfQuarter())->count() }}</h5>
-                        </div>
-                        <div>
-                            <h6 class="text-muted mb-1 small">This Year</h6>
-                            <h5 class="mb-0 text-danger">{{ $employees->where('retirement_date', '>=', now()->startOfYear())->count() }}</h5>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
+       
         <!-- Data Table Area -->
-        <div class="col-12 col-xl-7">
+        <div class="col-12">
             <div class="card border-0 shadow-sm h-100">
                 <div class="card-header bg-white py-3">
                     <div class="d-flex justify-content-between align-items-center">
@@ -218,9 +184,9 @@
                                     <td class="ps-3">{{ ($employees->currentPage() - 1) * $employees->perPage() + $index + 1 }}</td>
                                     <td>
                                         <div class="d-flex align-items-center">
-                                            <div class="avatar avatar-sm me-2 bg-light-danger rounded-circle">
+                                            {{-- <div class="avatar avatar-sm me-2 bg-light-danger rounded-circle">
                                                 <span class="avatar-initial">{{ substr($emp->first_name, 0, 1) }}</span>
-                                            </div>
+                                            </div> --}}
                                             <div>
                                                 <span class="fw-medium">{{ $emp->surname }} {{ $emp->first_name }}</span>
                                                 <small class="d-block text-muted">Employee No: {{ $emp->employee_number }}</small>
@@ -236,7 +202,7 @@
                                         </div>
                                     </td>
                                     <td>
-                                        <span class="badge bg-light-info text-info">
+                                        <span class="badge bg-light-info text-primary">
                                             {{ $emp->mda->mda ?? 'N/A' }}
                                         </span>
                                     </td>

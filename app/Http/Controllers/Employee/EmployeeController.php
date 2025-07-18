@@ -452,9 +452,9 @@ public function employeesByPayStructure(Request $request)
     if ($startDate && $endDate) {
         $query->whereBetween('retirement_date', [$startDate, $endDate]);
     }
-
+    $totalRetired = $query->count();
     $employees = $query->paginate(5);
-    return view('admin.reports.retired-employees', compact('employees', 'startDate', 'endDate'));
+    return view('admin.reports.retired-employees', compact('employees', 'startDate', 'endDate', 'totalRetired'));
 }
 
     /**

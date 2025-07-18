@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers\MDA;
 
-use App\Http\Controllers\Controller;
 use App\Models\MDA;
+use App\Models\Employee;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
 
 class MdaController extends Controller
 {
@@ -67,8 +68,8 @@ class MdaController extends Controller
     public function show(Mda $mda)
     {
         // Load employees in this MDA
-        $mda->load('employees');
-        return view('admin.mda.show', compact('mda'));
+        $employees = Employee::where('mda_id', $mda->id)->paginate(10);
+        return view('admin.mda.show', compact('mda', 'employees'));
     }
 
     /**

@@ -37,7 +37,7 @@
 
         @if ($gradeLevel->employees->count() > 0)
             <div class="mt-4">
-                <h5>List of Employees on Grade Level <span style="color: royalblue">{{ $gradeLevel->level }}</span></h5>
+                <h5>List of Employees on Grade Level:  <span style="color: royalblue">{{ $gradeLevel->level }}</span></h5>
                 <div class="card">
                     <div class="card-body">
                         <div class="table-responsive">
@@ -57,8 +57,8 @@
                                             <td>{{ $employee->employee_number }}</td>
                                             <td>{{ $employee->surname }} {{ $employee->first_name }}</td>
                                             <td>{{ $employee->mda->mda ?? 'N/A' }}</td>
-                                            <td>{{ $employee->gradeLevel->level ?? 'N/A' }}</td>
-                                            <td>{{ $employee->step->step ?? 'N/A' }}</td>
+                                            <td>GL {{ $employee->gradeLevel->level ?? 'N/A' }}</td>
+                                            <td>Step {{ $employee->step->step ?? 'N/A' }}</td>
                                         </tr>
                                     @endforeach
                                 </tbody>

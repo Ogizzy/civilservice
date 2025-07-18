@@ -41,7 +41,7 @@
                     </div>
                     <div class="col-md-6 text-md-end">
                         <span class="badge bg-light text-dark fs-6">
-                            Total: {{ count($employees) }} employees
+                            Total: {{ $employees->total() }} employees
                         </span>
                     </div>
                 </div>
@@ -95,7 +95,7 @@
                                 <th>S/N</th>
                                 <th>Employee Name</th>
                                 <th>Retirement Date</th>
-                                <th>Days Remaining</th>
+                                {{-- <th>Days Remaining</th> --}}
                                 <th>MDA</th>
                                 <th>Actions</th>
                             </tr>
@@ -106,9 +106,9 @@
                                 <td>{{ ($employees->currentPage() - 1) * $employees->perPage() + $index + 1 }}</td>
                                 <td>
                                     <div class="d-flex align-items-center">
-                                        <div class="avatar bg-light-primary rounded-circle me-3">
+                                        {{-- <div class="avatar bg-light-primary rounded-circle me-3">
                                             {{ substr($emp->first_name, 0, 1) }}{{ substr($emp->surname, 0, 1) }}
-                                        </div>
+                                        </div> --}}
                                         <div>
                                             <h6 class="mb-0">{{ $emp->surname }} {{ $emp->first_name }}</h6>
                                             <small class="text-muted">Employee No: {{ $emp->employee_number }}</small>
@@ -119,17 +119,16 @@
                                     <span class="d-block">{{ $emp->retirement_date->format('d M, Y') }}</span>
                                     <small class="text-muted">{{ $emp->retirement_date->diffForHumans() }}</small>
                                 </td>
-                                <td>
+                                {{-- <td>
                                     <span class="badge bg-{{ $emp->retirement_date->diffInDays(now()) < 30 ? 'danger' : 'warning' }}">
                                         {{ $emp->retirement_date->diffInDays(now()) }} Days
                                     </span>
-                                </td>
+                                </td> --}}
                                 <td>{{ $emp->mda->mda ?? 'N/A' }}</td>
                                 <td>
-                                    <button class="btn btn-sm btn-outline-primary" title="View Profile">
-                                        
+                                    <a href="{{ route('employees.show', $emp->id) }}" class="btn btn-sm btn-outline-primary" title="View Profile">
                                         <i class="bx bx-user"></i>
-                                    </button>
+                                    </a>
                                 </td>
                             </tr>
                             @endforeach
@@ -262,6 +261,7 @@
         $('#example').DataTable();
     });
 </script>
+
 <script>
     $(document).ready(function() {
         var table = $('#example2').DataTable({
@@ -273,4 +273,5 @@
             .appendTo('#example2_wrapper .col-md-6:eq(0)');
     });
 </script>
+
 @endsection
