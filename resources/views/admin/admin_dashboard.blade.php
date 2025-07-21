@@ -26,7 +26,7 @@
 	<link href="{{ asset('backend/assets/plugins/perfect-scrollbar/css/perfect-scrollbar.css') }}" rel="stylesheet" />
 	<link href="{{ asset('backend/assets/plugins/metismenu/css/metisMenu.min.css') }}" rel="stylesheet"/>
 	
-	{{-- Custom Css Start --}}
+	{{-- My Custom Css Start --}}
 	<link href="{{ asset('backend/assets/css/retirees.css') }}" rel="stylesheet"/>
 	<link href="{{ asset('backend/assets/css/employee-form.css') }}" rel="stylesheet"/>
 	<link href="{{ asset('backend/assets/css/service-account.css') }}" rel="stylesheet"/>
@@ -35,8 +35,8 @@
 
 
 	<!-- loader-->
-	{{-- <link href="{{ asset('backend/assets/css/pace.min.css') }}" rel="stylesheet"/>
-	<script src="{{ asset('backend/assets/js/pace.min.js') }}"></script> --}}
+	{{-- {{-- <link href="{{ asset('backend/assets/css/pace.min.css') }}" rel="stylesheet"/> 
+	{{-- <script src="{{ asset('backend/assets/js/pace.min.js') }}"></script> --}} 
 	<!-- Bootstrap CSS -->
 	<link href="{{ asset('backend/assets/css/bootstrap.min.css') }}" rel="stylesheet">
 	<link href="{{ asset('backend/assets/css/bootstrap-extended.css') }}" rel="stylesheet">
@@ -99,7 +99,7 @@
 	<script src="{{ asset('backend/assets/plugins/chartjs/js/chart.js') }}"></script>
 	<script src="{{ asset('backend/assets/js/index.js') }}"></script>
 	
-	{{-- Custom JS --}}
+	{{-- MCustom JS --}}
 	<script src="{{ asset('backend/assets/js/employee-form.js') }}"></script>
 	<script src="{{ asset('backend/assets/js/service-account.js') }}"></script>
 	<script src="{{ asset('backend/assets/js/import-excel.js') }}"></script>
@@ -179,5 +179,40 @@
 	});
 </script>
 
+{{-- Hamburger for Mobile Script --}}
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const toggleBtn = document.getElementById("hamburger-toggle");
+        const sidebar = document.getElementById("sidebar");
+
+        toggleBtn.addEventListener("click", function () {
+            sidebar.classList.toggle("sidebar-visible");
+        });
+    });
+</script>
+<style>
+    @media (max-width: 991.98px) {
+    .sidebar-wrapper {
+        position: fixed;
+        left: -260px;
+        top: 0;
+        height: 100%;
+        width: 260px;
+        background: #fff;
+        z-index: 1040;
+        transition: all 0.3s ease;
+    }
+
+    .sidebar-wrapper.sidebar-visible {
+        left: 0;
+    }
+
+    .page-wrapper {
+        margin-left: 0 !important;
+    }
+}
+
+    </style>
+{{-- End Hamburger for Mobile Script --}}
 </body>
 </html>

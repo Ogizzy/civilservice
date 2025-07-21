@@ -253,19 +253,6 @@ Route::prefix('employees/{employee}/queries')->middleware(['auth'])->group(funct
 });
 
 
-
-//All Queries Routes 
-// Route::prefix('queries')->middleware(['auth'])->group(function () {
-//     Route::get('/', [QueriesMisconductController::class, 'index'])->name('queries.index');
-//     Route::get('/create', [QueriesMisconductController::class, 'create'])->name('queries.create');
-//     Route::post('/', [QueriesMisconductController::class, 'store'])->name('queries.store');
-//     Route::get('/{queriesMisconduct}', [QueriesMisconductController::class, 'show'])->name('queries.show');
-//     Route::get('/{queriesMisconduct}/edit', [QueriesMisconductController::class, 'edit'])->name('queries.edit');
-//     Route::put('/{queriesMisconduct}', [QueriesMisconductController::class, 'update'])->name('queries.update');
-//     Route::delete('/{queriesMisconduct}', [QueriesMisconductController::class, 'destroy'])->name('queries.destroy');
-//     Route::get('/employee/{employee}/queries', [QueriesMisconductController::class, 'employeeQueries'])->name('queries.employee');
-// });
-
 // Report Routes
 Route::prefix('reports')->name('reports.')->group(function () {
     Route::get('/employees-per-lga', [EmployeeController::class, 'employeesPerLga'])->name('employees.per-lga');

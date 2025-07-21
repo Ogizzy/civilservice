@@ -2,8 +2,7 @@
 
     <div class="topbar d-flex align-items-center">
         <nav class="navbar navbar-expand gap-3">
-            <div class="mobile-toggle-menu"><i class='bx bx-menu'></i>
-            </div>
+            <div class="mobile-toggle-menu" id="hamburger-toggle"><i class='bx bx-menu'></i></div>
 
             <div class="position-relative search-bar d-lg-block d-none" data-bs-toggle="modal"
                 data-bs-target="#SearchModal">
@@ -119,3 +118,4 @@
         </nav>
     </div>
 </header>
+

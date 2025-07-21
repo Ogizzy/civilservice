@@ -239,10 +239,12 @@
                                 <i class="fas fa-calendar-times"></i>
                             </div>
                             <h5 class="text-gray-600 mb-2">No Leave Records Found</h5>
+                               @if(auth()->user()->employee)
                             <p class="text-gray-500 mb-4">You haven't applied for any leaves yet.</p>
                             <a href="{{ route('leaves.create') }}" class="btn btn-primary">
                                 <i class="fas fa-plus me-2"></i>Apply for Leave
                             </a>
+                            @endif
                         </div>
                     @endif
                 </div>

@@ -251,12 +251,13 @@
                     </h1>
                     <p class="page-description">View and manage leave applications</p>
                 </div>
-
+                @if(auth()->user()->employee)
                 <div class="col-md-4 text-md-end">
                     <a href="{{ route('leaves.create') }}" class="btn btn-primary">
                         <i class="fadeIn animated bx bx-plus-circle"></i> Apply for Leave
                     </a>
                 </div>
+                @endif
             </div>
         </div>
 
