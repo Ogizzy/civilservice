@@ -15,7 +15,7 @@
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb mb-0 p-0">
                     <li class="breadcrumb-item">
-                        <a href="{{ route('dashboard') }}" class="text-decoration-none">
+                        <a href="{{ route('admin.dashboard') }}" class="text-decoration-none">
                             <i class="fas fa-home"></i>
                         </a>
                     </li>

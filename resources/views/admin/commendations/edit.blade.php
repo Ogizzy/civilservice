@@ -10,7 +10,7 @@
         <h4 class="mt-4">Edit Commendation / Award</h4>
         
         <ol class="breadcrumb mb-4">
-            <li class="breadcrumb-item"><a href="{{ route('dashboard') }}">Dashboard</a></li>
+            <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Dashboard</a></li>
             <li class="breadcrumb-item">
                 <a href="{{ route('employees.commendations.index', $employee->id) }}">Commendations & Awards</a>
             </li>

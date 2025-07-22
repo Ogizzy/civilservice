@@ -16,30 +16,33 @@ class Role
     public function handle(Request $request, Closure $next, $role): Response
     {
       
-        $user = $request->user();
-        
-        // Check if user is authenticated
-        if (!$user) {
-            return redirect('login');
-        }
+        $user = auth()->user();
 
-        $userRole = $user->role->role;
-        
-        // Check if user has any of the required roles
-        if (!in_array($userRole, $role)) {
-            // User doesn't have required role, redirect based on their actual role
-            switch ($userRole) {
-                case 'Employee':
-                    return redirect()->route('employee.dashboard');
-                case 'BDIC Super Admin':
-                case 'Head of Service':
-                case 'Commissioner':
-                case 'Director':
-                    return redirect()->route('dashboard');
-                default:
-                    abort(403);
-            }
+    if (!$user || !$user->role) {
+        abort(403);
+    }
+
+    $userRole = $user->role->role;
+
+    // Convert comma-separated string to array
+    $roles = explode(',', $role);
+
+    // Trim extra spaces just in case
+    $roles = array_map('trim', $roles);
+
+    if (!in_array($userRole, $roles)) {
+        switch ($userRole) {
+            case 'Employee':
+                return redirect()->route('employee.dashboard');
+            case 'BDIC Super Admin':
+            case 'Head of Service':
+            case 'Commissioner':
+            case 'Director':
+                return redirect()->route('admin.dashboard');
+            default:
+                abort(403);
         }
+    }
         
         // User has one of the required roles, proceed with the request
         return $next($request);

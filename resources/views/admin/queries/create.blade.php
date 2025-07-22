@@ -8,7 +8,7 @@
 <div class="container-fluid px-4">
     <h4 class="mt-4">Add New Query/Misconduct</h4>
     <ol class="breadcrumb mb-4">
-        <li class="breadcrumb-item"><a href="{{ route('dashboard') }}">Dashboard</a></li>
+        <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Dashboard</a></li>
         <li class="breadcrumb-item"><a href="{{ route('employees.queries.index', $employee->id) }}">Queries & Misconduct</a></li>
         <li class="breadcrumb-item active">Add New</li>
     </ol>

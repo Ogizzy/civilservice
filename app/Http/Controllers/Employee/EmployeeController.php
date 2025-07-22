@@ -482,30 +482,30 @@ public function employeesByPayStructure(Request $request)
         return view('admin.reports.retiring-employees', compact('employees', 'startDate', 'endDate', 'search'));
     }
     
-    // Stat on main Dashboard
-    public function dashboard()
-    {
-     // Retirement per Year
-     $retirementPerYear = Employee::selectRaw('YEAR(retirement_date) as year, COUNT(*) as total')
-     ->groupBy('year')
-     ->orderBy('year')
-     ->pluck('total', 'year');
+//     // Stat on main Dashboard
+//     public function dashboard()
+//     {
+//      // Retirement per Year
+//      $retirementPerYear = Employee::selectRaw('YEAR(retirement_date) as year, COUNT(*) as total')
+//      ->groupBy('year')
+//      ->orderBy('year')
+//      ->pluck('total', 'year');
 
- // Gender distribution
- $genderStats = Employee::selectRaw('gender, COUNT(*) as total')
-     ->groupBy('gender')
-     ->pluck('total', 'gender');
+//  // Gender distribution
+//  $genderStats = Employee::selectRaw('gender, COUNT(*) as total')
+//      ->groupBy('gender')
+//      ->pluck('total', 'gender');
 
- // MDA-wise population
- $mdaStats = MDA::withCount('employees')->orderBy('employees_count', 'desc')->take(10)->get();
+//  // MDA-wise population
+//  $mdaStats = MDA::withCount('employees')->orderBy('employees_count', 'desc')->take(10)->get();
 
- // Gender (Male and Female)
- $maleCount = Employee::where('gender', 'Male')->count();
- $femaleCount = Employee::where('gender', 'Female')->count();
+//  // Gender (Male and Female)
+//  $maleCount = Employee::where('gender', 'Male')->count();
+//  $femaleCount = Employee::where('gender', 'Female')->count();
 
- return view('admin.dashboard', compact('retirementPerYear', 'genderStats', 'mdaStats', 'maleCount', 'femaleCount'));
+//  return view('admin.dashboard', compact('retirementPerYear', 'genderStats', 'mdaStats', 'maleCount', 'femaleCount'));
     
-}
+// }
 
 // Import Employee via Excel
  // Show Import Form

@@ -9,7 +9,7 @@
                 <h4 class="fw-bold text-dark mb-0">Edit Document</h4>
                 <nav aria-label="breadcrumb">
                     <ol class="breadcrumb mb-0 mt-1">
-                        <li class="breadcrumb-item"><a href="{{ route('dashboard') }}" class="text-decoration-none"><i class="bx bx-home-alt"></i> Dashboard</a></li>
+                        <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}" class="text-decoration-none"><i class="bx bx-home-alt"></i> Dashboard</a></li>
                         <li class="breadcrumb-item"><a href="{{ route('employees.index') }}" class="text-decoration-none">Employees</a></li>
                         <li class="breadcrumb-item"><a href="{{ route('employees.documents.index', $employee->id) }}" class="text-decoration-none">Documents</a></li>
                         <li class="breadcrumb-item active" aria-current="page">Edit</li>

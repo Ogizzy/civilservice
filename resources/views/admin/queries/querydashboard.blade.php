@@ -4,7 +4,7 @@
 <div class="container-fluid px-4">
     <h1 class="mt-4">Queries & Misconduct Records for {{ $employee->surname }}, {{ $employee->first_name }}</h1>
     <ol class="breadcrumb mb-4">
-        <li class="breadcrumb-item"><a href="{{ route('dashboard') }}">Dashboard</a></li>
+        <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Dashboard</a></li>
         <li class="breadcrumb-item"><a href="{{ route('queries.index') }}">Queries & Misconduct</a></li>
         <li class="breadcrumb-item"><a href="{{ route('employees.show', $employee) }}">{{ $employee->employee_number }}</a></li>
         <li class="breadcrumb-item active">Query Records</li>

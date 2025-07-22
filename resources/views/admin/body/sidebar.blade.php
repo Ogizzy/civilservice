@@ -16,7 +16,9 @@
             <i class='bx bx-arrow-back'></i>
         </a>
           @elseif(auth()->check())
-                <a href="{{ route('dashboard') }}"></a>
+                <a href="{{ route('admin.dashboard') }}" class="toggle-icon ms-auto">
+            <i class='bx bx-arrow-back'></i>
+                </a>
             @endif
     </div>
 
@@ -30,7 +32,7 @@
                     <div class="menu-title">Dashboard</div>
                 </a>
             @elseif(auth()->check())
-                <a href="{{ route('dashboard') }}">
+                <a href="{{ route('admin.dashboard') }}">
                     <div class="parent-icon"><i class='bx bx-home-alt'></i></div>
                     <div class="menu-title">Dashboard</div>
                 </a>
@@ -215,11 +217,11 @@
                     </a>
                 </li> --}}
 
-                <li>
+                {{-- <li>
                     <a href="{{ route('leave.balance.show') }}">
                         <i class='bx bx-radio-circle'></i>Leave Balance
                     </a>
-                </li>
+                </li> --}}
                 <li>
                     <a href="{{ route('employee_leaves.history') }}">
                         <i class='bx bx-radio-circle'></i>Leave History
@@ -339,11 +341,12 @@
                         </a>
                     </li>
 
-                    <li>
+                    {{-- <li>
                         <a href="{{ route('leave.balance.show') }}">
                             <i class='bx bx-radio-circle'></i>Leave Balance
                         </a>
-                    </li>
+                    </li> --}}
+
                     <li>
                         <a href="{{ route('employee_leaves.history') }}">
                             <i class='bx bx-radio-circle'></i>Leave History

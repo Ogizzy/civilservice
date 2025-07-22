@@ -29,22 +29,10 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-// Route::get('/dashboard', function () {
-//     return view('admin.dashboard');
-// })->middleware(['auth', 'roles:BDIC Super Admin, Head of Service, Commissioner, Director'])->name('dashboard');
-
-
-///// Admin Group Middleware 
-Route::middleware(['auth', 'role:BDIC Super Admin,Head of Service,Commissioner,Director'])
-    ->group(function() {
-        Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
-        // other admin routes
-    });
-
-
 Route::get('/employee/dashboard', function () {
     return view('admin.employee.dashboard');
 })->middleware(['auth', 'employee'])->name('employee.dashboard');
+
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -177,7 +165,7 @@ Route::prefix('employees/{employee}/promotions')->group(function () {
     Route::delete('{promotion}', [PromotionHistoryController::class, 'destroy'])->name('employees.promotions.destroy');
 });
 
-Route::get('/dashboard', [EmployeeController::class, 'dashboard'])->name('dashboard');
+// Route::get('/dashboard', [EmployeeController::class, 'admin.dashboard'])->name('admin.dashboard');
 
 
 Route::prefix('reports')->name('reports.')->group(function () {
@@ -282,10 +270,27 @@ Route::post('/users/{user}/status', [UserController::class, 'changeStatus'])
         // Other routes...
     });
     
-    // Route::middleware(['auth', 'check.status'])->group(function () {
-    //     Route::get('/dashboard', [UserController::class, 'index'])->name('dashboard');
-    //     // Other routes...
-    // });
+//     Route::middleware(['auth', 'check.status'])->group(function () {
+//     Route::get('/dashboard', [UserController::class, 'index'])->name('user.dashboard');
+//     Route::get('/admin/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
+//     // any shared routes
+// });
+//    Route::middleware(['auth', 'check.status'])->group(function () {
+//     Route::get('/dashboard', [UserController::class, 'index'])->name('user.dashboard');
+//     // other routes...
+// });
+
+// Regular users
+Route::middleware(['auth', 'check.status'])->group(function () {
+    Route::get('/dashboard', [UserController::class, 'index'])->name('user.dashboard');
+});
+
+// Admins only
+Route::middleware(['auth', 'check.status', 'role:BDIC Super Admin,Head of Service,Commissioner,Director'])->group(function () {
+    Route::get('/admin/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
+    // other admin routes
+});
+
    
     // Excel Template Download Route
 Route::get('/download-sample-template', [EmployeeController::class, 'downloadSampleTemplate'])->name('download.sample.template');

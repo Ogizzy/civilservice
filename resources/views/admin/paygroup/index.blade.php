@@ -8,7 +8,7 @@
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb border-0 rounded-3 p-3 mb-4 shadow-sm bg-light">
             <li class="breadcrumb-item">
-                <a href="{{ route('dashboard') }}" class="text-decoration-none">
+                <a href="{{ route('admin.dashboard') }}" class="text-decoration-none">
                     <i class="bx bx-home-alt fs-5 align-middle me-1"></i>Dashboard
                 </a>
             </li>

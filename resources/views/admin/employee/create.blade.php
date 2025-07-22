@@ -15,7 +15,7 @@
                     </div>
                     <nav aria-label="breadcrumb" class="ms-auto">
                         <ol class="breadcrumb mb-0 bg-transparent">
-                            <li class="breadcrumb-item"><a href="{{ route('dashboard') }}" class="text-decoration-none"><i class="bx bx-home-alt"></i></a></li>
+                            <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}" class="text-decoration-none"><i class="bx bx-home-alt"></i></a></li>
                             <li class="breadcrumb-item"><a href="{{ route('employees.index') }}" class="text-decoration-none">Employees</a></li>
                             <li class="breadcrumb-item active" aria-current="page">Create</li>
                         </ol>

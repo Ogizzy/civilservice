@@ -25,7 +25,7 @@
     <nav aria-label="breadcrumb" class="mb-4">
         <ol class="breadcrumb bg-light p-3 rounded">
             <li class="breadcrumb-item">
-                <a href="{{ route('dashboard') }}" class="text-decoration-none">
+                <a href="{{ route('admin.dashboard') }}" class="text-decoration-none">
                     <i class="bx bx-home-alt"></i> Dashboard
                 </a>
             </li>

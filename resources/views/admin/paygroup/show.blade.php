@@ -17,7 +17,7 @@
                     <h2 class="fw-bold text-white mb-1">Pay Group Details</h2>
                     <nav aria-label="breadcrumb">
                         <ol class="breadcrumb mb-0 p-0 bg-transparent small">
-                            <li class="breadcrumb-item"><a href="{{ route('dashboard') }}" class="text-white opacity-75"><i class="fas fa-home"></i></a></li>
+                            <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}" class="text-white opacity-75"><i class="fas fa-home"></i></a></li>
                             <li class="breadcrumb-item"><a href="{{ route('pay-groups.index') }}" class="text-white opacity-75">Pay Groups</a></li>
                             <li class="breadcrumb-item active text-white opacity-75" aria-current="page">{{ $payGroup->paygroup }}</li>
                         </ol>
