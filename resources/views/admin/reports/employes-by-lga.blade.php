@@ -84,7 +84,7 @@
                     </div>
                     <div>
                         <h6 class="mb-0">Total LGAs</h6>
-                        <h3 class="mb-0">{{ $lgaCounts->count() }}</h3>
+                        <h3 class="mb-0">{{ $allLgaCounts->count() }}</h3>
                     </div>
                 </div>
             </div>
@@ -97,7 +97,7 @@
                     </div>
                     <div>
                         <h6 class="mb-0">Total Employees</h6>
-                        <h3 class="mb-0">{{ $lgaCounts->sum('total') }}</h3>
+                        <h3 class="mb-0">{{ $allLgaCounts->sum('total') }}</h3>
                     </div>
                 </div>
             </div>
@@ -110,7 +110,7 @@
                     </div>
                     <div>
                         <h6 class="mb-0">Average per LGA</h6>
-                        <h3 class="mb-0">{{ round($lgaCounts->sum('total') / ($lgaCounts->count() ?: 1)) }}</h3>
+                        <h3 class="mb-0">{{ round($allLgaCounts->sum('total') / ($allLgaCounts->count() ?: 1)) }}</h3>
                     </div>
                 </div>
             </div>
@@ -123,7 +123,7 @@
                     </div>
                     <div>
                         <h6 class="mb-0">Top LGA</h6>
-                        <h3 class="mb-0">{{ $lgaCounts->max('total') ?? 0 }}</h3>
+                        <h3 class="mb-0">{{ $allLgaCounts->max('total') ?? 0 }}</h3>
                     </div>
                 </div>
             </div>
@@ -257,8 +257,8 @@
 <script>
     // Initialize chart
     let currentChart;
-    const labels = {!! json_encode($lgaCounts->pluck('lga')) !!};
-    const data = {!! json_encode($lgaCounts->pluck('total')) !!};
+    const labels = {!! json_encode($allLgaCounts->pluck('lga')) !!};
+    const data = {!! json_encode($allLgaCounts->pluck('total')) !!};
     const backgroundColor = [
         'rgba(54, 162, 235, 0.7)',
         'rgba(75, 192, 192, 0.7)',

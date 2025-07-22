@@ -297,28 +297,36 @@ public function employeesPerLga(Request $request)
         $query->where('gender', $request->gender);
     }
    
-    $grouped = $query
+  $grouped = $query
     ->select('lga', DB::raw('count(*) as total'))
     ->groupBy('lga')
     ->orderBy('total', 'desc')
     ->get();
 
-    // Manual Pagination
-    $perPage = 10;
-    $currentPage = LengthAwarePaginator::resolveCurrentPage();
-    $currentItems = $grouped->slice(($currentPage - 1) * $perPage, $perPage)->values();
-    $lgaCounts = new LengthAwarePaginator(
-        $currentItems,
-        $grouped->count(),
-        $perPage,
-        $currentPage,
-        ['path' => $request->url(), 'query' => $request->query()]
-    );
+// Pagination
+$perPage = 10;
+$currentPage = LengthAwarePaginator::resolveCurrentPage();
+$currentItems = $grouped->slice(($currentPage - 1) * $perPage, $perPage)->values();
 
-    $mdas = \App\Models\MDA::all();
-    $genders = ['Male', 'Female'];
+$lgaCounts = new LengthAwarePaginator(
+    $currentItems,
+    $grouped->count(),
+    $perPage,
+    $currentPage,
+    ['path' => $request->url(), 'query' => $request->query()]
+);
 
-    return view('admin.reports.employes-by-lga', compact('lgaCounts', 'mdas', 'genders'));
+// Other data
+$mdas = \App\Models\MDA::all();
+$genders = ['Male', 'Female'];
+
+return view('admin.reports.employes-by-lga', [
+    'lgaCounts' => $lgaCounts,
+    'allLgaCounts' => $grouped,
+    'mdas' => $mdas,
+    'genders' => $genders
+]);
+
 }
 
     /**
