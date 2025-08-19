@@ -269,6 +269,8 @@ Route::post('/users/{user}/status', [UserController::class, 'changeStatus'])
         Route::get('/user/management/', [UserController::class, 'usermgt'])->name('user.management');
         // Other routes...
     });
+
+    
     
 //     Route::middleware(['auth', 'check.status'])->group(function () {
 //     Route::get('/dashboard', [UserController::class, 'index'])->name('user.dashboard');
@@ -279,6 +281,7 @@ Route::post('/users/{user}/status', [UserController::class, 'changeStatus'])
 //     Route::get('/dashboard', [UserController::class, 'index'])->name('user.dashboard');
 //     // other routes...
 // });
+
 
 // Regular users
 Route::middleware(['auth', 'check.status'])->group(function () {
