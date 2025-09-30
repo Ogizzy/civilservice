@@ -6,7 +6,7 @@
             <img src="{{ asset('backend/assets/images/login-images/benue-logo.png') }}" class="logo-icon" alt="logo icon">
         </div>
         <div>
-            <h6>Civil Service Commission</h6>
+            <h6>Civil Service Mgt System</h6>
         </div>
 
 
