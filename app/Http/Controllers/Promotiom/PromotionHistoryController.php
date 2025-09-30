@@ -75,7 +75,7 @@ class PromotionHistoryController extends Controller
             'user_id' => Auth::id(),
         ]);
 
-        // Update employee's current level and step
+        // Update employee's current level and step //
         $employee->update([
             'level_id' => $validated['current_level'],
             'step_id' => $validated['current_step'],
