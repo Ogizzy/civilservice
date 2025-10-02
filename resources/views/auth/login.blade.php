@@ -34,7 +34,7 @@
       <div class="login-form">
         <div class="form-inner">
           <img src="{{ asset('backend/assets/login/benue-logo.png')}}" alt="Benue Logo" class="logo" width="100" />
-          <h4><b>Benue State Civil Service Commission</b></h4>
+          <h4><b>Benue State Civil Service Management System</b></h4>
           <p class="welcome-text" style="color: blue">
             Please Sign into your account
           </p>
