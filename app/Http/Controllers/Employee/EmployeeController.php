@@ -30,11 +30,32 @@ class EmployeeController extends Controller
     /**
      * Display a listing of the employees.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $employees = Employee::with(['mda', 'payGroup', 'gradeLevel', 'step'])->get();
-        return view('admin.employee.index', compact('employees'));
+        // $employees = Employee::with(['mda', 'payGroup', 'gradeLevel', 'step'])->get();
+        // return view('admin.employee.index', compact('employees'));
+
+        $query = Employee::with([
+        'mda:id', 
+        'payGroup:id',
+        'gradeLevel:id,level', 
+        'step:id,step'
+    ])
+    ->select(['id', 'employee_number', 'surname', 'first_name', 'mda_id', 'paygroup_id', 'level_id', 'step_id']);
+
+    // Add search functionality
+    if ($request->has('search') && $request->search != '') {
+        $query->where(function($q) use ($request) {
+            $q->where('employee_number', 'LIKE', '%'.$request->search.'%')
+              ->orWhere('surname', 'LIKE', '%'.$request->search.'%')
+              ->orWhere('first_name', 'LIKE', '%'.$request->search.'%');
+        });
     }
+
+    $employees = $query->orderBy('surname')->paginate(50);
+
+    return view('admin.employee.index', compact('employees'));
+}
 
     /**
      * Show the form for creating a new employee.
