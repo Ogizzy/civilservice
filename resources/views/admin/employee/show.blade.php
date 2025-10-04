@@ -78,7 +78,6 @@
                                             </p>
                                             <p><strong>Religion:</strong> {{ $employee->religion ?? 'N/A' }}</p>
                                             <p><strong>State of Origin:</strong>
-                                            <p><strong>State of Origin:</strong>
                                                 @if ($employee->state_id)
                                                     @php
                                                         $state = \App\Models\State::find($employee->state_id);

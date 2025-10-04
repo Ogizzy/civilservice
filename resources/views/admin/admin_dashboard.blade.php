@@ -43,6 +43,7 @@
 	<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
 	<link href="{{ asset('backend/assets/css/app.css') }}" rel="stylesheet">
 	<link href="{{ asset('backend/assets/css/icons.css') }}" rel="stylesheet">
+	
 	<!-- Theme Style CSS -->
 	<link rel="stylesheet" href="{{ asset('backend/assets/css/dark-theme.css') }}"/>
 	<link rel="stylesheet" href="{{ asset('backend/assets/css/semi-dark.css') }}"/>
@@ -123,6 +124,9 @@
 	<!--Datatable-->
 	<script src="{{ asset('backend/assets/plugins/datatable/js/jquery.dataTables.min.js') }}"></script>
 	<script src="{{ asset('backend/assets/plugins/datatable/js/dataTables.bootstrap5.min.js') }}"></script>
+	<script src="{{ asset('backend/assets/plugins/perfect-scrollbar/js/perfect-scrollbar.js') }}"></script>
+	<script src="{{ asset('backend/assets/plugins/metismenu/js/metisMenu.min.js') }}"></script>
+	<script src="assets/plugins/perfect-scrollbar/js/perfect-scrollbar.js"></script>
 	
 	{{-- <script>
 		$(document).ready(function() {

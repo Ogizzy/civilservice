@@ -30,6 +30,7 @@
                     <div class="flex-grow-1">
                         <h5 class="mb-1 text-primary">Initiate Transfer For:</h5>
                         <h4 class="mb-0">{{ $employee->surname }} {{ $employee->first_name }} {{ $employee->middle_name }}</h4>
+                        <small>Current MDA: {{$employee->mda->mda ?? 'N/A'}}</small>
                     </div>
                     <div class="employee-id">
                         <span class="badge bg-primary">Employee No: {{ $employee->employee_number }}</span>
@@ -206,5 +207,55 @@
     }
 
 </style>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const fileInput = document.getElementById("documentFile");
+    const fileUploadArea = document.getElementById("fileUploadArea");
+    const filePreview = document.getElementById("filePreview");
+
+    // Show selected file name
+    fileInput.addEventListener("change", function () {
+        if (fileInput.files.length > 0) {
+            const file = fileInput.files[0];
+            filePreview.style.display = "block";
+            filePreview.innerHTML = `
+                <strong>Selected File:</strong> ${file.name} 
+                <br> Size: ${(file.size / 1024 / 1024).toFixed(2)} MB
+            `;
+        } else {
+            filePreview.style.display = "none";
+            filePreview.innerHTML = "";
+        }
+    });
+
+    // Drag and drop highlight
+    fileUploadArea.addEventListener("dragover", function (e) {
+        e.preventDefault();
+        fileUploadArea.classList.add("drag-over");
+    });
+
+    fileUploadArea.addEventListener("dragleave", function () {
+        fileUploadArea.classList.remove("drag-over");
+    });
+
+    fileUploadArea.addEventListener("drop", function (e) {
+        e.preventDefault();
+        fileUploadArea.classList.remove("drag-over");
+
+        if (e.dataTransfer.files.length > 0) {
+            fileInput.files = e.dataTransfer.files;
+
+            const file = e.dataTransfer.files[0];
+            filePreview.style.display = "block";
+            filePreview.innerHTML = `
+                <strong>Dropped File:</strong> ${file.name} 
+                <br> Size: ${(file.size / 1024 / 1024).toFixed(2)} MB
+            `;
+        }
+    });
+});
+</script>
+
 
 @endsection
