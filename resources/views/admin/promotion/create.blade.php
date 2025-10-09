@@ -32,7 +32,7 @@
         </div>
     </div>
     <!-- End Breadcrumb -->
-
+<hr>
     <div class="container-fluid px-4">
         <div class="card border-0 shadow-sm rounded-lg animate__animated animate__fadeIn animate__faster">
             <div class="card-header bg-light py-3 d-flex align-items-center">
@@ -48,6 +48,9 @@
                             <h6 class="mb-1">Employee Details</h6>
                             <p class="mb-0 fw-bold text-primary">
                                 {{ $employee->surname }} {{ $employee->first_name }} {{ $employee->middle_name }}
+                            </p>
+                            <p class="text-muted">
+                            Employee current: <b>Grade Level: {{ $employee->level_id }} | Step: {{ $employee->step_id }}
                             </p>
                         </div>
                     </div>
@@ -85,7 +88,7 @@
                                 <option value="">-- Select Grade Level --</option>
                                 @foreach($gradeLevels as $level)
                                     <option value="{{ $level->id }}" {{ old('current_level') == $level->id ? 'selected' : '' }}>
-                                        {{ $level->level }}
+                                        Grade Level {{ $level->level }}
                                     </option>
                                 @endforeach
                             </select>
@@ -103,7 +106,7 @@
                                 <option value="">-- Select Step --</option>
                                 @foreach($steps as $step)
                                     <option value="{{ $step->id }}" {{ old('current_step') == $step->id ? 'selected' : '' }}>
-                                        {{ $step->step }}
+                                       Step {{ $step->step }}
                                     </option>
                                 @endforeach
                             </select>

@@ -152,102 +152,79 @@
 
     <!-- Table Card -->
     <!-- Table Card -->
-<div class="card border-0 shadow-sm">
-    <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
-        <h5 class="mb-0"><i class="bx bx-table me-2"></i>LGA Employee Distribution</h5>
-        <div class="input-group input-group-sm" style="width: 200px;">
-            <input type="text" class="form-control" placeholder="Search LGA..." id="searchLga">
-            <span class="input-group-text bg-transparent border-start-0">
-                <i class="bx bx-search"></i>
-            </span>
+<div class="card">
+    <div class="card-body">
+
+        <!-- Toolbar for search + export/print -->
+        <div class="d-flex justify-content-between mb-3">
+            <!-- Laravel Search -->
+            <form method="GET" action="{{ route('reports.employees.per-lga') }}" class="d-flex">
+                <input type="text" name="search" class="form-control me-2" value="{{ request('search') }}"
+                    placeholder="Search LGA...">
+                <button type="submit" class="btn btn-primary">Search</button>
+            </form>
+
+            <!-- Export/Print Buttons -->
+            <div id="exportButtons"></div>
         </div>
-    </div>
-    <div class="card-body p-0">
-        @if($lgaCounts->count())
-            <div class="table-responsive">
-                <table class="table table-hover align-middle" id="lgaTable">
-                    <thead class="table-light">
+
+        <div class="table-responsive">
+            <table id="lgaTable" class="table table-striped table-bordered" style="width:100%">
+                <thead class="thead-dark">
+                    <tr>
+                        <th class="ps-4">
+                            <div class="d-flex align-items-center">
+                                LGA
+                                <a href="#" class="text-muted ms-2 sort-link" data-column="lga">
+                                    <i class="bx bx-sort-alt-2"></i>
+                                </a>
+                            </div>
+                        </th>
+                        <th class="text-end pe-4">
+                            <div class="d-flex align-items-center justify-content-end">
+                                Total Employees
+                                <a href="#" class="text-muted ms-2 sort-link" data-column="total">
+                                    <i class="bx bx-sort-alt-2"></i>
+                                </a>
+                            </div>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach ($lgaCounts as $item)
                         <tr>
-                            <th class="ps-4">
-                                <div class="d-flex align-items-center">
-                                    LGA
-                                    <a href="#" class="text-muted ms-2 sort-link" data-column="lga">
-                                        <i class="bx bx-sort-alt-2"></i>
-                                    </a>
-                                </div>
-                            </th>
-                            <th class="text-end pe-4">
+                            <td class="ps-4 fw-medium">
+                                @if($item->lga)
+                                    <i class="bx bx-map-pin text-primary me-2"></i>{{ $item->lga }}
+                                @else
+                                    <span class="badge bg-light text-secondary">
+                                        <i class="bx bx-error-circle me-1"></i>Not Specified
+                                    </span>
+                                @endif
+                            </td>
+                            <td class="text-end pe-4">
                                 <div class="d-flex align-items-center justify-content-end">
-                                    Total Employees
-                                    <a href="#" class="text-muted ms-2 sort-link" data-column="total">
-                                        <i class="bx bx-sort-alt-2"></i>
-                                    </a>
-                                </div>
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach ($lgaCounts as $item)
-                            <tr>
-                                <td class="ps-4 fw-medium">
-                                    @if($item->lga)
-                                        <i class="bx bx-map-pin text-primary me-2"></i>{{ $item->lga }}
-                                    @else
-                                        <span class="badge bg-light text-secondary">
-                                            <i class="bx bx-error-circle me-1"></i>Not Specified
-                                        </span>
-                                    @endif
-                                </td>
-                                <td class="text-end pe-4">
-                                    <div class="d-flex align-items-center justify-content-end">
-                                        <div class="progress flex-grow-1 me-2" style="height: 8px; max-width: 150px;">
-                                            <div class="progress-bar bg-primary" role="progressbar" 
-                                                style="width: {{ ($item->total / max($lgaCounts->max('total'), 1)) * 100 }}%" 
-                                                aria-valuenow="{{ $item->total }}" aria-valuemin="0" 
-                                                aria-valuemax="{{ $lgaCounts->max('total') }}"></div>
-                                        </div>
-                                        <span class="fw-bold">{{ $item->total }}</span>
+                                    <div class="progress flex-grow-1 me-2" style="height: 8px; max-width: 150px;">
+                                        <div class="progress-bar bg-primary" role="progressbar" 
+                                            style="width: {{ ($item->total / max($lgaCounts->max('total'), 1)) * 100 }}%" 
+                                            aria-valuenow="{{ $item->total }}" aria-valuemin="0" 
+                                            aria-valuemax="{{ $lgaCounts->max('total') }}"></div>
                                     </div>
-                                </td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-            </div>
-            {{ $lgaCounts->links() }} <!-- Pagination Links -->
-        @else
-            <div class="alert alert-info m-4">
-                <div class="d-flex align-items-center">
-                    <i class="bx bx-info-circle fs-4 me-2"></i>
-                    <div>
-                        <h6 class="mb-0">No Data Available</h6>
-                        <p class="mb-0">No employee data found for the selected filters.</p>
-                    </div>
-                </div>
-            </div>
-        @endif
-    </div>
-    
-    <div class="card-footer bg-white py-3">
-        <div class="d-flex justify-content-between align-items-center">
-            <span class="text-muted small">
-                @if(request('mda_id') || request('gender'))
-                    Filtered results: {{ $lgaCounts->count() }} LGAs
-                @else
-                    Showing all {{ $lgaCounts->count() }} Local Government Areas
-                @endif
-            </span>
-            <div>
-                <a href="#" class="btn btn-sm btn-outline-secondary me-2">
-                    <i class="bx bx-download me-1"></i> Download CSV
-                </a>
-                <a href="#" class="btn btn-sm btn-outline-primary">
-                    <i class="bx bx-chart me-1"></i> Detailed Analysis
-                </a>
+                                    <span class="fw-bold">{{ $item->total }}</span>
+                                </div>
+                            </td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+
+            <div class="mt-3">
+                {{ $lgaCounts->links('pagination::bootstrap-5') }}
             </div>
         </div>
     </div>
 </div>
+
 
 </div>
 

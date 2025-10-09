@@ -21,8 +21,7 @@ class TransferHistoryController extends Controller
         $transfers = TransferHistory::where('employee_id', $employee->id)
             ->with(['previousMda', 'currentMda', 'document', 'user'])
             ->orderBy('effective_date', 'desc')
-            ->paginate(15);
-
+            ->paginate(2);
         return view('admin.transfer.index', compact('employee', 'transfers'));
     }
 
@@ -111,7 +110,6 @@ class TransferHistoryController extends Controller
         if ($transfer->employee_id !== $employee->id) {
             return abort(404);
         }
-
         // Don't delete the document, as it might be referenced elsewhere
         $transfer->delete();
 
@@ -119,7 +117,6 @@ class TransferHistoryController extends Controller
             'message' => 'Transfer record deleted successfully',
             'alert-type' => 'success'
         );
-
 
         return redirect()->route('employees.transfers.index', $employee->id)
             ->with($notification);

@@ -17,6 +17,7 @@
         </div>
     </div>
     <!--end breadcrumb-->
+    <hr>
 
     <div class="container-fluid">
         <!-- Header Section -->
@@ -155,7 +156,7 @@
                                     </div>
                                     <div>
                                         <h6 class="mb-1">Promotion Letter</h6>
-                                        <p class="text-muted mb-0">Click to view the official promotion document</p>
+                                        <p class="text-muted mb-0">Click to view promotion document</p>
                                     </div>
                                 </div>
                                 <div class="d-flex gap-2">

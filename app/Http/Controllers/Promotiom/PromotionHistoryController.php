@@ -17,14 +17,32 @@ class PromotionHistoryController extends Controller
     /**
      * Display a listing of the employee's promotion history.
      */
-    public function index(Employee $employee)
-    {
-        $promotions = PromotionHistory::where('employee_id', $employee->id)
-        ->with(['previousGradeLevel','previousStep','currentGradeLevel','currentStep','document', 
-            'user'])->orderBy('effective_date', 'desc')->paginate(5);
-        
-        return view('admin.promotion.index', compact('employee', 'promotions'));
+    public function index(Request $request, Employee $employee)
+{
+    $query = PromotionHistory::where('employee_id', $employee->id)
+        ->with([
+            'previousGradeLevel',
+            'previousStep',
+            'currentGradeLevel',
+            'currentStep',
+            'document',
+            'user'
+        ]);
+    // Search filter
+    if ($request->has('search') && $request->search != '') {
+        $search = $request->search;
+        $query->where(function ($q) use ($search) {
+            $q->where('promotion_type', 'LIKE', "%{$search}%");
+        });
     }
+    // Order & paginate
+    $promotions = $query->orderBy('effective_date', 'desc')->paginate(5);
+    // Keep search term during pagination
+    $promotions->appends(['search' => $request->search]);
+
+    return view('admin.promotion.index', compact('employee', 'promotions'));
+}
+
 
     /**
      * Show the form for creating a new promotion record.
