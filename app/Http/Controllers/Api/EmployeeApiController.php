@@ -18,7 +18,7 @@ class EmployeeApiController extends Controller
     if (!$employee_number) {
         return response()->json([
             'status' => 'error',
-            'message' => 'Employee number is required',
+            'message' => 'Subhead number is required',
         ], 400);
     }
 
