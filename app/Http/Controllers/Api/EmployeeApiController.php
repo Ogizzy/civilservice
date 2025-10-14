@@ -27,7 +27,7 @@ class EmployeeApiController extends Controller
     if (!$employee) {
         return response()->json([
             'status' => 'error',
-            'message' => 'Employee not found',
+            'message' => 'No Employee record found for the provided Subhead Number.',
         ], 404);
     }
 
@@ -53,7 +53,7 @@ public function updateContact(Request $request)
     if (!$employee) {
         return response()->json([
             'status' => 'error',
-            'message' => 'Employee not found with the provided Subhead Number',
+            'message' => 'No Employee record found.',
         ], 404);
     }
 
