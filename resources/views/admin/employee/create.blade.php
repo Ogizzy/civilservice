@@ -216,7 +216,7 @@
                                         <select class="form-select border-start-0 ps-0 @error('level_id') is-invalid @enderror" id="level_id" name="level_id" required>
                                             <option value="">Select Grade Level</option>
                                             @foreach($gradeLevels as $level)
-                                                <option value="{{ $level->id }}" @selected(old('level_id') == $level->id)>{{ $level->level }}</option>
+                                                <option value="{{ $level->id }}" @selected(old('level_id') == $level->id)>Grade Level {{ $level->level }}</option>
                                             @endforeach
                                         </select>
                                     </div>
@@ -232,7 +232,7 @@
                                         <select class="form-select border-start-0 ps-0 @error('step_id') is-invalid @enderror" id="step_id" name="step_id" required>
                                             <option value="">Select Step</option>
                                             @foreach($steps as $step)
-                                                <option value="{{ $step->id }}" @selected(old('step_id') == $step->id)>{{ $step->step }}</option>
+                                                <option value="{{ $step->id }}" @selected(old('step_id') == $step->id)>Step {{ $step->step }}</option>
                                             @endforeach
                                         </select>
                                     </div>

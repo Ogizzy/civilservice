@@ -90,7 +90,7 @@
                          <!-- Document Upload -->
                     <div class="form-group mb-4">
                         <label class="form-label">
-                            <i class="fas fa-file-upload me-2"></i> Upload Promotion Letter <span class="required">*</span>
+                            <i class="fas fa-file-upload me-2"></i> Upload Transfer Letter <span class="text-danger">*</span>
                         </label>
                         <div class="file-upload-wrapper">
                             <div class="file-upload-area" id="fileUploadArea">
@@ -99,7 +99,7 @@
                                     <h6>Drop files here or click to browse</h6>
                                     <p>Max size: 10MB | Formats: PDF, DOCX, JPEG</p>
                                 </div>
-                                <input type="file" name="document_file" class="file-input @error('document_file') is-invalid @enderror" id="documentFile" accept=".pdf,.docx,.jpeg,.jpg">
+                                <input type="file" name="document_file" class="file-input  @error('document_file') is-invalid @enderror" id="documentFile" accept=".pdf,.docx,.jpeg,.jpg" required>
                             </div>
                             <div class="file-preview" id="filePreview" style="display: none;"></div>
                         </div>
