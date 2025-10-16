@@ -59,7 +59,7 @@ class EmployeeApiController extends Controller
         if (!$employee) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'Employee not found with the provided Subhead number',
+                'message' => 'Employee not found with the provided Subhead Number',
             ], 404);
         }
 
