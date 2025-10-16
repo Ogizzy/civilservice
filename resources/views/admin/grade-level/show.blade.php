@@ -17,7 +17,7 @@
             </div>
         </div>
         <!--end breadcrumb-->
-
+        <hr>
         <div class="container">
             <div class="d-flex justify-content-between align-items-center mb-3">
                 <h4></h4>
@@ -37,11 +37,24 @@
 
         @if ($gradeLevel->employees->count() > 0)
             <div class="mt-4">
-                <h5>List of Employees on Grade Level:  <span style="color: royalblue">{{ $gradeLevel->level }}</span></h5>
+                <h5>List of Employees on Grade Level: <span style="color: royalblue">{{ $gradeLevel->level }}</span></h5>
                 <div class="card">
                     <div class="card-body">
+                        <!-- Toolbar for search + export/print -->
+                        <div class="d-flex justify-content-between mb-3">
+                            <!-- Laravel Search -->
+                            <form method="GET" action="{{ route('grade-levels.show', $gradeLevel->id) }}" class="d-flex">
+                                <input type="text" name="search" class="form-control me-2"
+                                    value="{{ request('search') }}" placeholder="Search employees...">
+                                <button type="submit" class="btn btn-primary">Search</button>
+                            </form>
+
+                            <!-- Export/Print Buttons -->
+                            <div id="exportButtons"></div>
+                        </div>
+
                         <div class="table-responsive">
-                            <table id="example2" class="table table-striped table-bordered">
+                            <table id="gradelevelsTable" class="table table-striped table-bordered">
                                 <thead class="thead-dark">
                                     <tr>
                                         <th>Employee No</th>
@@ -57,12 +70,15 @@
                                             <td>{{ $employee->employee_number }}</td>
                                             <td>{{ $employee->surname }} {{ $employee->first_name }}</td>
                                             <td>{{ $employee->mda->mda ?? 'N/A' }}</td>
-                                            <td>GL {{ $employee->gradeLevel->level ?? 'N/A' }}</td>
+                                            <td>Grade Level {{ $employee->gradeLevel->level ?? 'N/A' }}</td>
                                             <td>Step {{ $employee->step->step ?? 'N/A' }}</td>
                                         </tr>
                                     @endforeach
                                 </tbody>
                             </table>
+                            <div class="mt-3">
+                                {{ $employees->links('pagination::bootstrap-5') }}
+                            </div>
                         </div>
         @endif
     </div>
@@ -75,18 +91,38 @@
 
     <script>
         $(document).ready(function() {
-            $('#example').DataTable();
-        });
-    </script>
-    <script>
-        $(document).ready(function() {
-            var table = $('#example2').DataTable({
-                lengthChange: false,
-                buttons: ['copy', 'excel', 'pdf', 'print']
+            // Initialize DataTables but disable pagination/search
+            let table = $('#gradelevelsTable').DataTable({
+                paging: false, // ❌ Disable DataTables pagination
+                searching: false, // ❌ Disable DataTables search (we use Laravel search)
+                info: false,
+                ordering: true,
+                dom: 'Bfrtip',
+                buttons: [{
+                        extend: 'copy',
+                        className: 'btn btn-sm btn-warning'
+                    },
+                    {
+                        extend: 'excel',
+                        className: 'btn btn-sm btn-success'
+                    },
+                    {
+                        extend: 'csv',
+                        className: 'btn btn-sm btn-info'
+                    },
+                    {
+                        extend: 'pdf',
+                        className: 'btn btn-sm btn-danger'
+                    },
+                    {
+                        extend: 'print',
+                        className: 'btn btn-sm btn-primary'
+                    }
+                ]
             });
 
-            table.buttons().container()
-                .appendTo('#example2_wrapper .col-md-6:eq(0)');
+            // Move buttons to custom div
+            table.buttons().container().appendTo('#exportButtons');
         });
     </script>
 @endsection

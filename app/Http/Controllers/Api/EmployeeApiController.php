@@ -46,28 +46,24 @@ class EmployeeApiController extends Controller
      * (2) Update employee phone number and email.
      */
 
-    public function updateContact(Request $request, $employee_number = null)
+     public function updateContact(Request $request, $employee_number)
     {
-        // Accept from URL parameter or request body
-        $employee_number = $employee_number ?? $request->employee_number;
-
-        $request->merge(['employee_number' => $employee_number]);
-
         $request->validate([
-            'employee_number' => 'required|string',
             'phone' => 'required|string|max:11',
             'email' => 'required|email|max:255',
         ]);
 
+        // Find the employee by their number
         $employee = Employee::where('employee_number', $employee_number)->first();
 
         if (!$employee) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'No employee record found for the provided Subhead Number.',
+                'message' => 'Employee not found with the provided number',
             ], 404);
         }
 
+        // Update phone and email
         $employee->update([
             'phone' => $request->phone,
             'email' => $request->email,
@@ -81,6 +77,6 @@ class EmployeeApiController extends Controller
                 'phone' => $employee->phone,
                 'email' => $employee->email,
             ]
-        ]);
+        ], 200);
     }
 }

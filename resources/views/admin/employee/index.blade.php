@@ -152,7 +152,7 @@
                         dom: 'Bfrtip',
                         buttons: [{
                                 extend: 'copy',
-                                className: 'btn btn-sm btn-secondary'
+                                className: 'btn btn-sm btn-warning'
                             },
                             {
                                 extend: 'excel',

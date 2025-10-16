@@ -11,31 +11,49 @@
                     <ol class="breadcrumb mb-0 p-0">
                         <li class="breadcrumb-item"><a href="javascript:;"><i class="bx bx-home-alt"></i></a>
                         </li>
-                        <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Dashboard</a></li>
                         <li class="breadcrumb-item active" aria-current="page">List of Grade Levels</li>
+                        <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Dashboard</a></li>
                     </ol>
                 </nav>
             </div>
+
+            <div class="mb-0 text-uppercase" style="margin-left: auto;">
+                <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal"
+                    data-bs-target="#gradeLevelModal" onclick="createGradeLevel()">
+                    <i class="lni lni-circle-plus"></i> Add Grade Level
+                </button>
+            </div>
+
         </div>
         <!--end breadcrumb-->
+        
+        <h6 class="mb-0 text-uppercase">Grade Levels</h6>
 
+        <hr>
         <div class="container">
-            <div class="d-flex justify-content-between align-items-center mb-3">
-                <h4></h4>
-                <div>
-                    <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#gradeLevelModal" onclick="createGradeLevel()">
-                        <i class="lni lni-circle-plus"></i> Add Grade Level
-                    </button>
-                </div>
-            </div>
+
 
             @if (session('success'))
                 <div class="alert alert-success">{{ session('success') }}</div>
             @endif
             <div class="card">
                 <div class="card-body">
+
+                     <!-- Toolbar for search + export/print -->
+                    <div class="d-flex justify-content-between mb-3">
+                        <!-- Laravel Search -->
+                        <form method="GET" action="{{ route('grade-levels.index') }}" class="d-flex">
+                            <input type="text" name="search" class="form-control me-2" value="{{ request('search') }}"
+                                placeholder="Search grade levels...">
+                            <button type="submit" class="btn btn-primary">Search</button>
+                        </form>
+
+                        <!-- Export/Print Buttons -->
+                        <div id="exportButtons"></div>
+                    </div>
+
                     <div class="table-responsive">
-                        <table id="example2" class="table table-striped table-bordered">
+                        <table id="GradelevelTable" class="table table-striped table-bordered">
                             <thead class="thead-dark">
                                 <tr>
                                     <th>S/N</th>
@@ -46,20 +64,21 @@
                             <tbody>
                                 @forelse($gradeLevels as $index => $level)
                                     <tr>
-                                        <td>{{ $index + 1 }}</td>
-                                        <td>GL {{ $level->level }}</td>
+                                        <td>{{ $gradeLevels->firstItem() + $index }}</td>
+                                        <td>Grade Level {{ $level->level }}</td>
                                         <td>
                                             <a href="{{ route('grade-levels.show', $level->id) }}"
-                                                class="btn btn-info btn-sm"><i class="fadeIn animated bx bx-list-ul"></i></a>
-                                            <button type="button" 
-                                                class="btn btn-warning btn-sm" 
+                                                class="btn btn-info btn-sm"><i
+                                                    class="fadeIn animated bx bx-list-ul"></i></a>
+                                            <button type="button" class="btn btn-warning btn-sm"
                                                 onclick="editGradeLevel({{ $level->id }}, '{{ $level->level }}')">
                                                 <i class="lni lni-pencil-alt"></i>
                                             </button>
                                             <form action="{{ route('grade-levels.destroy', $level->id) }}" method="POST"
                                                 class="d-inline">
                                                 @csrf @method('DELETE')
-                                                <button class="btn btn-danger btn-sm delete-btn" ><i class="lni lni-trash"></i></button>
+                                                <button class="btn btn-danger btn-sm delete-btn"><i
+                                                        class="lni lni-trash"></i></button>
                                             </form>
                                         </td>
                                     </tr>
@@ -70,6 +89,9 @@
                                 @endforelse
                             </tbody>
                         </table>
+                        <div class="mt-3">
+                            {{ $gradeLevels->links('pagination::bootstrap-5') }}
+                        </div>
                     </div>
                 </div>
             </div>
@@ -90,8 +112,11 @@
                         <input type="hidden" id="method_field" name="_method" value="POST">
                         <div class="mb-3">
                             <label>Grade Level Name</label>
-                            <input type="text" id="level" name="level" class="form-control" placeholder="Enter Grade Level" required>
-                            @error('level') <span class="text-danger">{{ $message }}</span> @enderror
+                            <input type="text" id="level" name="level" class="form-control"
+                                placeholder="Enter Grade Level" required>
+                            @error('level')
+                                <span class="text-danger">{{ $message }}</span>
+                            @enderror
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -106,7 +131,7 @@
     <script>
         $(document).ready(function() {
             $('#example').DataTable();
-            
+
             // Initialize DataTable with buttons
             var table = $('#example2').DataTable({
                 lengthChange: false,
@@ -116,43 +141,82 @@
             table.buttons().container()
                 .appendTo('#example2_wrapper .col-md-6:eq(0)');
         });
-        
+
         // Function for creating a new grade level
         function createGradeLevel() {
             // Set modal title for add
             $('#gradeLevelModalLabel').text('Add Grade Level');
-            
+
             // Clear form fields
             $('#gradeLevelForm').trigger('reset');
-            
+
             // Reset form action and method
             $('#gradeLevelForm').attr('action', '{{ route('grade-levels.store') }}');
             $('#method_field').val('POST');
-            
+
             // Reset button text
             $('#submitBtn').removeClass('btn-primary').addClass('btn-success').text('Save');
-            
+
             // Open modal
             $('#gradeLevelModal').modal('show');
         }
-        
+
         // Function for editing a grade level
         function editGradeLevel(id, level) {
             // Set modal title for edit
             $('#gradeLevelModalLabel').text('Edit Grade Level');
-            
+
             // Fill the form with grade level data
             $('#level').val(level);
-            
+
             // Change form action and method for update
-            $('#gradeLevelForm').attr('action', '{{ url("grade-levels") }}/' + id);
+            $('#gradeLevelForm').attr('action', '{{ url('grade-levels') }}/' + id);
             $('#method_field').val('PUT');
-            
+
             // Change button text
             $('#submitBtn').removeClass('btn-success').addClass('btn-primary').text('Update');
-            
+
             // Open modal
             $('#gradeLevelModal').modal('show');
         }
     </script>
+
+        <!-- Datatable and jQuery scripts -->
+      <script>
+                $(document).ready(function() {
+                    // Initialize DataTables but disable pagination/search
+                    let table = $('#GradelevelTable').DataTable({
+                        paging: false, // ❌ Disable DataTables pagination
+                        searching: false, // ❌ Disable DataTables search (we use Laravel search)
+                        info: false,
+                        ordering: true,
+                        dom: 'Bfrtip',
+                        buttons: [{
+                                extend: 'copy',
+                                className: 'btn btn-sm btn-warning'
+                            },
+                            {
+                                extend: 'excel',
+                                className: 'btn btn-sm btn-success'
+                            },
+                            {
+                                extend: 'csv',
+                                className: 'btn btn-sm btn-info'
+                            },
+                            {
+                                extend: 'pdf',
+                                className: 'btn btn-sm btn-danger'
+                            },
+                            {
+                                extend: 'print',
+                                className: 'btn btn-sm btn-primary'
+                            }
+                        ]
+                    });
+
+                    // Move buttons to custom div
+                    table.buttons().container().appendTo('#exportButtons');
+                });
+            </script>
+    
 @endsection

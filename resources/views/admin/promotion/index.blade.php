@@ -50,7 +50,7 @@
                         <!-- Laravel Search -->
                         <form method="GET" action="{{ route('employees.promotions.index', $employee->id) }}" class="d-flex">
                             <input type="text" name="search" class="form-control me-2" value="{{ request('search') }}"
-                                placeholder="Search employees...">
+                                placeholder="Search Promotion Type...">
                             <button type="submit" class="btn btn-primary">Search</button>
                         </form>
 
@@ -130,7 +130,7 @@
                         dom: 'Bfrtip',
                         buttons: [{
                                 extend: 'copy',
-                                className: 'btn btn-sm btn-secondary'
+                                className: 'btn btn-sm btn-warning'
                             },
                             {
                                 extend: 'excel',

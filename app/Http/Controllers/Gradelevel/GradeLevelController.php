@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Gradelevel;
 
+use App\Models\Employee;
 use App\Models\GradeLevel;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -14,11 +15,21 @@ class GradeLevelController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
-    {
-        $gradeLevels = GradeLevel::orderBy('level', 'asc')->get();
-        return view('admin.grade-level.index', compact('gradeLevels'));
+    public function index(Request $request)
+{
+    $query = GradeLevel::query();
+
+    // search functionality
+    if ($request->has('search') && $request->search != '') {
+        $query->where(function($q) use ($request) {
+            $q->where('level', 'LIKE', '%'.$request->search.'%');
+        });
     }
+    $perPage = $request->get('per_page', 10); // default to 10 per page
+    $gradeLevels = $query->orderBy('level', 'asc')->paginate($perPage);
+    return view('admin.grade-level.index', compact('gradeLevels'));
+}
+
 
     /**
      * Show the form for creating a new grade level
@@ -47,7 +58,6 @@ class GradeLevelController extends Controller
                 ->withErrors($validator)
                 ->withInput();
         }
-
         GradeLevel::create([
             'level' => $request->level,
         ]);
@@ -66,12 +76,28 @@ class GradeLevelController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
-    {
-        $gradeLevel = GradeLevel::findOrFail($id);
-        return view('admin.grade-level.show', compact('gradeLevel'));
-    }
+    public function show(Request $request, $id)
+{
+    // Find the grade level
+    $gradeLevel = GradeLevel::findOrFail($id);
 
+    // Query employees that belong to this grade level
+    $query = Employee::where('level_id', $id);
+
+    // Apply search filter
+    if ($request->has('search') && $request->search != '') {
+        $query->where(function($q) use ($request) {
+            $q->where('surname', 'LIKE', '%'.$request->search.'%')
+              ->orWhere('first_name', 'LIKE', '%'.$request->search.'%')
+              ->orWhere('middle_name', 'LIKE', '%'.$request->search.'%');
+        });
+    }
+    // Pagination
+    $perPage = $request->input('per_page', 5);
+    $employees = $query->orderBy('surname')->paginate($perPage);
+    
+    return view('admin.grade-level.show', compact('gradeLevel', 'employees'));
+}
     /**
      * Show the form for editing the specified grade level
      *
