@@ -9,5 +9,9 @@ Route::get('/user', function (Request $request) {
 })->middleware('auth:sanctum');
 
 Route::get('/employee/validate/{employee_number?}', [EmployeeApiController::class, 'validateCivilServant']);
-Route::post('/employee/update/{employee_number}', [EmployeeApiController::class, 'updateContact']);
+// Route::post('/employee/update/{employee_number}', [EmployeeApiController::class, 'updateContact']);
 // Route::middleware('auth:sanctum')->post('/employee/update', [EmployeeApiController::class, 'updateContact']);
+// protected group
+Route::middleware('auth:sanctum')->group(function () {
+    Route::post('/employee/update/{employee_number}', [EmployeeApiController::class, 'updateContact']);
+});

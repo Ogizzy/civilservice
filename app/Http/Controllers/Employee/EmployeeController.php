@@ -46,7 +46,8 @@ class EmployeeController extends Controller
             $q->where('employee_number', 'LIKE', '%'.$request->search.'%')
               ->orWhere('surname', 'LIKE', '%'.$request->search.'%')
               ->orWhere('first_name', 'LIKE', '%'.$request->search.'%')
-              ->orWhere('middle_name', 'LIKE', '%'.$request->search.'%');
+              ->orWhere('middle_name', 'LIKE', '%'.$request->search.'%')
+              ->orWhere('email', 'LIKE', '%'.$request->search.'%');
         });
     }
     $perPage = $request->input('per_page', 10);

@@ -63,7 +63,7 @@
                                         <td>{{ $employee->employee_number }}</td>
                                         <td>{{ $employee->surname }} {{ $employee->first_name }}</td>
                                         <td>
-                                            GL{{ $employee->gradeLevel->level ?? 'N/A' }}/Step
+                                            GL {{ $employee->gradeLevel->level ?? 'N/A' }} / Step
                                             {{ $employee->step->step ?? 'N/A' }}
                                         </td>
                                         <td>
