@@ -12,28 +12,49 @@ class MdaController extends Controller
     /**
      * Display a listing of the MDAs.
      */
-    public function index()
-    {
-        $mdas = MDA::all();// Show all MDAs, both active and inactive
-        // $mdas = Mda::where('status', true)->get(); // Only active MDAs
-        return view('admin.mda.index', compact('mdas'));
-    }
 
-    public function deactivate(Mda $mda)
-    {
-        $mda->status = 0;
-        $mda->save();
-    
-        return redirect()->route('mdas.index')->with('message', 'MDA deactivated successfully.');
+   public function index(Request $request)
+{
+    // Filter type: 'active', 'inactive', or 'all'
+    $filter = $request->input('filter', 'active');
+
+    // Base query
+    $query = Mda::query();
+
+    // Apply filter
+    if ($filter === 'active') {
+        $query->where('status', 1);
+    } elseif ($filter === 'inactive') {
+        $query->where('status', 0);
     }
     
-    public function activate(Mda $mda)
-    {
-        $mda->status = 1;
-        $mda->save();
-    
-        return redirect()->route('mdas.index')->with('message', 'MDA activated successfully.');
+      if ($request->has('search') && $request->search != '') {
+        $query->where('mda', 'LIKE', '%'.$request->search.'%');
     }
+    // Pagination (10 per page)
+    $mdas = $query->orderBy('mda', 'asc')->paginate(10);
+
+    // Keep query params for pagination links
+    $mdas->appends($request->query());
+
+    return view('admin.mda.index', compact('mdas', 'filter'));
+}
+
+  // In your MdaController
+public function activate($id)
+{
+    $mda = Mda::findOrFail($id);
+    $mda->update(['status' => 1]);
+    return redirect()->back()->with('success', 'MDA activated successfully');
+}
+
+public function deactivate($id)
+{
+    $mda = Mda::findOrFail($id);
+    $mda->update(['status' => 0]);
+    return redirect()->back()->with('success', 'MDA deactivated successfully');
+}
+
     
     /**
      * Show the form for creating a new MDA.

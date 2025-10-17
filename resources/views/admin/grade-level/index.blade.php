@@ -28,14 +28,13 @@
         <!--end breadcrumb-->
         
         <h6 class="mb-0 text-uppercase">Grade Levels</h6>
-
         <hr>
         <div class="container">
-
 
             @if (session('success'))
                 <div class="alert alert-success">{{ session('success') }}</div>
             @endif
+
             <div class="card">
                 <div class="card-body">
 
@@ -47,7 +46,6 @@
                                 placeholder="Search grade levels...">
                             <button type="submit" class="btn btn-primary">Search</button>
                         </form>
-
                         <!-- Export/Print Buttons -->
                         <div id="exportButtons"></div>
                     </div>

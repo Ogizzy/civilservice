@@ -94,6 +94,9 @@ Route::delete('/mdas/{mda}', [MdaController::class, 'destroy'])->name('mdas.dest
 Route::get('/mdas/{mda}/deactivate', [MdaController::class, 'deactivate'])->name('mdas.deactivate');
 Route::get('/mdas/{mda}/activate', [MdaController::class, 'activate'])->name('mdas.activate');
 
+Route::get('/mdas/{id}/activate', [MdaController::class, 'activate']);
+Route::get('/mdas/{id}/deactivate', [MdaController::class, 'deactivate']);
+
 
 
 // All Pay Groups Routes

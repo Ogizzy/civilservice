@@ -14,11 +14,23 @@ class StepController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
-    {
-        $steps = Step::orderBy('step', 'asc')->get();
-        return view('admin.step.index', compact('steps'));
+ public function index(Request $request)
+{
+    // Start query
+    $query = Step::query();
+
+    // Apply search filter
+    if ($request->has('search') && $request->search != '') {
+        $query->where('step', 'LIKE', '%'.$request->search.'%');
     }
+    // Pagination
+    $perPage = $request->input('per_page', 10);
+    $steps = $query->orderBy('step', 'asc')->paginate($perPage);
+    // Append search term to pagination links
+    $steps->appends($request->query());
+
+    return view('admin.step.index', compact('steps'));
+}
 
     /**
      * Show the form for creating a new step

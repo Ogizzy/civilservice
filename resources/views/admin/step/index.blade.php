@@ -3,39 +3,54 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
 
     <div class="page-content">
-        <!--breadcrumb-->
+         <!--breadcrumb-->
         <div class="page-breadcrumb d-none d-sm-flex align-items-center mb-3">
-            <div class="breadcrumb-title pe-3">Manage Steps</div>
+            <div class="breadcrumb-title pe-3">Steps</div>
             <div class="ps-3">
                 <nav aria-label="breadcrumb">
                     <ol class="breadcrumb mb-0 p-0">
                         <li class="breadcrumb-item"><a href="javascript:;"><i class="bx bx-home-alt"></i></a>
                         </li>
                         <li class="breadcrumb-item active" aria-current="page">List of Steps</li>
+                        <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Dashboard</a></li>
                     </ol>
                 </nav>
             </div>
-        </div>
-        <!--end breadcrumb-->
 
-        <div class="container">
-            <div class="d-flex justify-content-between align-items-center mb-3">
-                <h4></h4>
-                <div>
-                    <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addStepModal">
+            <div class="mb-0 text-uppercase" style="margin-left: auto;">
+                <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addStepModal">
                         <i class="lni lni-circle-plus"></i> Add Step
                     </button>
-                </div>
             </div>
+        </div>
+        <!--end breadcrumb-->
+          <h6 class="mb-0 text-uppercase">Manage Steps</h6>
 
+        <hr>
+
+        <div class="container">
             @if (session('success'))
                 <div class="alert alert-success">{{ session('success') }}</div>
             @endif
 
             <div class="card">
                 <div class="card-body">
+
+                     <!-- Toolbar for search + export/print -->
+                    <div class="d-flex justify-content-between mb-3">
+                        <!-- Laravel Search -->
+                        <form method="GET" action="{{ route('steps.index') }}" class="d-flex">
+                            <input type="text" name="search" class="form-control me-2" value="{{ request('search') }}"
+                                placeholder="Search steps...">
+                            <button type="submit" class="btn btn-primary">Search</button>
+                        </form>
+
+                        <!-- Export/Print Buttons -->
+                        <div id="exportButtons"></div>
+                    </div>
+
                     <div class="table-responsive">
-                        <table id="example2" class="table table-striped table-bordered">
+                        <table id="StepTable" class="table table-striped table-bordered">
                             <thead class="thead-dark">
                                 <tr>
                                     <th>S/N</th>
@@ -46,15 +61,15 @@
                             <tbody>
                                 @forelse($steps as $index => $step)
                                     <tr>
-                                        <td>{{ $index + 1 }}</td>
-                                        <td>{{ $step->step }}</td>
+                                        <td>{{ $steps->firstItem() + $index }}</td>
+                                        <td>Step {{ $step->step }}</td>
                                         <td>
                                             <button class="btn btn-info btn-sm view-btn" 
                                                     data-bs-toggle="modal" 
                                                     data-bs-target="#viewStepModal" 
                                                     data-id="{{ $step->id }}"
                                                     data-step="{{ $step->step }}">
-                                                <i class="lni lni-eye"></i>
+                                                <i class="fadeIn animated bx bx-list-ul"></i>
                                             </button>
                                             <button class="btn btn-warning btn-sm edit-btn" 
                                                     data-bs-toggle="modal" 
@@ -79,6 +94,8 @@
                                 @endforelse
                             </tbody>
                         </table>
+                       <div class="mt-3">
+                           {{ $steps->links('pagination::bootstrap-5') }}
                     </div>
                 </div>
             </div>
@@ -201,4 +218,43 @@
             });
         });
     </script>
+
+      <!-- Datatable and jQuery scripts -->
+      <script>
+                $(document).ready(function() {
+                    // Initialize DataTables but disable pagination/search
+                    let table = $('#StepTable').DataTable({
+                        paging: false, // ❌ Disable DataTables pagination
+                        searching: false, // ❌ Disable DataTables search (we use Laravel search)
+                        info: false,
+                        ordering: true,
+                        dom: 'Bfrtip',
+                        buttons: [{
+                                extend: 'copy',
+                                className: 'btn btn-sm bg-secondary text-white'
+                            },
+                            {
+                                extend: 'excel',
+                                className: 'btn btn-sm bg-success text-white'
+                            },
+                            {
+                                extend: 'csv',
+                                className: 'btn btn-sm bg-info text-white'
+                            },
+                            {
+                                extend: 'pdf',
+                                className: 'btn btn-sm bg-danger text-white'
+                            },
+                            {
+                                extend: 'print',
+                                className: 'btn btn-sm bg-primary text-white'
+                            }
+                        ]
+                    });
+
+                    // Move buttons to custom div
+                    table.buttons().container().appendTo('#exportButtons');
+                });
+            </script>
+    
 @endsection
