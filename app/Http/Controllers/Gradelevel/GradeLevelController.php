@@ -89,11 +89,12 @@ class GradeLevelController extends Controller
         $query->where(function($q) use ($request) {
             $q->where('surname', 'LIKE', '%'.$request->search.'%')
               ->orWhere('first_name', 'LIKE', '%'.$request->search.'%')
-              ->orWhere('middle_name', 'LIKE', '%'.$request->search.'%');
+              ->orWhere('middle_name', 'LIKE', '%'.$request->search.'%')
+              ->orWhere('employee_number', 'LIKE', '%'.$request->search.'%');
         });
     }
     // Pagination
-    $perPage = $request->input('per_page', 5);
+    $perPage = $request->input('per_page', 10);
     $employees = $query->orderBy('surname')->paginate($perPage);
     
     return view('admin.grade-level.show', compact('gradeLevel', 'employees'));

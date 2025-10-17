@@ -193,23 +193,23 @@
                         dom: 'Bfrtip',
                         buttons: [{
                                 extend: 'copy',
-                                className: 'btn btn-sm btn-warning'
+                                className: 'btn btn-sm bg-secondary text-white'
                             },
                             {
                                 extend: 'excel',
-                                className: 'btn btn-sm btn-success'
+                                className: 'btn btn-sm bg-success text-white'
                             },
                             {
                                 extend: 'csv',
-                                className: 'btn btn-sm btn-info'
+                                className: 'btn btn-sm bg-info text-white'
                             },
                             {
                                 extend: 'pdf',
-                                className: 'btn btn-sm btn-danger'
+                                className: 'btn btn-sm bg-danger text-white'
                             },
                             {
                                 extend: 'print',
-                                className: 'btn btn-sm btn-primary'
+                                className: 'btn btn-sm bg-primary text-white'
                             }
                         ]
                     });

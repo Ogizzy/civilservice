@@ -26,14 +26,13 @@
                 </a>
             </div>
 
-            <div class="card">
+            <div class="card" >
                 <div class="card-body">
                     <p><strong>Grade Level:</strong> {{ $gradeLevel->level }}</p>
                     <p><strong>Total Employees:</strong> {{ $gradeLevel->employees->count() }}</p>
                 </div>
             </div>
         </div>
-
 
         @if ($gradeLevel->employees->count() > 0)
             <div class="mt-4">
@@ -49,14 +48,13 @@
                                 <button type="submit" class="btn btn-primary">Search</button>
                             </form>
 
-                            <!-- Export/Print Buttons -->
                             <div id="exportButtons"></div>
                         </div>
-
                         <div class="table-responsive">
                             <table id="gradelevelsTable" class="table table-striped table-bordered">
                                 <thead class="thead-dark">
                                     <tr>
+                                        <th>S/N</th>
                                         <th>Employee No</th>
                                         <th>Name</th>
                                         <th>MDA</th>
@@ -65,19 +63,24 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach ($gradeLevel->employees as $employee)
+                                    @forelse ($employees as $index => $employee)
                                         <tr>
+                                            <td>{{ $employees->firstItem() + $index }}</td>
                                             <td>{{ $employee->employee_number }}</td>
                                             <td>{{ $employee->surname }} {{ $employee->first_name }}</td>
                                             <td>{{ $employee->mda->mda ?? 'N/A' }}</td>
                                             <td>Grade Level {{ $employee->gradeLevel->level ?? 'N/A' }}</td>
                                             <td>Step {{ $employee->step->step ?? 'N/A' }}</td>
                                         </tr>
-                                    @endforeach
+                                    @empty
+                                        <tr>
+                                            <td colspan="6" class="text-center text-muted">No employees found</td>
+                                        </tr>
+                                    @endforelse
                                 </tbody>
                             </table>
                             <div class="mt-3">
-                                {{ $employees->links('pagination::bootstrap-5') }}
+                                {{ $employees->appends(request()->query())->links('pagination::bootstrap-5') }}
                             </div>
                         </div>
         @endif
@@ -100,28 +103,27 @@
                 dom: 'Bfrtip',
                 buttons: [{
                         extend: 'copy',
-                        className: 'btn btn-sm btn-warning'
+                        className: 'btn btn-sm bg-secondary text-white'
                     },
                     {
                         extend: 'excel',
-                        className: 'btn btn-sm btn-success'
+                        className: 'btn btn-sm bg-success text-white'
                     },
                     {
                         extend: 'csv',
-                        className: 'btn btn-sm btn-info'
+                        className: 'btn btn-sm bg-info text-white'
                     },
                     {
                         extend: 'pdf',
-                        className: 'btn btn-sm btn-danger'
+                        className: 'btn btn-sm bg-danger text-white'
                     },
                     {
                         extend: 'print',
-                        className: 'btn btn-sm btn-primary'
+                        className: 'btn btn-sm bg-primary text-white'
                     }
                 ]
             });
 
-            // Move buttons to custom div
             table.buttons().container().appendTo('#exportButtons');
         });
     </script>

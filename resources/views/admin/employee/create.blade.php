@@ -596,7 +596,7 @@
                                     <div class="rounded-circle bg-primary bg-opacity-10 p-2 me-3">
                                         <i class="bx bx-help-circle text-primary"></i>
                                     </div>
-                                    <span>Contact Office of Head of Service for help with grade levels</span>
+                                    <span>Contact Office of Head of Service for help</span>
                                 </li>
                             </ul>
                         </div>

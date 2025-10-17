@@ -18,7 +18,7 @@
             </div>
         </div>
         <!--end breadcrumb-->
-
+        <hr>
         <div class="container">
            
  @if (auth()->user()->role->role === 'Employee')
