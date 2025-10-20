@@ -24,7 +24,7 @@
                                 <div class="input-group">
                                    
                                     <button type="button" class="btn btn-primary px-4 d-flex align-items-center" onclick="createPayGroup()">
-                                        <i class="lni lni-circle-plus me-2"></i> Add New Pay Group
+                                        <i class="bx bxs-plus-square"></i> Add New Pay Group
                                     </button>
                                 </div>
                             </div>
@@ -69,7 +69,7 @@
 										<p class="mb-0 text-white">Total Pay Groups</p>
 										<h4 class="my-1 text-white">{{ $payGroups->count() }}</h4>
 									</div>
-									<div class="text-white ms-auto font-35"><i class="bx bx-group"></i>
+									<div class="text-white ms-auto font-35"><i class="bx bx-layer"></i>
 									</div>
 								</div>
 							</div>
@@ -122,25 +122,17 @@
 					</div> 
 				</div>
 
-        
-
         <!-- Main Content Area -->
         <div class="row">
             <div class="col-12">
                
-
                 <!-- Enhanced Pay Group Table -->
                 <div class="card border-0 shadow-sm">
                     <div class="card-body p-0">
                         <div class="table-responsive">
-                            <table id="payGroupsTable" class="table table-hover align-middle mb-0" style="width:100%">
+                            <table id="payGroupsTable" class="table table-striped table-bordered" style="width:100%">
                                 <thead class="thead-dark">
                                     <tr>
-                                        <th class="text-center" style="width: 60px">
-                                            <div class="form-check">
-                                                <input class="form-check-input" type="checkbox" id="selectAll">
-                                            </div>
-                                        </th>
                                         <th>S/N</th>
                                         <th>Pay Group</th>
                                         <th>Code</th>
@@ -152,24 +144,13 @@
                                 <tbody>
                                     @forelse($payGroups as $index => $group)
                                         <tr class="{{ !$group->status ? 'table-light opacity-75' : '' }}">
-                                            <td class="text-center">
-                                                <div class="form-check">
-                                                    <input class="form-check-input group-checkbox" type="checkbox" value="{{ $group->id }}">
-                                                </div>
-                                            </td>
+                                            
                                             <td class="text-center">{{ $index + 1 }}</td>
                                             <td>
-                                                <div class="d-flex align-items-center">
-                                                    {{-- <div class="avatar avatar-sm me-2 bg-light rounded">
-                                                        <span class="avatar-text rounded text-primary fw-bold">{{ substr($group->paygroup, 0, 2) }}</span>
-                                                    </div> --}}
-                                                    <div>
-                                                        <h6 class="mb-0 fw-semibold">{{ $group->paygroup }}</h6>
-                                                    </div>
-                                                </div>
+                                                {{ $group->paygroup }}
                                             </td>
                                             <td>
-                                                <span class="badge bg-light text-dark border">{{ $group->paygroup_code }}</span>
+                                               {{ $group->paygroup_code }}
                                             </td>
                                             
                                             <td>
@@ -196,7 +177,7 @@
                                                     <ul class="dropdown-menu dropdown-menu-end shadow">
                                                         <li>
                                                             <a href="{{ route('pay-groups.show', $group) }}" class="dropdown-item">
-                                                                <i class="lni lni-eye me-2"></i> View Details
+                                                                <i class="lni lni-eye"></i> View Details
                                                             </a>
                                                         </li>
                                                         <li>
@@ -273,7 +254,7 @@
                             <div class="mb-3">
                                 <label for="paygroup" class="form-label fw-medium">Pay Group Name <span class="text-danger">*</span></label>
                                 <input type="text" id="paygroup" name="paygroup" class="form-control form-control-lg" 
-                                    placeholder="e.g. Monthly Staff" required autofocus>
+                                    placeholder="e.g. CONPCASS" required autofocus>
                                 <div class="form-text">Enter a descriptive name for this pay group</div>
                                 @error('paygroup') <small class="text-danger">{{ $message }}</small> @enderror
                             </div>
@@ -283,7 +264,7 @@
                                 <div class="input-group">
                                     <span class="input-group-text bg-light">PG-</span>
                                     <input type="text" id="paygroup_code" name="paygroup_code" class="form-control form-control-lg" 
-                                        placeholder="e.g. MSTF001" required>
+                                        placeholder="e.g. CPS" required>
                                 </div>
                                 <div class="form-text">A unique identifier code for this pay group</div>
                                 @error('paygroup_code') <small class="text-danger">{{ $message }}</small> @enderror

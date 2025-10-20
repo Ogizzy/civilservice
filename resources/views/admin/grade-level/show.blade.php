@@ -21,19 +21,46 @@
         <div class="container">
             <div class="d-flex justify-content-between align-items-center mb-3">
                 <h4></h4>
-                <a href="{{ route('grade-levels.index') }}" class="btn btn-secondary btn-sm">
+                <a href="{{ route('grade-levels.index') }}" class="btn btn-danger btn-sm">
                     <i class="lni lni-shift-left"></i> Back
                 </a>
             </div>
-
-            <div class="card" >
-                <div class="card-body">
-                    <p><strong>Grade Level:</strong> {{ $gradeLevel->level }}</p>
-                    <p><strong>Total Employees:</strong> {{ $gradeLevel->employees->count() }}</p>
-                </div>
-            </div>
         </div>
 
+         <!-- Dashboard Stats Summary -->
+         <div class="row row-cols-1 row-cols-md-2 row-cols-xl-4">
+					<div class="col">
+						<div class="card radius-10 bg-primary">
+							<div class="card-body">
+								<div class="d-flex align-items-center">
+									<div>
+										<p class="mb-0 text-white">Grade Level:</p>
+										<h4 class="my-1 text-white">{{ $gradeLevel->level }}</h4>
+									</div>
+									<div class="text-white ms-auto font-35"><i class="bx bx-layer"></i>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+										
+					<div class="col">
+						<div class="card radius-10 bg-success">
+							<div class="card-body">
+								<div class="d-flex align-items-center">
+									<div>
+										<p class="mb-0 text-white">Total Employees</p>
+										<h4 class="my-1 text-white">{{ $gradeLevel->employees->count() }}</h4>
+									</div>
+									<div class="text-white ms-auto font-35"><i class="bx bx-user-check"></i>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					
+                    
+				</div>
         @if ($gradeLevel->employees->count() > 0)
             <div class="mt-4">
                 <h5>List of Employees on Grade Level: <span style="color: royalblue">{{ $gradeLevel->level }}</span></h5>

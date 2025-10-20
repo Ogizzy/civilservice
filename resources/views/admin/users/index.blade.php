@@ -41,8 +41,21 @@
 
             <div class="card">
                 <div class="card-body">
+                    <!-- Toolbar for search + export/print -->
+                    <div class="d-flex justify-content-between mb-3">
+                        <!-- Laravel Search -->
+                        <form method="GET" action="{{ route('roles.index') }}" class="d-flex">
+                            <input type="text" name="search" class="form-control me-2" value="{{ request('search') }}"
+                                placeholder="Search roles...">
+                            <button type="submit" class="btn btn-primary">Search</button>
+                        </form>
+
+                        <!-- Export/Print Buttons -->
+                        <div id="exportButtons"></div>
+                    </div>
+
                     <div class="table-responsive">
-                        <table id="example2" class="table table-striped table-bordered">
+                        <table id="roleUsersTable" class="table table-striped table-bordered">
                             <thead class="thead-dark">
                                 <tr>
                                     <th>S/N</th>
@@ -216,4 +229,41 @@
                 });
             });
         </script>
+
+         <script>
+                $(document).ready(function() {
+                    // Initialize DataTables but disable pagination/search
+                    let table = $('#roleUsersTable').DataTable({
+                        paging: false, 
+                        searching: false, 
+                        info: false,
+                        ordering: true,
+                        dom: 'Bfrtip',
+                        buttons: [{
+                                extend: 'copy',
+                                className: 'btn btn-sm bg-secondary text-white'
+                            },
+                            {
+                                extend: 'excel',
+                                className: 'btn btn-sm bg-success text-white'
+                            },
+                            {
+                                extend: 'csv',
+                                className: 'btn btn-sm bg-info text-white'
+                            },
+                            {
+                                extend: 'pdf',
+                                className: 'btn btn-sm bg-danger text-white'
+                            },
+                            {
+                                extend: 'print',
+                                className: 'btn btn-sm bg-primary text-white'
+                            }
+                        ]
+                    });
+
+                    // Move buttons to custom div
+                    table.buttons().container().appendTo('#exportButtons');
+                });
+            </script>
 @endsection

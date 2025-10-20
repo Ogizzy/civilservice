@@ -74,7 +74,7 @@ class PayGroupController extends Controller
         ->where('paygroup_id', $payGroup->id)
         ->select(['id', 'employee_number', 'surname', 'first_name', 'mda_id', 'level_id', 'step_id']);
 
-    // Apply search filter
+        // Apply search filter
     if ($request->filled('search')) {
         $search = $request->input('search');
         $query->where(function ($q) use ($search) {
@@ -85,12 +85,9 @@ class PayGroupController extends Controller
               ->orWhere('middle_name', 'LIKE', "%$search%");
         });
     }
-    // Handle pagination size (default: 10 per page)
     $perPage = $request->input('per_page', 10);
-
     // Paginate and order results
     $employees = $query->orderBy('surname')->paginate($perPage);
-
     return view('admin.paygroup.show', compact('payGroup', 'employees'));
 }
 

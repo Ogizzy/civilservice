@@ -14,11 +14,28 @@ class UserRoleController extends Controller
    /**
      * Display a listing of the roles.
      */
-    public function index()
-    {
-        $roles = UserRole::withCount('users')->paginate(15);
-        return view('admin.roles.index', compact('roles'));
+    public function index(Request $request)
+{
+    // Capture the search query from the request
+    $search = $request->input('search');
+
+    // Base query
+    $query = UserRole::withCount('users');
+
+    // Apply search filter if search text is entered
+    if (!empty($search)) {
+        $query->where('role', 'LIKE', "%{$search}%");
     }
+
+    // Paginate results (5 per page by default)
+    $roles = $query->orderBy('role', 'asc')->paginate(5);
+
+    // Preserve search query in pagination links
+    $roles->appends(['search' => $search]);
+
+    return view('admin.roles.index', compact('roles', 'search'));
+}
+
 
     /**
      * Show the form for creating a new role.

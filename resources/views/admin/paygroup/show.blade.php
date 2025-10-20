@@ -180,6 +180,7 @@
                                         <table id="PaygroupTable" class="table table-striped table-bordered">
                                             <thead class="thead-dark">
                                                 <tr>
+                                                    <th>S/N</th>
                                                     <th>Employee No</th>
                                                     <th>Name</th>
                                                     <th>MDA</th>
@@ -190,7 +191,11 @@
                                             </thead>
                                             <tbody>
                                                 @foreach ($employees as $employee)
+                                                        
                                                     <tr>
+                                                        <td>
+                                                            {{ $employees->firstItem() + $loop ->index }}
+                                                        </td>
                                                         <td>
                                                             {{ $employee->employee_number }}
                                                         </td>

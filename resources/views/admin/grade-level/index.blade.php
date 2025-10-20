@@ -20,7 +20,7 @@
             <div class="mb-0 text-uppercase" style="margin-left: auto;">
                 <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal"
                     data-bs-target="#gradeLevelModal" onclick="createGradeLevel()">
-                    <i class="lni lni-circle-plus"></i> Add Grade Level
+                    <i class="bx bxs-plus-square"></i> Add Grade Level
                 </button>
             </div>
 

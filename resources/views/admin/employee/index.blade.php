@@ -145,8 +145,8 @@
                 $(document).ready(function() {
                     // Initialize DataTables but disable pagination/search
                     let table = $('#employeesTable').DataTable({
-                        paging: false, // ❌ Disable DataTables pagination
-                        searching: false, // ❌ Disable DataTables search (we use Laravel search)
+                        paging: false, 
+                        searching: false, 
                         info: false,
                         ordering: true,
                         dom: 'Bfrtip',

@@ -19,6 +19,7 @@
             </button>
         </div>
     </div>
+    <hr>
 
     <!-- Filter Card -->
     <div class="card border-0 shadow-sm mb-4">
@@ -73,62 +74,72 @@
             </form>
         </div>
     </div>
+    
 
-    <!-- Stats Cards -->
-    <div class="row mb-4">
-        <div class="col-md-3">
-            <div class="card border-0 shadow-sm bg-primary text-white">
-                <div class="card-body d-flex align-items-center">
-                    <div class="rounded-circle bg-white text-primary p-3 me-3">
-                        <i class="bx bx-map fs-3"></i>
-                    </div>
-                    <div>
-                        <h6 class="mb-0">Total LGAs</h6>
-                        <h3 class="mb-0">{{ $allLgaCounts->count() }}</h3>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card border-0 shadow-sm bg-success text-white">
-                <div class="card-body d-flex align-items-center">
-                    <div class="rounded-circle bg-white text-success p-3 me-3">
-                        <i class="bx bx-user-plus fs-3"></i>
-                    </div>
-                    <div>
-                        <h6 class="mb-0">Total Employees</h6>
-                        <h3 class="mb-0">{{ $allLgaCounts->sum('total') }}</h3>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card border-0 shadow-sm bg-info text-white">
-                <div class="card-body d-flex align-items-center">
-                    <div class="rounded-circle bg-white text-info p-3 me-3">
-                        <i class="bx bx-stats fs-3"></i>
-                    </div>
-                    <div>
-                        <h6 class="mb-0">Average per LGA</h6>
-                        <h3 class="mb-0">{{ round($allLgaCounts->sum('total') / ($allLgaCounts->count() ?: 1)) }}</h3>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card border-0 shadow-sm bg-warning text-white">
-                <div class="card-body d-flex align-items-center">
-                    <div class="rounded-circle bg-white text-warning p-3 me-3">
-                        <i class="bx bx-chart fs-3"></i>
-                    </div>
-                    <div>
-                        <h6 class="mb-0">Top LGA</h6>
-                        <h3 class="mb-0">{{ $allLgaCounts->max('total') ?? 0 }}</h3>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+     <!-- Dashboard Stats Summary -->
+         <div class="row row-cols-1 row-cols-md-2 row-cols-xl-4">
+					<div class="col">
+						<div class="card radius-10 bg-primary">
+							<div class="card-body">
+								<div class="d-flex align-items-center">
+									<div>
+										<p class="mb-0 text-white">Total LGAs</p>
+										<h4 class="my-1 text-white">{{ $allLgaCounts->count() }}</h4>
+									</div>
+									<div class="text-white ms-auto font-35"><i class="bx bx-home"></i>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+										
+					<div class="col">
+						<div class="card radius-10 bg-success">
+							<div class="card-body">
+								<div class="d-flex align-items-center">
+									<div>
+										<p class="mb-0 text-white">Total Employees</p>
+										<h4 class="my-1 text-white">{{ $allLgaCounts->sum('total') }}</h4>
+									</div>
+									<div class="text-white ms-auto font-35"><i class="bx bx-user-check"></i>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					
+                    <div class="col">
+						<div class="card radius-10 bg-info">
+							<div class="card-body">
+								<div class="d-flex align-items-center">
+									<div>
+										<p class="mb-0 text-white">Average per LGA</p>
+										<h4 class="my-1 text-white">{{ round($allLgaCounts->sum('total') / ($allLgaCounts->count() ?: 1)) }}</h4>
+									</div>
+									<div class="text-white ms-auto font-35"><i class="bx bx-x-circle"></i>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					
+                      <div class="col">
+						<div class="card radius-10 bg-warning">
+							<div class="card-body">
+								<div class="d-flex align-items-center">
+									<div>
+										<p class="mb-0 text-dark">Top LGA</p>
+										<h4 class="text-dark my-1">{{ $allLgaCounts->max('total') ?? 0 }}</h4>
+									</div>
+									<div class="text-dark ms-auto font-35"><i class="bx bx-bar-chart"></i>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div> 
+				</div>
+
+   
 
     <!-- Chart Card -->
     <div class="card border-0 shadow-sm mb-4">
