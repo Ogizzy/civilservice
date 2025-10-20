@@ -13,9 +13,19 @@ class UserPermissionController extends Controller
     /**
      * Display a listing of the permissions.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $permissions = UserPermission::with(['role', 'feature'])->paginate(15);
+        $query = UserPermission::with(['role', 'feature']);
+
+        // Apply search filter
+        if ($request->has('search') && $request->search !== '') {
+            $search = $request->search;
+            $query->whereHas('role', function ($q) use ($search) {
+                $q->where('role', 'LIKE', "%{$search}%");
+            });
+        }
+        $permissions = $query->paginate(10)->appends($request->only('search'));
+
         return view('admin.permissions.index', compact('permissions'));
     }
 

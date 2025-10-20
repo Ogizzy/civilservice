@@ -25,7 +25,7 @@
                 </div>
             </div>
             <!--end breadcrumb-->
-            <h6 class="mb-0 text-uppercase">Employees Table</h6>
+            <h6 class="mb-0 text-uppercase">Manage Employees</h6>
 
             <hr>
 

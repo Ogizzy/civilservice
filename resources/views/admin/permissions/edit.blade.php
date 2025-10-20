@@ -15,8 +15,8 @@
             </nav>
         </div>
         <div class="ms-auto">
-            <a href="{{ url()->previous() }}" class="btn btn-outline-secondary px-5 radius-30">
-                <i class="bx bx-arrow-back me-1"></i>Back
+            <a href="{{ route('permissions.index') }}" class="btn btn-outline-secondary px-5 radius-30">
+                <i class="bx bx-arrow-back "></i>Back
             </a>
         </div>
     </div>
@@ -115,7 +115,7 @@
                             <a href="{{ route('permissions.index') }}" class="btn btn-outline-secondary px-4">
                                 <i class="bx bx-x me-1"></i>Cancel
                             </a>
-                            <button type="submit" class="btn btn-primary px-4">
+                            <button type="submit" class="btn btn-primary">
                                 <i class="bx bx-save me-1"></i>Update Permission
                             </button>
                         </div>
