@@ -15,10 +15,8 @@ class PayGroupController extends Controller
     public function index(Request $request)
     {
     $perPage = $request->input('per_page', 10);
-
     // Retrieve paginated pay groups ordered alphabetically by name
     $payGroups = PayGroup::orderBy('paygroup', 'asc')->paginate($perPage);
-
     return view('admin.paygroup.index', compact('payGroups'));
     }
 

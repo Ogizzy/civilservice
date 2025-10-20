@@ -237,24 +237,7 @@
                             {{ $payGroups->appends(request()->query())->links('pagination::bootstrap-5') }}
                         </div>
                         </div>
-
-                        <!-- Bulk Actions Footer -->
-                        <div class="bg-light p-3 d-flex justify-content-between align-items-center border-top">
-                            <div>
-                                <span class="selected-count-text me-2">0 items selected</span>
-                                <div class="btn-group btn-group-sm" role="group">
-                                    <button type="button" class="btn btn-outline-primary" id="bulkActivateBtn" disabled>
-                                        <i class="lni lni-checkmark me-1"></i> Activate
-                                    </button>
-                                    <button type="button" class="btn btn-outline-danger" id="bulkDeactivateBtn" disabled>
-                                        <i class="lni lni-close me-1"></i> Deactivate
-                                    </button>
-                                </div>
-                            </div>
-                            <div class="pagination-container">
-                                <!-- Pagination will be added by DataTables -->
-                            </div>
-                        </div>
+                     
                     </div>
                 </div>
             </div>
