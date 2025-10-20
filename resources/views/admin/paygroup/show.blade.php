@@ -10,7 +10,7 @@
 
     <div class="page-content">
         <!-- Hero Section -->
-        <div class="card bg-gradient-blue-to-purple mb-4 shadow-sm border-0">
+        <div class="card bg-gradient-primary-to-secondary mb-4 shadow-sm border-0">
             <div class="card-body p-4">
                 <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center">
                     <div class="mb-3 mb-md-0">
