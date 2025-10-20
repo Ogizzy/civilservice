@@ -21,16 +21,12 @@ class UserRoleController extends Controller
 
     // Base query
     $query = UserRole::withCount('users');
-
-    // Apply search filter if search text is entered
+    
+    // Apply search filter if provided
     if (!empty($search)) {
         $query->where('role', 'LIKE', "%{$search}%");
     }
-
-    // Paginate results (5 per page by default)
     $roles = $query->orderBy('role', 'asc')->paginate(5);
-
-    // Preserve search query in pagination links
     $roles->appends(['search' => $search]);
 
     return view('admin.roles.index', compact('roles', 'search'));

@@ -20,7 +20,7 @@
         </div>
         <div class="ms-auto">
             <a href="{{ route('permissions.create') }}" class="btn btn-primary px-4">
-                <i class="lni lni-circle-plus"></i> Add Permission
+                <i class="bx bxs-plus-square"></i> Add Permission
             </a>
         </div>
     </div>

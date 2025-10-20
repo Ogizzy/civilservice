@@ -14,11 +14,24 @@ class PlatformFeatureController extends Controller
      /**
      * Display a listing of the features.
      */
-    public function index()
-    {
-        $features = PlatformFeature::all();
-        return view('admin.features.index', compact('features'));
+    public function index(Request $request)
+{
+    $search = $request->input('search');
+
+    // Base query
+    $query = PlatformFeature::query();
+
+    // Apply search filter if provided
+    if (!empty($search)) {
+        $query->where('feature', 'LIKE', "%{$search}%")
+              ->orWhere('description', 'LIKE', "%{$search}%");
     }
+    $features = $query->orderBy('feature', 'asc')->paginate(10);
+    // Preserve search query during pagination
+    $features->appends(['search' => $search]);
+    return view('admin.features.index', compact('features', 'search'));
+}
+
 
     /**
      * Show the form for creating a new feature.
