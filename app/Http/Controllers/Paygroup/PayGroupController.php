@@ -12,10 +12,14 @@ class PayGroupController extends Controller
      /**
      * Display a listing of the pay groups.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $payGroups = PayGroup::all();
-        return view('admin.paygroup.index', compact('payGroups'));
+    $perPage = $request->input('per_page', 10);
+
+    // Retrieve paginated pay groups ordered alphabetically by name
+    $payGroups = PayGroup::orderBy('paygroup', 'asc')->paginate($perPage);
+
+    return view('admin.paygroup.index', compact('payGroups'));
     }
 
     public function deactivate(PayGroup $payGroup)

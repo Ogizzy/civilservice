@@ -134,14 +134,14 @@
                     <div class="card-body p-0">
                         <div class="table-responsive">
                             <table id="payGroupsTable" class="table table-hover align-middle mb-0" style="width:100%">
-                                <thead class="table-light">
+                                <thead class="thead-dark">
                                     <tr>
                                         <th class="text-center" style="width: 60px">
                                             <div class="form-check">
                                                 <input class="form-check-input" type="checkbox" id="selectAll">
                                             </div>
                                         </th>
-                                        <th class="text-center">S/N</th>
+                                        <th>S/N</th>
                                         <th>Pay Group</th>
                                         <th>Code</th>
                                         <th>Last Updated</th>
@@ -233,7 +233,9 @@
                                     @endforelse
                                 </tbody>
                             </table>
-                            
+                            <div class="mt-3">
+                            {{ $payGroups->appends(request()->query())->links('pagination::bootstrap-5') }}
+                        </div>
                         </div>
 
                         <!-- Bulk Actions Footer -->
