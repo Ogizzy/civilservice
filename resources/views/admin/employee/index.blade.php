@@ -19,7 +19,7 @@
                 <div class="ms-auto">
                     <div class="btn-group">
                         <a href="{{ route('employees.create') }}" class="btn btn-primary">
-                            <i class="lni lni-circle-plus"></i> Add Employee
+                            <i class="bx bxs-plus-square"></i> Add Employee
                         </a>
                     </div>
                 </div>

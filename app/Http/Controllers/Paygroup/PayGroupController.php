@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Paygroup;
 
+use App\Models\Employee;
 use App\Models\PayGroup;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -64,12 +65,32 @@ class PayGroupController extends Controller
     /**
      * Display the specified pay group.
      */
-    public function show(PayGroup $payGroup)
-    {
-        // Load employees in this pay group
-        $payGroup->load('employees');
-        return view('admin.paygroup.show', compact('payGroup'));
+   public function show(Request $request, PayGroup $payGroup)
+{
+    // Query employees belonging to this pay group
+    $query = Employee::with(['gradeLevel:id,level', 'step:id,step', 'mda:id,mda'])
+        ->where('paygroup_id', $payGroup->id)
+        ->select(['id', 'employee_number', 'surname', 'first_name', 'mda_id', 'level_id', 'step_id']);
+
+    // Apply search filter
+    if ($request->filled('search')) {
+        $search = $request->input('search');
+        $query->where(function ($q) use ($search) {
+            $q->where('employee_number', 'LIKE', "%$search%")
+              ->orWhere('email', 'LIKE', "%$search%")
+              ->orWhere('surname', 'LIKE', "%$search%")
+              ->orWhere('first_name', 'LIKE', "%$search%")
+              ->orWhere('middle_name', 'LIKE', "%$search%");
+        });
     }
+    // Handle pagination size (default: 10 per page)
+    $perPage = $request->input('per_page', 10);
+
+    // Paginate and order results
+    $employees = $query->orderBy('surname')->paginate($perPage);
+
+    return view('admin.paygroup.show', compact('payGroup', 'employees'));
+}
 
     /**
      * Show the form for editing the specified pay group.

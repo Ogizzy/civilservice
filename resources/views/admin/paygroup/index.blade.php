@@ -3,21 +3,35 @@
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
 
-<div class="page-content">
-    <!-- Modern Breadcrumb -->
-    <nav aria-label="breadcrumb">
-        <ol class="breadcrumb border-0 rounded-3 p-3 mb-4 shadow-sm bg-light">
-            <li class="breadcrumb-item">
-                <a href="{{ route('admin.dashboard') }}" class="text-decoration-none">
-                    <i class="bx bx-home-alt fs-5 align-middle me-1"></i>Dashboard
-                </a>
-            </li>
-            <li class="breadcrumb-item active fw-semibold" aria-current="page">
-                <i class="bx bx-collection fs-5 align-middle me-1"></i>Pay Groups
-            </li>
-        </ol>
-    </nav>
+@php
+    $totalEmployees = \App\Models\Employee::count();
+@endphp
 
+<div class="page-content">
+     <!-- Enhanced Action Header -->
+                <div class="card border-0 shadow-sm mb-4">
+                    <div class="card-body p-4">
+                        <div class="d-flex justify-content-between align-items-center flex-wrap">
+
+                            <div>
+                                <h4 class="mb-1 fw-bold text-primary">
+                                    <i class="bx bx-collection me-2"></i> Pay Group Management
+                                </h4>
+                                <p class="text-muted mb-0">Manage employee payment categories and classifications</p>
+                            </div>
+                            
+                            <div class="mt-3 mt-md-0">
+                                <div class="input-group">
+                                   
+                                    <button type="button" class="btn btn-primary px-4 d-flex align-items-center" onclick="createPayGroup()">
+                                        <i class="lni lni-circle-plus me-2"></i> Add New Pay Group
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
     <!-- Notification Alerts -->
     <div class="container px-0">
         @if (session('success'))
@@ -43,86 +57,77 @@
             </div>
         @endif
 
+
+
         <!-- Dashboard Stats Summary -->
-        <div class="row mb-4">
-            <div class="col-md-4">
-                <div class="card border-0 shadow-sm h-100">
-                    <div class="card-body d-flex align-items-center">
-                        <div class="rounded-circle bg-primary bg-opacity-10 p-3 me-3">
-                            <i class="bx bx-group text-primary fs-3"></i>
-                        </div>
-                        <div>
-                            <h6 class="mb-1 fw-semibold">Total Pay Groups</h6>
-                            <h3 class="mb-0 fw-bold">{{ $payGroups->count() }}</h3>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="card border-0 shadow-sm h-100">
-                    <div class="card-body d-flex align-items-center">
-                        <div class="rounded-circle bg-success bg-opacity-10 p-3 me-3">
-                            <i class="bx bx-check-circle text-success fs-3"></i>
-                        </div>
-                        <div>
-                            <h6 class="mb-1 fw-semibold">Active Groups</h6>
-                            <h3 class="mb-0 fw-bold">{{ $payGroups->where('status', 1)->count() }}</h3>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="card border-0 shadow-sm h-100">
-                    <div class="card-body d-flex align-items-center">
-                        <div class="rounded-circle bg-danger bg-opacity-10 p-3 me-3">
-                            <i class="bx bx-x-circle text-danger fs-3"></i>
-                        </div>
-                        <div>
-                            <h6 class="mb-1 fw-semibold">Inactive Groups</h6>
-                            <h3 class="mb-0 fw-bold">{{ $payGroups->where('status', 0)->count() }}</h3>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+         <div class="row row-cols-1 row-cols-md-2 row-cols-xl-4">
+					<div class="col">
+						<div class="card radius-10 bg-primary bg-gradient">
+							<div class="card-body">
+								<div class="d-flex align-items-center">
+									<div>
+										<p class="mb-0 text-white">Total Pay Groups</p>
+										<h4 class="my-1 text-white">{{ $payGroups->count() }}</h4>
+									</div>
+									<div class="text-white ms-auto font-35"><i class="bx bx-group"></i>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+										
+					<div class="col">
+						<div class="card radius-10 bg-success bg-gradient">
+							<div class="card-body">
+								<div class="d-flex align-items-center">
+									<div>
+										<p class="mb-0 text-white">Active Groups</p>
+										<h4 class="my-1 text-white">{{ $payGroups->where('status', 1)->count() }}</h4>
+									</div>
+									<div class="text-white ms-auto font-35"><i class="bx bx-check-circle"></i>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					
+                    <div class="col">
+						<div class="card radius-10 bg-danger bg-gradient">
+							<div class="card-body">
+								<div class="d-flex align-items-center">
+									<div>
+										<p class="mb-0 text-white">Inactive Groups</p>
+										<h4 class="my-1 text-white">{{ $payGroups->where('status', 0)->count() }}</h4>
+									</div>
+									<div class="text-white ms-auto font-35"><i class="bx bx-x-circle"></i>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					
+                      <div class="col">
+						<div class="card radius-10 bg-warning bg-gradient">
+							<div class="card-body">
+								<div class="d-flex align-items-center">
+									<div>
+										<p class="mb-0 text-dark">Total Employees</p>
+										<h4 class="text-dark my-1">{{ $totalEmployees }}</h4>
+									</div>
+									<div class="text-dark ms-auto font-35"><i class="bx bx-user-check"></i>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div> 
+				</div>
+
+        
 
         <!-- Main Content Area -->
         <div class="row">
             <div class="col-12">
-                <!-- Enhanced Action Header -->
-                <div class="card border-0 shadow-sm mb-4">
-                    <div class="card-body p-4">
-                        <div class="d-flex justify-content-between align-items-center flex-wrap">
-
-                            <div>
-                                <h4 class="mb-1 fw-bold text-primary">
-                                    <i class="bx bx-collection me-2"></i> Pay Group Management
-                                </h4>
-                                <p class="text-muted mb-0">Manage employee payment categories and classifications</p>
-                            </div>
-                            
-                            <div class="mt-3 mt-md-0">
-                                <div class="input-group">
-                                    <div class="form-check form-switch me-3 d-flex align-items-center">
-                                        <input class="form-check-input me-2" type="checkbox" id="showInactiveSwitch">
-                                        <label class="form-check-label fw-medium" for="showInactiveSwitch">Show Inactive</label>
-                                    </div>
-                                    <button type="button" class="btn btn-primary px-4 d-flex align-items-center" onclick="createPayGroup()">
-                                        <i class="lni lni-circle-plus me-2"></i> Add New Pay Group
-                                    </button>
-                                    <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
-                                        <i class="bx bx-export"></i>
-                                    </button>
-                                    <ul class="dropdown-menu dropdown-menu-end">
-                                        <li><button class="dropdown-item" type="button" id="exportExcel"><i class="bx bx-spreadsheet me-2"></i>Export to Excel</button></li>
-                                        <li><button class="dropdown-item" type="button" id="exportPdf"><i class="bx bx-file me-2"></i>Export to PDF</button></li>
-                                        <li><button class="dropdown-item" type="button" id="printData"><i class="bx bx-printer me-2"></i>Print</button></li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+               
 
                 <!-- Enhanced Pay Group Table -->
                 <div class="card border-0 shadow-sm">
@@ -228,6 +233,7 @@
                                     @endforelse
                                 </tbody>
                             </table>
+                            
                         </div>
 
                         <!-- Bulk Actions Footer -->

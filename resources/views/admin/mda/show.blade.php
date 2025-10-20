@@ -21,6 +21,7 @@
             </nav>
         </div>
     </div>
+    <hr>
 
     <div class="container-fluid">
         <!-- Ministry Profile Banner -->
@@ -28,10 +29,10 @@
             <div class="card-body d-flex align-items-center justify-content-between flex-wrap">
                 <div class="d-flex align-items-center gap-4">
                     <div class="bg-white text-primary rounded-circle p-3 shadow-sm">
-                        <i class="bx bx-building-house fs-3"></i>
+                        <i class="fadeIn animated bx bx-home"></i>
                     </div>
                     <div>
-                        <h4 class="mb-1">{{ $mda->mda }}</h4>
+                        <h3 class="mb-1 text-white">{{ $mda->mda }}</h3>
                         <div class="d-flex gap-3 small">
                             <span><strong>Code:</strong> {{ $mda->mda_code }}</span>
                             <span><strong>Created:</strong> {{ $mda->created_at->format('M d, Y') }}</span>
@@ -54,11 +55,11 @@
                 <div class="d-flex justify-content-between align-items-center">
                     <div class="d-flex align-items-center">
                         <div class="rounded-circle bg-primary bg-opacity-10 p-2 me-3">
-                            <i class="bx bx-user-circle fs-4 text-primary"></i>
+                            <i class="fadeIn animated bx bx-user-check fs-3 text-white"></i>
                         </div>
                         <h5 class="mb-0">Ministry Employees</h5>
                     </div>
-                    <span class="badge bg-primary rounded-pill">
+                    <span class="badge bg-primary round">
                         {{ $mda->employees->count() }} {{ Str::plural('Employee', $mda->employees->count()) }}
                     </span>
                 </div>
