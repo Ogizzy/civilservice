@@ -13,28 +13,30 @@ use Illuminate\Support\Facades\Log;
 
 class UserController extends Controller
 {
-    // public function __construct()
-    // {
-    //     // Apply middleware - only active users can manage other users
-    //     $this->middleware('user.status:active')->except(['profile', 'updateProfile']);
-        
-    //     // Allow suspended users to view/update their own profile
-    //     $this->middleware('user.status:active,suspended')->only(['profile', 'updateProfile']);
-    // }
-
     /**
      * Display a listing of the users.
      */
-    public function index()
-    {
-        $employeeRoleId = UserRole::where('role', 'Employee')->value('id');
+  public function index(Request $request)
+{
+    $employeeRoleId = UserRole::where('role', 'Employee')->value('id');
 
-        $users = User::where('role_id', '!=', $employeeRoleId)
-                     ->with('role')
-                     ->paginate(15);
-        
-        return view('admin.users.index', compact('users'));
+    $query = User::where('role_id', '!=', $employeeRoleId)->with('role');
+
+    // 🔍 Add search
+    if ($request->has('search') && $request->search !== '') {
+        $search = $request->search;
+        $query->where(function ($q) use ($search) {
+            $q->where('surname', 'LIKE', "%{$search}%")
+              ->orWhere('first_name', 'LIKE', "%{$search}%")
+              ->orWhere('other_names', 'LIKE', "%{$search}%")
+              ->orWhere('email', 'LIKE', "%{$search}%");
+        });
     }
+
+    $users = $query->paginate(5)->appends($request->only('search'));
+
+    return view('admin.users.index', compact('users'));
+}
 
     /**
      * Show the form for creating a new user.
@@ -48,6 +50,7 @@ class UserController extends Controller
     /**
      * Store a newly created user in storage.
      */
+    
     public function store(Request $request)
     {
         $validated = $request->validate([

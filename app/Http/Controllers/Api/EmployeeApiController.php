@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Controllers\Controller;
+use Log;
 use App\Models\Employee;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
 
 
 class EmployeeApiController extends Controller
@@ -80,4 +81,55 @@ class EmployeeApiController extends Controller
             ]
         ], 200);
     }
+
+
+    
+     /**
+     * Get paginated list of employees for external systems (Civil Service Admin System).
+     */
+    public function index(Request $request)
+    {
+        // You can control pagination size using ?per_page=50
+        $perPage = $request->get('per_page', 10);
+
+        // Select only the required fields
+        $employees = Employee::select([
+            'employee_number',
+            'surname',
+            'first_name',
+            'middle_name',
+            'gender',
+            'email',
+            'phone',
+            'dob',
+            'first_appointment_date',
+            'confirmation_date',
+            'retirement_date',
+            'mda_id',
+            'step_id',
+            'rank',
+        ])->paginate($perPage);
+
+        Log::channel('api_updates')->info('Civil Service System Data Accessed', [
+    'ip' => $request->ip(),
+    'user' => optional($request->user())->email,
+    'time' => now()->toDateTimeString(),
+    ]);
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Employee records retrieved successfully',
+            'data' => $employees->items(),
+            'pagination' => [
+                'current_page' => $employees->currentPage(),
+                'per_page' => $employees->perPage(),
+                'total' => $employees->total(),
+                'last_page' => $employees->lastPage(),
+                'next_page_url' => $employees->nextPageUrl(),
+                'prev_page_url' => $employees->previousPageUrl(),
+            ]
+        ]);
+    }
+
+    
 }

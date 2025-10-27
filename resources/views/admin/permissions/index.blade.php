@@ -36,7 +36,7 @@
                     <!-- Laravel Search -->
                     <form method="GET" action="{{ route('permissions.index') }}" class="d-flex">
                         <input type="text" name="search" class="form-control me-2" value="{{ request('search') }}"
-                            placeholder="Search permissions...">
+                            placeholder="Search by Role...">
                         <button type="submit" class="btn btn-primary">Search</button>
                     </form>
 
