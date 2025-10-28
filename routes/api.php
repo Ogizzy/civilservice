@@ -11,5 +11,6 @@ Route::get('/user', function (Request $request) {
 Route::get('/employee/validate/{employee_number?}', [EmployeeApiController::class, 'validateCivilServant']);
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/employee/update/{employee_number}', [EmployeeApiController::class, 'updateContact']);
-    Route::get('/employee/data', [EmployeeApiController::class, 'index']);
+    Route::get('/civil-service/employees', [EmployeeApiController::class, 'index']);
+    Route::get('/employees/by-year/{year}', [EmployeeApiController::class, 'getEmployeesByYear']);
 });
