@@ -149,7 +149,7 @@ class EmployeeApiController extends Controller
 
     $perPage = $request->input('per_page', 10);
 
-    $employees = Employee::with(['mda:id,mda', 'level:id,level', 'step:id,step', 'paygroup:id,paygroup'])
+    $employees = Employee::with(['mda:id,mda', 'gradeLevel:id,level', 'step:id,step'])
         ->select([
             'employee_number',
             'surname',
@@ -165,10 +165,9 @@ class EmployeeApiController extends Controller
             'mda_id',
             'level_id',
             'step_id',
-            'paygroup_id',
             'rank',
+            'passport',
         ])
-        // ->whereYear('first_appointment_date', '<=', $year)
         ->whereYear('retirement_date', $year)
         ->orderBy('surname')
         ->paginate($perPage);
@@ -195,8 +194,10 @@ class EmployeeApiController extends Controller
             'confirmation_date' => $employee->confirmation_date,
             'retirement_date' => $employee->retirement_date,
             'mda' => optional($employee->mda)->mda,
+            'grade_level' => optional($employee->gradeLevel)->level,
             'step' => optional($employee->step)->step,
             'rank' => $employee->rank,
+            'passport' => $employee->passport ? $employee->passport : null,
         ];
     });
 
@@ -205,7 +206,6 @@ class EmployeeApiController extends Controller
         'user' => optional($request->user())->email,
         'time' => now()->toDateTimeString(),
         ]);
-
 
     return response()->json([
         'status' => 'success',
