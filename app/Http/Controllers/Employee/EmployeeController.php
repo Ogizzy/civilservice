@@ -24,6 +24,8 @@ use Maatwebsite\Excel\Concerns\FromArray;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Maatwebsite\Excel\Validators\ValidationException;
+use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
+use Illuminate\Contracts\Filesystem\Cloud;
 
 class EmployeeController extends Controller
 {
@@ -104,10 +106,20 @@ class EmployeeController extends Controller
         ]);
 
         // Handle passport upload
+        // if ($request->hasFile('passport')) {
+        //     $path = $request->file('passport')->store('passports', 'public');
+        //     $validated['passport'] = $path;
+        // }
+
         if ($request->hasFile('passport')) {
-            $path = $request->file('passport')->store('passports', 'public');
-            $validated['passport'] = $path;
-        }
+    $uploadedFileUrl = Cloudinary::upload(
+        $request->file('passport')->getRealPath(),
+        ['folder' => 'civil_service/passports']
+    )->getSecurePath();
+
+    $validated['passport'] = $uploadedFileUrl;
+}
+
 
         // Calculate retirement date if not provided
         if (empty($validated['retirement_date'])) {
@@ -221,16 +233,36 @@ class EmployeeController extends Controller
             ]);
         }
 
-        // Handle passport upload
-        if ($request->hasFile('passport')) {
-            // Delete old passport if exists
-            if ($employee->passport) {
-                Storage::disk('public')->delete($employee->passport);
-            }
+        // // Handle passport locally upload
+        // if ($request->hasFile('passport')) {
+        //     // Delete old passport if exists
+        //     if ($employee->passport) {
+        //         Storage::disk('public')->delete($employee->passport);
+        //     }
             
-            $path = $request->file('passport')->store('passports', 'public');
-            $validated['passport'] = $path;
-        }
+        //     $path = $request->file('passport')->store('passports', 'public');
+        //     $validated['passport'] = $path;
+        // }
+
+
+        //  Cloudinary upload
+       if ($request->hasFile('passport')) {
+    // Delete old image from Cloudinary if it exists
+    if ($employee->passport_public_id) {
+        Cloudinary::destroy($employee->passport_public_id);
+    }
+
+    // Upload new image
+    $uploadedFile = Cloudinary::upload(
+        $request->file('passport')->getRealPath(),
+        ['folder' => 'civil_service/passports']
+    );
+
+    $validated['passport'] = $uploadedFile->getSecurePath();
+    $validated['passport_public_id'] = $uploadedFile->getPublicId();
+}
+
+
 
         // Calculate retirement date if not provided
         if (empty($validated['retirement_date'])) {

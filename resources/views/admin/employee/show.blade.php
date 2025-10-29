@@ -45,7 +45,7 @@
                                 <div class="col-md-3 text-center">
                                     <div class="mb-3">
                                         @if ($employee->passport)
-                                            <img src="{{ asset('storage/' . $employee->passport) }}"
+                                            <img src="{{ $employee->passport}}"
                                                 class="img-thumbnail rounded-circle"
                                                 style="width: 200px; height: 200px; object-fit: cover;"
                                                 alt="Employee Photo">
