@@ -7,7 +7,7 @@
             <div class="col-md-12">
                 <div class="card shadow-lg">
                     <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center shadow-sm rounded-top px-4 py-3">
-                        <h4 class="mb-0 font-weight-bold">
+                        <h4 class="mb-0 font-weight-bold text-white">
                             <i class="fas fa-user-edit mr-2"></i> Edit Employee
                         </h4>
                         <a href="{{ route('employees.index') }}" class="btn btn-light btn-sm d-flex align-items-center shadow-sm border-0">
