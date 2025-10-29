@@ -278,7 +278,7 @@ class EmployeeController extends Controller
                 $validated['passport_public_id'] = null;
             }
         }
-
+         $employee->update($validated);
 
         // Calculate retirement date if not provided
         if (empty($validated['retirement_date'])) {
