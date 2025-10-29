@@ -9,6 +9,7 @@ Route::get('/user', function (Request $request) {
 })->middleware('auth:sanctum');
 
 Route::get('/employee/validate/{employee_number?}', [EmployeeApiController::class, 'validateCivilServant']);
+
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/employee/update/{employee_number}', [EmployeeApiController::class, 'updateContact']);
     Route::get('/civil-service/employees', [EmployeeApiController::class, 'index']);

@@ -105,7 +105,9 @@ class EmployeeApiController extends Controller
             'confirmation_date',
             'retirement_date',
             'mda_id',
+            'level_id',
             'step_id',
+            'paygroup_id',
             'rank',
         ])->paginate($perPage);
 
@@ -147,7 +149,7 @@ class EmployeeApiController extends Controller
 
     $perPage = $request->input('per_page', 10);
 
-    $employees = Employee::with(['mda:id,mda', 'step:id,step'])
+    $employees = Employee::with(['mda:id,mda', 'level:id,level', 'step:id,step', 'paygroup:id,paygroup'])
         ->select([
             'employee_number',
             'surname',
@@ -161,7 +163,9 @@ class EmployeeApiController extends Controller
             'confirmation_date',
             'retirement_date',
             'mda_id',
+            'level_id',
             'step_id',
+            'paygroup_id',
             'rank',
         ])
         // ->whereYear('first_appointment_date', '<=', $year)
