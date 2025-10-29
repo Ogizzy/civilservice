@@ -8,7 +8,7 @@
                     <div class="card shadow-lg">
                         <div
                             class="card-header bg-primary text-white d-flex justify-content-between align-items-center shadow-sm rounded-top px-4 py-3">
-                            <h4 class="mb-0 font-weight-bold">
+                            <h4 class="mb-0 font-weight-bold text-white">
                                 <i class="fas fa-user-circle mr-2"></i> Employee Details
                             </h4>
 

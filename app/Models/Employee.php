@@ -41,6 +41,11 @@ class Employee extends Model implements Auditable
         'user_id',
         'state_id',
         'password',
+        'passport_public_id',
+        'next_of_kin_name',
+        'next_of_kin_relationship',
+        'next_of_kin_phone',
+        'next_of_kin_address',
     ];
 
     protected $hidden = [

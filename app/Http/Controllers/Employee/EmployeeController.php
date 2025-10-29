@@ -35,28 +35,28 @@ class EmployeeController extends Controller
     public function index(Request $request)
     {
         $query = Employee::with([
-        'mda:id', 
-        'payGroup:id',
-        'gradeLevel:id,level', 
-        'step:id,step'
-    ])
-    ->select(['id', 'employee_number', 'surname', 'first_name', 'mda_id', 'paygroup_id', 'level_id', 'step_id']);
+            'mda:id',
+            'payGroup:id',
+            'gradeLevel:id,level',
+            'step:id,step'
+        ])
+            ->select(['id', 'employee_number', 'surname', 'first_name', 'mda_id', 'paygroup_id', 'level_id', 'step_id']);
 
-    // search functionality
-    if ($request->has('search') && $request->search != '') {
-        $query->where(function($q) use ($request) {
-            $q->where('employee_number', 'LIKE', '%'.$request->search.'%')
-              ->orWhere('surname', 'LIKE', '%'.$request->search.'%')
-              ->orWhere('first_name', 'LIKE', '%'.$request->search.'%')
-              ->orWhere('middle_name', 'LIKE', '%'.$request->search.'%')
-              ->orWhere('email', 'LIKE', '%'.$request->search.'%');
-        });
+        // search functionality
+        if ($request->has('search') && $request->search != '') {
+            $query->where(function ($q) use ($request) {
+                $q->where('employee_number', 'LIKE', '%' . $request->search . '%')
+                    ->orWhere('surname', 'LIKE', '%' . $request->search . '%')
+                    ->orWhere('first_name', 'LIKE', '%' . $request->search . '%')
+                    ->orWhere('middle_name', 'LIKE', '%' . $request->search . '%')
+                    ->orWhere('email', 'LIKE', '%' . $request->search . '%');
+            });
+        }
+        $perPage = $request->input('per_page', 10);
+        $employees = $query->orderBy('surname')->paginate($perPage);
+
+        return view('admin.employee.index', compact('employees'));
     }
-    $perPage = $request->input('per_page', 10);
-    $employees = $query->orderBy('surname')->paginate($perPage);
-
-    return view('admin.employee.index', compact('employees'));
-}
 
     /**
      * Show the form for creating a new employee.
@@ -111,15 +111,25 @@ class EmployeeController extends Controller
         //     $validated['passport'] = $path;
         // }
 
+        // Cloudinary upload
         if ($request->hasFile('passport')) {
-    $uploadedFileUrl = Cloudinary::upload(
-        $request->file('passport')->getRealPath(),
-        ['folder' => 'civil_service/passports']
-    )->getSecurePath();
+            try {
+                // Upload to Cloudinary
+                $uploadedFile = Cloudinary::upload(
+                    $request->file('passport')->getRealPath(),
+                    ['folder' => 'civil_service/passports']
+                );
 
-    $validated['passport'] = $uploadedFileUrl;
-}
-
+                $validated['passport'] = $uploadedFile->getSecurePath();
+                $validated['passport_public_id'] = $uploadedFile->getPublicId();
+            } catch (\Exception $e) {
+                // Handle Cloudinary upload error
+                // Fallback to local storage if Cloudinary fails
+                $path = $request->file('passport')->store('passports', 'public');
+                $validated['passport'] = $path;
+                $validated['passport_public_id'] = null;
+            }
+        }
 
         // Calculate retirement date if not provided
         if (empty($validated['retirement_date'])) {
@@ -143,7 +153,7 @@ class EmployeeController extends Controller
             'employee_number' => $validated['employee_number'],
             'email' => $validated['email'] ?? ($validated['employee_number'] . '@gmail.com'),
             'password' => $validated['password'],
-            'role_id' => 6, 
+            'role_id' => 6,
             'status' => 'active',
         ]);
 
@@ -164,12 +174,12 @@ class EmployeeController extends Controller
      */
     public function show(Employee $employee)
     {
-    $employees = Employee::with('state')->get();
-    $documents = Document::where('employee_id', $employee->id)->paginate(5);
-    $documents = $employee->documents()->paginate(5, ['*'], 'documents');
-    $transfers = $employee->transferHistories()->with(['previousMda', 'currentMda'])->paginate(5, ['*'], 'transfers');
-    $promotions = $employee->promotionHistories()->with(['previousLevel', 'currentLevel', 'previousStep', 'currentStep'])->paginate(5, ['*'], 'promotions');
-    return view('admin.employee.show', compact('employee', 'documents', 'transfers', 'promotions', 'employees'));
+        $employees = Employee::with('state')->get();
+        $documents = Document::where('employee_id', $employee->id)->paginate(5);
+        $documents = $employee->documents()->paginate(5, ['*'], 'documents');
+        $transfers = $employee->transferHistories()->with(['previousMda', 'currentMda'])->paginate(5, ['*'], 'transfers');
+        $promotions = $employee->promotionHistories()->with(['previousLevel', 'currentLevel', 'previousStep', 'currentStep'])->paginate(5, ['*'], 'promotions');
+        return view('admin.employee.show', compact('employee', 'documents', 'transfers', 'promotions', 'employees'));
     }
 
     /**
@@ -226,7 +236,7 @@ class EmployeeController extends Controller
                 'password' => 'string|min:6|confirmed',
             ]);
             $validated['password'] = Hash::make($request->password);
-            
+
             // Update user's password too
             $employee->user->update([
                 'password' => $validated['password']
@@ -239,29 +249,35 @@ class EmployeeController extends Controller
         //     if ($employee->passport) {
         //         Storage::disk('public')->delete($employee->passport);
         //     }
-            
+
         //     $path = $request->file('passport')->store('passports', 'public');
         //     $validated['passport'] = $path;
         // }
 
 
         //  Cloudinary upload
-       if ($request->hasFile('passport')) {
-    // Delete old image from Cloudinary if it exists
-    if ($employee->passport_public_id) {
-        Cloudinary::destroy($employee->passport_public_id);
-    }
+        if ($request->hasFile('passport')) {
+            try {
+                // Delete old image from Cloudinary if it exists
+                if ($employee->passport_public_id) {
+                    Cloudinary::destroy($employee->passport_public_id);
+                }
 
-    // Upload new image
-    $uploadedFile = Cloudinary::upload(
-        $request->file('passport')->getRealPath(),
-        ['folder' => 'civil_service/passports']
-    );
+                // Upload new image to Cloudinary
+                $uploadedFile = Cloudinary::upload(
+                    $request->file('passport')->getRealPath(),
+                    ['folder' => 'civil_service/passports']
+                );
 
-    $validated['passport'] = $uploadedFile->getSecurePath();
-    $validated['passport_public_id'] = $uploadedFile->getPublicId();
-}
-
+                $validated['passport'] = $uploadedFile->getSecurePath();
+                $validated['passport_public_id'] = $uploadedFile->getPublicId();
+            } catch (\Exception $e) {
+                // Fallback to local storage
+                $path = $request->file('passport')->store('passports', 'public');
+                $validated['passport'] = $path;
+                $validated['passport_public_id'] = null;
+            }
+        }
 
 
         // Calculate retirement date if not provided
@@ -300,16 +316,18 @@ class EmployeeController extends Controller
     public function destroy(Employee $employee)
     {
         // Check for related records
-        if ($employee->documents()->count() > 0 || 
-            $employee->transferHistories()->count() > 0 || 
-            $employee->promotionHistories()->count() > 0 || 
-            $employee->commendations()->count() > 0 || 
-            $employee->queries()->count() > 0) {
-            
-                $notification = array(
-                    'message' => 'Cannot delete employee as they have related records',
-                    'alert-type' => 'error'
-                );
+        if (
+            $employee->documents()->count() > 0 ||
+            $employee->transferHistories()->count() > 0 ||
+            $employee->promotionHistories()->count() > 0 ||
+            $employee->commendations()->count() > 0 ||
+            $employee->queries()->count() > 0
+        ) {
+
+            $notification = array(
+                'message' => 'Cannot delete employee as they have related records',
+                'alert-type' => 'error'
+            );
 
             return redirect()->route('employees.index')
                 ->with($notification);
@@ -325,7 +343,7 @@ class EmployeeController extends Controller
         $employee->delete();
         User::find($userId)->delete();
 
- $notification = array(
+        $notification = array(
             'message' => 'Employee deleted successfully',
             'alert-type' => 'success'
         );
@@ -337,49 +355,48 @@ class EmployeeController extends Controller
     /**
      * Display employees by LGA.
      */
- 
-public function employeesPerLga(Request $request)
-{
-    $query = DB::table('employees');
 
-    if ($request->filled('mda_id')) {
-        $query->where('mda_id', $request->mda_id);
+    public function employeesPerLga(Request $request)
+    {
+        $query = DB::table('employees');
+
+        if ($request->filled('mda_id')) {
+            $query->where('mda_id', $request->mda_id);
+        }
+        if ($request->filled('gender')) {
+            $query->where('gender', $request->gender);
+        }
+
+        $grouped = $query
+            ->select('lga', DB::raw('count(*) as total'))
+            ->groupBy('lga')
+            ->orderBy('total', 'desc')
+            ->get();
+
+        // Pagination
+        $perPage = 10;
+        $currentPage = LengthAwarePaginator::resolveCurrentPage();
+        $currentItems = $grouped->slice(($currentPage - 1) * $perPage, $perPage)->values();
+
+        $lgaCounts = new LengthAwarePaginator(
+            $currentItems,
+            $grouped->count(),
+            $perPage,
+            $currentPage,
+            ['path' => $request->url(), 'query' => $request->query()]
+        );
+
+        // Other data
+        $mdas = \App\Models\MDA::all();
+        $genders = ['Male', 'Female'];
+
+        return view('admin.reports.employes-by-lga', [
+            'lgaCounts' => $lgaCounts,
+            'allLgaCounts' => $grouped,
+            'mdas' => $mdas,
+            'genders' => $genders
+        ]);
     }
-    if ($request->filled('gender')) {
-        $query->where('gender', $request->gender);
-    }
-   
-  $grouped = $query
-    ->select('lga', DB::raw('count(*) as total'))
-    ->groupBy('lga')
-    ->orderBy('total', 'desc')
-    ->get();
-
-// Pagination
-$perPage = 10;
-$currentPage = LengthAwarePaginator::resolveCurrentPage();
-$currentItems = $grouped->slice(($currentPage - 1) * $perPage, $perPage)->values();
-
-$lgaCounts = new LengthAwarePaginator(
-    $currentItems,
-    $grouped->count(),
-    $perPage,
-    $currentPage,
-    ['path' => $request->url(), 'query' => $request->query()]
-);
-
-// Other data
-$mdas = \App\Models\MDA::all();
-$genders = ['Male', 'Female'];
-
-return view('admin.reports.employes-by-lga', [
-    'lgaCounts' => $lgaCounts,
-    'allLgaCounts' => $grouped,
-    'mdas' => $mdas,
-    'genders' => $genders
-]);
-
-}
 
     /**
      * Display employees by MDA.
@@ -388,18 +405,18 @@ return view('admin.reports.employes-by-lga', [
     {
         // Get all MDAs for the filter dropdown
         $mdas = Mda::orderBy('mda')->get();
-        
+
         // Get the selected MDA ID from request
         $selectedMdaId = $request->get('mda_id');
-        
+
         // Get items per page (default to 25)
         $perPage = $request->get('per_page', 10);
-        
+
         // Initialize variables
         $employees = collect();
         $genderStats = [];
         $totalGradeLevels = 0;
-        
+
         if ($selectedMdaId) {
             // Get paginated employees for the selected MDA
             $employees = Employee::with(['mda', 'payGroup', 'gradeLevel'])
@@ -407,46 +424,46 @@ return view('admin.reports.employes-by-lga', [
                 ->orderBy('surname')
                 ->orderBy('first_name')
                 ->paginate($perPage);
-            
+
             // Append query parameters to pagination links
             $employees->appends($request->query());
-            
+
             // Get gender statistics for all employees in this MDA
             $allEmployees = Employee::where('mda_id', $selectedMdaId)->get();
             $genderStats = $allEmployees->groupBy('gender')->map->count()->toArray();
-            
+
             // Get total unique grade levels for this MDA
             $totalGradeLevels = $allEmployees->pluck('grade_level_id')->unique()->count();
         }
-        
+
         return view('admin.reports.employees-by-mda', compact(
             'mdas',
-            'employees', 
+            'employees',
             'selectedMdaId',
             'genderStats',
             'totalGradeLevels'
         ));
     }
-    
+
 
     /**
      * Display employees by rank.
      */
-    
-public function employeesByRank(Request $request)
-{
-    $rank = $request->input('rank');
 
-    $query = Employee::query();
-    if ($rank) {
-        $query->where('rank', $rank);
+    public function employeesByRank(Request $request)
+    {
+        $rank = $request->input('rank');
+
+        $query = Employee::query();
+        if ($rank) {
+            $query->where('rank', $rank);
+        }
+
+        $employees = $query->with(['mda'])->get();
+        $ranks = Employee::select('rank')->distinct()->pluck('rank');
+
+        return view('admin.reports.employees-by-rank', compact('employees', 'ranks', 'rank'));
     }
-
-    $employees = $query->with(['mda'])->get();
-    $ranks = Employee::select('rank')->distinct()->pluck('rank');
-
-    return view('admin.reports.employees-by-rank', compact('employees', 'ranks', 'rank'));
-}
 
     /**
      * Display employees by gender.
@@ -461,61 +478,61 @@ public function employeesByRank(Request $request)
     /**
      * Display employees by qualification.
      */
-  public function employeesByQualification(Request $request)
-{
-    $qualification = $request->input('qualification');
+    public function employeesByQualification(Request $request)
+    {
+        $qualification = $request->input('qualification');
 
-    $query = Employee::query();
-    if ($qualification) {
-        $query->where('qualifications', 'like', "%$qualification%");
+        $query = Employee::query();
+        if ($qualification) {
+            $query->where('qualifications', 'like', "%$qualification%");
+        }
+
+        $employees = $query->with('mda')->get();
+        $qualifications = Employee::select('qualifications')->distinct()->pluck('qualifications');
+
+        return view('admin.reports.employees-by-qualification', compact('employees', 'qualifications', 'qualification'));
     }
-
-    $employees = $query->with('mda')->get();
-    $qualifications = Employee::select('qualifications')->distinct()->pluck('qualifications');
-
-    return view('admin.reports.employees-by-qualification', compact('employees', 'qualifications', 'qualification'));
-}
 
     /**
      * Display employees by pay group, grade level, and step.
      */
-   
-public function employeesByPayStructure(Request $request)
-{
-    $paygroup_id = $request->input('paygroup_id');
-    $level_id = $request->input('level_id');
-    $step_id = $request->input('step_id');
 
-    $query = Employee::query();
-    if ($paygroup_id) $query->where('paygroup_id', $paygroup_id);
-    if ($level_id) $query->where('level_id', $level_id);
-    if ($step_id) $query->where('step_id', $step_id);
+    public function employeesByPayStructure(Request $request)
+    {
+        $paygroup_id = $request->input('paygroup_id');
+        $level_id = $request->input('level_id');
+        $step_id = $request->input('step_id');
 
-    $employees = $query->with(['mda', 'payGroup', 'gradeLevel', 'step'])->paginate(10);
+        $query = Employee::query();
+        if ($paygroup_id) $query->where('paygroup_id', $paygroup_id);
+        if ($level_id) $query->where('level_id', $level_id);
+        if ($step_id) $query->where('step_id', $step_id);
 
-    $payGroups = \App\Models\PayGroup::all();
-    $levels = \App\Models\GradeLevel::all();
-    $steps = \App\Models\Step::all();
+        $employees = $query->with(['mda', 'payGroup', 'gradeLevel', 'step'])->paginate(10);
 
-    return view('admin.reports.employees-by-pay-structure', compact('employees', 'payGroups', 'levels', 'steps'));
-}
+        $payGroups = \App\Models\PayGroup::all();
+        $levels = \App\Models\GradeLevel::all();
+        $steps = \App\Models\Step::all();
+
+        return view('admin.reports.employees-by-pay-structure', compact('employees', 'payGroups', 'levels', 'steps'));
+    }
 
     /**
      * Display employees that retired in a given date range.
      */
-   public function retiredEmployees(Request $request)
-{
-    $startDate = $request->input('start_date');
-    $endDate = $request->input('end_date');
+    public function retiredEmployees(Request $request)
+    {
+        $startDate = $request->input('start_date');
+        $endDate = $request->input('end_date');
 
-    $query = Employee::where('retirement_date', '<=', now());
-    if ($startDate && $endDate) {
-        $query->whereBetween('retirement_date', [$startDate, $endDate]);
+        $query = Employee::where('retirement_date', '<=', now());
+        if ($startDate && $endDate) {
+            $query->whereBetween('retirement_date', [$startDate, $endDate]);
+        }
+        $totalRetired = $query->count();
+        $employees = $query->paginate(5);
+        return view('admin.reports.retired-employees', compact('employees', 'startDate', 'endDate', 'totalRetired'));
     }
-    $totalRetired = $query->count();
-    $employees = $query->paginate(5);
-    return view('admin.reports.retired-employees', compact('employees', 'startDate', 'endDate', 'totalRetired'));
-}
 
     /**
      * Display employees retiring in a given date range.
@@ -525,86 +542,85 @@ public function employeesByPayStructure(Request $request)
         $startDate = $request->input('start_date') ?? now();
         $endDate = $request->input('end_date') ?? now()->addMonths(6);
         $search = $request->input('search');
-    
+
         $employees = Employee::with('mda')
             ->whereBetween('retirement_date', [$startDate, $endDate])
             ->when($search, function ($query, $search) {
                 $query->where(function ($q) use ($search) {
                     $q->where('first_name', 'like', "%$search%")
-                      ->orWhere('surname', 'like', "%$search%")
-                      ->orWhere('employee_number', 'like', "%$search%");
+                        ->orWhere('surname', 'like', "%$search%")
+                        ->orWhere('employee_number', 'like', "%$search%");
                 });
             })
             ->orderBy('retirement_date', 'asc')
             ->paginate(10)
             ->appends($request->only(['start_date', 'end_date', 'search']));
-    
+
         return view('admin.reports.retiring-employees', compact('employees', 'startDate', 'endDate', 'search'));
     }
-    
-//     // Stat on main Dashboard
-//     public function dashboard()
-//     {
-//      // Retirement per Year
-//      $retirementPerYear = Employee::selectRaw('YEAR(retirement_date) as year, COUNT(*) as total')
-//      ->groupBy('year')
-//      ->orderBy('year')
-//      ->pluck('total', 'year');
 
-//  // Gender distribution
-//  $genderStats = Employee::selectRaw('gender, COUNT(*) as total')
-//      ->groupBy('gender')
-//      ->pluck('total', 'gender');
+    //     // Stat on main Dashboard
+    //     public function dashboard()
+    //     {
+    //      // Retirement per Year
+    //      $retirementPerYear = Employee::selectRaw('YEAR(retirement_date) as year, COUNT(*) as total')
+    //      ->groupBy('year')
+    //      ->orderBy('year')
+    //      ->pluck('total', 'year');
 
-//  // MDA-wise population
-//  $mdaStats = MDA::withCount('employees')->orderBy('employees_count', 'desc')->take(10)->get();
+    //  // Gender distribution
+    //  $genderStats = Employee::selectRaw('gender, COUNT(*) as total')
+    //      ->groupBy('gender')
+    //      ->pluck('total', 'gender');
 
-//  // Gender (Male and Female)
-//  $maleCount = Employee::where('gender', 'Male')->count();
-//  $femaleCount = Employee::where('gender', 'Female')->count();
+    //  // MDA-wise population
+    //  $mdaStats = MDA::withCount('employees')->orderBy('employees_count', 'desc')->take(10)->get();
 
-//  return view('admin.dashboard', compact('retirementPerYear', 'genderStats', 'mdaStats', 'maleCount', 'femaleCount'));
-    
-// }
+    //  // Gender (Male and Female)
+    //  $maleCount = Employee::where('gender', 'Male')->count();
+    //  $femaleCount = Employee::where('gender', 'Female')->count();
 
-// Import Employee via Excel
- // Show Import Form
- public function showImportForm()
- {
-     return view('admin.employee.importemployee');
- }
+    //  return view('admin.dashboard', compact('retirementPerYear', 'genderStats', 'mdaStats', 'maleCount', 'femaleCount'));
 
- // Handle Excel Import
- public function import(Request $request)
- {
-     // Validate the uploaded file
-     $validated = $request->validate([
-         'file' => 'required|mimes:xlsx,xls,csv|max:2048', // max 2MB for safety
-     ]);
+    // }
 
-     try {
-         // Perform the import
-         Excel::import(new EmployeeImport, $validated['file']);
+    // Import Employee via Excel
+    // Show Import Form
+    public function showImportForm()
+    {
+        return view('admin.employee.importemployee');
+    }
 
-         return redirect()->back()->with('success', 'Employees imported successfully!');
-         
-     } catch (\Maatwebsite\Excel\Validators\ValidationException $e) {
-         // Handle validation errors inside the Excel file
-         $failures = $e->failures();
+    // Handle Excel Import
+    public function import(Request $request)
+    {
+        // Validate the uploaded file
+        $validated = $request->validate([
+            'file' => 'required|mimes:xlsx,xls,csv|max:2048', // max 2MB for safety
+        ]);
 
-         $errorMessages = [];
-         foreach ($failures as $failure) {
-             $errorMessages[] = 'Row ' . $failure->row() . ': ' . implode(', ', $failure->errors());
-         }
+        try {
+            // Perform the import
+            Excel::import(new EmployeeImport, $validated['file']);
 
-         return redirect()->back()->withErrors($errorMessages);
-     } catch (\Exception $e) {
-         // Handle any other errors
-         return redirect()->back()->withErrors('An error occurred during import: ' . $e->getMessage());
-     }
- }
+            return redirect()->back()->with('success', 'Employees imported successfully!');
+        } catch (\Maatwebsite\Excel\Validators\ValidationException $e) {
+            // Handle validation errors inside the Excel file
+            $failures = $e->failures();
 
- public function downloadSampleTemplate()
+            $errorMessages = [];
+            foreach ($failures as $failure) {
+                $errorMessages[] = 'Row ' . $failure->row() . ': ' . implode(', ', $failure->errors());
+            }
+
+            return redirect()->back()->withErrors($errorMessages);
+        } catch (\Exception $e) {
+            // Handle any other errors
+            return redirect()->back()->withErrors('An error occurred during import: ' . $e->getMessage());
+        }
+    }
+
+    public function downloadSampleTemplate()
     {
         $filePath = public_path('backend/excel-template/main-template.xlsx');
         // Check if file exists
@@ -616,6 +632,4 @@ public function employeesByPayStructure(Request $request)
             'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
         ]);
     }
-
-
 }
