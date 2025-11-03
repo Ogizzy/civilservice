@@ -63,7 +63,7 @@
 </div>
 
 <!-- Statistics -->
-         <div class="row row-cols-1 row-cols-md-2 row-cols-xl-4">
+         <div class="row row-cols-1 row-cols-md-2 row-cols-xl-12 g-4 mb-4">
 															
 					<div class="col">
 						<div class="card radius-10 bg-primary">
@@ -104,15 +104,7 @@
     <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
         <h5 class="mb-0">Employee Details</h5>
 
-        <!-- Export/Print Buttons -->
-        <div>
-            <button class="btn btn-sm btn-outline-primary me-2">
-                <i class="bx bx-export me-1"></i> Export
-            </button>
-            <button class="btn btn-sm btn-outline-secondary">
-                <i class="bx bx-printer me-1"></i> Print
-            </button>
-        </div>
+       
     </div>
 
     <div class="card-body">
