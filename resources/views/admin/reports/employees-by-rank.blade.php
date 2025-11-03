@@ -63,18 +63,41 @@
 </div>
 
 <!-- Statistics -->
-<div class="card mb-4">
-    <div class="card-body d-flex justify-content-between align-items-center">
-        <div>
-            <h6 class="text-muted small">Total Employees</h6>
-            <h3 class="fw-bold">{{ $employees->total() }}</h3>
-        </div>
-        <div>
-            <h6 class="text-muted small">Current Filter</h6>
-            <h4 class="fw-bold">{{ $rank ?: 'All Ranks' }}</h4>
-        </div>
-    </div>
-</div>
+         <div class="row row-cols-1 row-cols-md-2 row-cols-xl-4">
+															
+					<div class="col">
+						<div class="card radius-10 bg-primary">
+							<div class="card-body">
+								<div class="d-flex align-items-center">
+									<div>
+										<p class="mb-0 text-white">Total Employees</p>
+										<h4 class="my-1 text-white">{{ $employees->total() }}</h4>
+									</div>
+									<div class="text-white ms-auto font-35"><i class="bx bx-user-check"></i>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					
+                    <div class="col">
+						<div class="card radius-10 bg-info">
+							<div class="card-body">
+								<div class="d-flex align-items-center">
+									<div>
+										<p class="mb-0 text-white">Current Filter</p>
+										<h4 class="my-1 text-white">{{ $rank ?: 'All Ranks' }}</h4>
+									</div>
+									<div class="text-white ms-auto font-35"><i class="fadeIn animated bx bx-layer"></i>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					
+                     
+				</div>
+
 
 <!-- Employee Table -->
 <div class="card">
@@ -110,7 +133,7 @@
                             <td>{{ $employees->firstItem() + $key }}</td>
                             <td>{{ $emp->surname }} {{ $emp->first_name }}</td>
                             <td>{{ $emp->mda->mda ?? 'N/A' }}</td>
-                            <td><span class="badge bg-primary">{{ $emp->rank ?? 'N/A' }}</span></td>
+                            <td>{{ $emp->rank ?? 'N/A' }}</span></td>
                             <td><span class="badge bg-success">Active</span></td>
                         </tr>
                     @empty
@@ -123,7 +146,7 @@
         </div>
 
         <!-- Pagination -->
-        <div class="mt-3 d-flex justify-content-center">
+        <div class="mt-3">
             {{ $employees->appends(request()->query())->links('pagination::bootstrap-5') }}
         </div>
     </div>

@@ -455,6 +455,7 @@ class EmployeeController extends Controller
                         $mdaQuery->where('mda', 'like', "%{$search}%");
                     });
             });
+            
         }
 
         $employees = $query->paginate($perPage)->appends($request->query());
