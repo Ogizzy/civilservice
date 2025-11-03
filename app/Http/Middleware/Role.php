@@ -23,28 +23,35 @@ class Role
     }
 
     $userRole = $user->role->role;
-
-    // Convert comma-separated string to array
-    $roles = explode(',', $role);
-
-    // Trim extra spaces just in case
-    $roles = array_map('trim', $roles);
+    $roles = array_map('trim', explode(',', $role));
 
     if (!in_array($userRole, $roles)) {
+        // Prevent redirect loops by checking current route name
+        $currentRoute = $request->route()->getName();
+
         switch ($userRole) {
             case 'Employee':
-                return redirect()->route('employee.dashboard');
+
+                if ($currentRoute !== 'employee.dashboard') {
+                    return redirect()->route('employee.dashboard');
+                }
+                break;
+
             case 'BDIC Super Admin':
             case 'Head of Service':
             case 'Commissioner':
             case 'Director':
-                return redirect()->route('admin.dashboard');
+                
+                if ($currentRoute !== 'admin.dashboard') {
+                    return redirect()->route('admin.dashboard');
+                }
+                break;
+
             default:
                 abort(403);
         }
     }
-        
-        // User has one of the required roles, proceed with the request
+   // User has one of the required roles, proceed with the request
         return $next($request);
     }
 }

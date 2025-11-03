@@ -57,7 +57,7 @@
 
 	<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.css" >
 
-	<title>Benue State Civil Service Commission</title>
+	<title>Benue State Civil Service Management System</title>
 </head>
 
 {{-- <body style="font-weight:bold"><div style="width:300px;margin:auto auto;"><img src="/resources/images/loading.gif" width="300px"/></div> --}}

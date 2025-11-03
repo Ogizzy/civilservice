@@ -14,14 +14,12 @@ class EmployeeMiddleware
      *
      * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
      */
-    public function handle(Request $request, Closure $next): Response
+    public function handle(Request $request, Closure $next)
     {
         if (Auth::check() && Auth::user()->role_id == 6) {
             return $next($request);
         }
 
-        return redirect()->route('login')->with('error', 'Unauthorized access.');
-        
-        return $next($request);
+       return redirect()->route('admin.dashboard')->with('error', 'Unauthorized access.');
     }
 }
