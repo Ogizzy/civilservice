@@ -477,20 +477,32 @@ class EmployeeController extends Controller
     /**
      * Display employees by qualification.
      */
-    public function employeesByQualification(Request $request)
-    {
-        $qualification = $request->input('qualification');
+   public function employeesByQualification(Request $request)
+{
+    $qualification = $request->input('qualification');
+    $search = $request->input('search');
+    $perPage = $request->input('per_page', 10);
 
-        $query = Employee::query();
-        if ($qualification) {
-            $query->where('qualifications', 'like', "%$qualification%");
-        }
+    $query = Employee::with('mda');
 
-        $employees = $query->with('mda')->get();
-        $qualifications = Employee::select('qualifications')->distinct()->pluck('qualifications');
-
-        return view('admin.reports.employees-by-qualification', compact('employees', 'qualifications', 'qualification'));
+    if ($qualification) {
+        $query->where('qualifications', 'like', "%$qualification%");
     }
+
+    if ($search) {
+        $query->where(function($q) use ($search) {
+            $q->where('surname', 'like', "%$search%")
+              ->orWhere('first_name', 'like', "%$search%")
+              ->orWhere('employee_number', 'like', "%$search%")
+              ->orWhereHas('mda', fn($m) => $m->where('mda', 'like', "%$search%"));
+        });
+    }
+
+    $employees = $query->paginate($perPage);
+    $qualifications = Employee::select('qualifications')->distinct()->pluck('qualifications');
+
+    return view('admin.reports.employees-by-qualification', compact('employees', 'qualifications', 'qualification'));
+}
 
     /**
      * Display employees by pay group, grade level, and step.
