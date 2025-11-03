@@ -35,7 +35,7 @@
                     <!-- Toolbar for search + export/print -->
                     <div class="d-flex justify-content-between mb-3">
                         <!-- Laravel Search -->
-                        <form method="GET" action="{{ route('employees.index') }}" class="d-flex">
+                        <form method="GET" action="" class="d-flex">
                             <input type="text" name="search" class="form-control me-2" value="{{ request('search') }}"
                                 placeholder="Search employees...">
                             <button type="submit" class="btn btn-primary">Search</button>

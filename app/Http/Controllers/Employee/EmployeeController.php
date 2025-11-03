@@ -438,16 +438,29 @@ class EmployeeController extends Controller
     public function employeesByRank(Request $request)
     {
         $rank = $request->input('rank');
+        $search = $request->input('search');
+        $perPage = $request->input('per_page', 10);
 
-        $query = Employee::query();
+        $query = Employee::with(['mda']);
+
         if ($rank) {
             $query->where('rank', $rank);
         }
 
-        $employees = $query->with(['mda'])->get();
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('first_name', 'like', "%{$search}%")
+                    ->orWhere('surname', 'like', "%{$search}%")
+                    ->orWhereHas('mda', function ($mdaQuery) use ($search) {
+                        $mdaQuery->where('mda', 'like', "%{$search}%");
+                    });
+            });
+        }
+
+        $employees = $query->paginate($perPage)->appends($request->query());
         $ranks = Employee::select('rank')->distinct()->pluck('rank');
 
-        return view('admin.reports.employees-by-rank', compact('employees', 'ranks', 'rank'));
+        return view('admin.reports.employees-by-rank', compact('employees', 'ranks', 'rank', 'search'));
     }
 
     /**
