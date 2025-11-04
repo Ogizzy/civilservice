@@ -10,16 +10,16 @@
 
     <div class="page-content">
         <!-- Page Heading -->
-        <div class="card bg-gradient-primary-to-secondary mb-4 shadow-sm border-0">
+        <div class="card bg-primary mb-4 shadow-sm border-0">
             <div class="card-body p-4">
                 <div class="d-flex align-items-center justify-content-between">
                     <div>
                         <h3 class="mb-1 fw-bold text-white">MDAs Management</h3>
                         <nav aria-label="breadcrumb">
                             <ol class="breadcrumb mb-0 p-0 bg-transparent small">
-                                <li class="breadcrumb-item"><a href="#" class="text-white opacity-75"><i
+                                <li class="breadcrumb-item"><a href="#" class="text-white"><i
                                             class="fas fa-home"></i></a></li>
-                                <li class="breadcrumb-item active text-white opacity-75" aria-current="page">Ministries,
+                                <li class="breadcrumb-item active text-white" aria-current="page">Ministries,
                                     Departments & Agencies</li>
                             </ol>
                         </nav>
@@ -169,8 +169,6 @@
                                     @endforelse
                                 </tbody>
                             </table>
-
-                            <!-- Pagination -->
                             <div class="mt-3">
                                 {{ $mdas->appends(request()->query())->links('pagination::bootstrap-5') }}
                             </div>
@@ -182,6 +180,8 @@
             <!-- End Table -->
         </div>
     </div>
+
+    
 
     <!-- Create MDA Modal -->
     <div class="modal fade" id="createMdaModal" tabindex="-1" aria-labelledby="createMdaModalLabel"
