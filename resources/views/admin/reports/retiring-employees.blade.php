@@ -31,22 +31,42 @@
     <!--end breadcrumb-->
 
     <div class="container">
-        <!-- Dashboard Card -->
-        <div class="card shadow-sm mb-4">
-            <div class="card-body">
-                <div class="row align-items-center">
-                    <div class="col-md-6">
-                        <h4 class="fw-bold mb-0 text-primary">Employees Retiring Soon</h4>
-                        <p class="text-muted mb-md-0">Overview of upcoming retirements</p>
-                    </div>
-                    <div class="col-md-6 text-md-end">
-                        <span class="badge bg-light text-dark fs-6">
-                            Total: {{ $employees->total() }} employees
-                        </span>
-                    </div>
-                </div>
-            </div>
-        </div>
+       <hr>
+
+
+<!-- Statistics -->
+         <div class="row row-cols-1 row-cols-md-2 row-cols-xl-12 g-4 mb-4">
+					<div class="col">
+						<div class="card radius-10 bg-warning">
+							<div class="card-body">
+								<div class="d-flex align-items-center">
+									<div>
+									
+										<h4 class="my-1 text-dark">Employees Retiring Soon</h4>
+                                        	<p class="mb-0 text-dark">Overview of upcoming retirements</p>
+									</div>
+									<div class="text-dark ms-auto font-35"><i class="bx bx-user-check"></i>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					
+                    <div class="col">
+						<div class="card radius-10 bg-danger">
+							<div class="card-body">
+								<div class="d-flex align-items-center">
+									<div>
+										<h4 class="mb-0 text-white">Total Retirements</h4>
+										<h3 class="my-1 text-white">{{ $employees->total() }}</h3>
+									</div>
+									<div class="text-white ms-auto font-35"><i class="fadeIn animated bx bx-layer"></i>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
 
         <!-- Filter Section -->
         <div class="card shadow-sm mb-4">
@@ -88,8 +108,22 @@
         <!-- Data Table Card -->
         <div class="card shadow-sm">
             <div class="card-body">
+
+                 <!-- Toolbar for search + export/print -->
+                    <div class="d-flex justify-content-between mb-3">
+                        <!-- Laravel Search -->
+                        <form method="GET" action="" class="d-flex">
+                            <input type="text" name="search" class="form-control me-2" value="{{ request('search') }}"
+                                placeholder="Search employees...">
+                            <button type="submit" class="btn btn-primary">Search</button>
+                        </form>
+
+                        <!-- Export/Print Buttons -->
+                        <div id="exportButtons"></div>
+                    </div>
+
                 <div class="table-responsive">
-                    <table id="example2" class="table table-striped table-bordered">
+                    <table id="retiringTable" class="table table-striped table-bordered">
                         <thead class="thead-dark">
                             <tr>
                                 <th>S/N</th>
@@ -106,12 +140,9 @@
                                 <td>{{ ($employees->currentPage() - 1) * $employees->perPage() + $index + 1 }}</td>
                                 <td>
                                     <div class="d-flex align-items-center">
-                                        {{-- <div class="avatar bg-light-primary rounded-circle me-3">
-                                            {{ substr($emp->first_name, 0, 1) }}{{ substr($emp->surname, 0, 1) }}
-                                        </div> --}}
                                         <div>
                                             <h6 class="mb-0">{{ $emp->surname }} {{ $emp->first_name }}</h6>
-                                            <small class="text-muted">Employee No: {{ $emp->employee_number }}</small>
+                                            <small class="text-red">Employee No: {{ $emp->employee_number }}</small>
                                         </div>
                                     </div>
                                 </td>
@@ -142,6 +173,7 @@
                     <div class="text-muted">
                         Showing {{ $employees->firstItem() }} to {{ $employees->lastItem() }} of {{ $employees->total() }} entries
                     </div>
+
                     <nav aria-label="Page navigation">
                         <ul class="pagination mb-0">
                             {{-- Previous Page Link --}}
@@ -256,22 +288,41 @@
 </script>
 
 
-<script>
-    $(document).ready(function() {
-        $('#example').DataTable();
-    });
-</script>
+  <script>
+                $(document).ready(function() {
+                    // Initialize DataTables but disable pagination/search
+                    let table = $('#retiringTable').DataTable({
+                        paging: false, 
+                        searching: false, 
+                        info: false,
+                        ordering: true,
+                        dom: 'Bfrtip',
+                        buttons: [{
+                                extend: 'copy',
+                                className: 'btn btn-sm bg-secondary text-white'
+                            },
+                            {
+                                extend: 'excel',
+                                className: 'btn btn-sm bg-success text-white'
+                            },
+                            {
+                                extend: 'csv',
+                                className: 'btn btn-sm bg-info text-white'
+                            },
+                            {
+                                extend: 'pdf',
+                                className: 'btn btn-sm bg-danger text-white'
+                            },
+                            {
+                                extend: 'print',
+                                className: 'btn btn-sm bg-primary text-white'
+                            }
+                        ]
+                    });
 
-<script>
-    $(document).ready(function() {
-        var table = $('#example2').DataTable({
-            lengthChange: false,
-            buttons: ['copy', 'excel', 'pdf', 'print']
-        });
-
-        table.buttons().container()
-            .appendTo('#example2_wrapper .col-md-6:eq(0)');
-    });
-</script>
+                    // Move buttons to custom div
+                    table.buttons().container().appendTo('#exportButtons');
+                });
+            </script>
 
 @endsection

@@ -25,6 +25,8 @@
         </div>
     </div>
 
+    <hr>
+
     <!-- Filter Form -->
     <div class="card shadow-sm border-0 mb-4">
         <div class="card-header bg-white">
@@ -98,12 +100,12 @@
                                     <tr>
                                         <td>{{ ($employees->currentPage() - 1) * $employees->perPage() + $index + 1 }}</td>
                                         <td>
-                                            <strong>{{ $emp->surname }} {{ $emp->first_name }}</strong><br>
+                                           {{ $emp->surname }} {{ $emp->first_name }}<br>
                                             <small class="text-muted">Employee No: {{ $emp->employee_number }}</small>
                                         </td>
-                                        <td><span class="badge bg-success">{{ $emp->payGroup->paygroup ?? 'N/A' }}</span></td>
-                                        <td><span class="badge bg-primary">Grade Level {{ $emp->gradeLevel->level ?? 'N/A' }}</span></td>
-                                        <td><span class="badge bg-secondary">Step {{ $emp->step->step ?? 'N/A' }}</span></td>
+                                        <td>{{ $emp->payGroup->paygroup ?? 'N/A' }}</span></td>
+                                        <td>Grade Level {{ $emp->gradeLevel->level ?? 'N/A' }}</span></td>
+                                        <td>Step {{ $emp->step->step ?? 'N/A' }}</span></td>
                                     </tr>
                                 @empty
                                     <tr>
@@ -116,8 +118,8 @@
                             </tbody>
                         </table>
                     </div>
-                    <div class="d-flex justify-content-center p-3">
-                        {{ $employees->links() }}
+                    <div class="mt-3">
+                        {{ $employees->links('pagination::bootstrap-5') }}
                     </div>
                 </div>
             </div>

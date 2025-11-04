@@ -36,51 +36,55 @@
         </div>
     </div>
 
+    <hr>
+
     <!-- Main Content Area -->
     <div class="row g-4">
         <!-- Summary Cards -->
         <div class="col-12">
             <div class="row g-3">
                 <div class="col-md-4">
-                    <div class="card border-0 shadow-sm">
+                    <div class="card radius-10 bg-danger">
                         <div class="card-body">
                             <div class="d-flex align-items-center">
                                 <div class="rounded-circle p-3 bg-light-primary me-3">
-                                    <i class="bx bx-user-check text-primary fs-4"></i>
+                                    <i class="bx bx-user-check text-info fs-4"></i>
                                 </div>
                                 <div>
-                                    <h6 class="text-muted mb-0">Total Retirees</h6>
-                                    <h4 class="mb-0">{{ $employees->total() }}</h4>
+                                    <h6 class="mb-0 text-white">Total Retirees</h6>
+                                    <h4 class="mb-0 text-white">{{ $employees->total() }}</h4>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
+
                 <div class="col-md-4">
-                    <div class="card border-0 shadow-sm">
+                    <div class="card radius-10 bg-success">
                         <div class="card-body">
                             <div class="d-flex align-items-center">
-                                <div class="rounded-circle p-3 bg-light-warning me-3">
+                                <div class="rounded-circle p-3 bg-light-primary me-3">
                                     <i class="bx bx-calendar text-warning fs-4"></i>
                                 </div>
                                 <div>
-                                    <h6 class="text-muted mb-0">Current Year Retirements</h6>
-                                    <h4 class="mb-0">{{ $employees->count() }} </h4><sm>Employees</sm>
+                                    <h6 class="mb-0 text-white">Current Year Retirements</h6>
+                                    <h4 class="mb-0 text-white">{{ $employees->count() }} </h4><sm class="mb-0 text-white">Employees</sm>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
+
                 <div class="col-md-4">
-                    <div class="card border-0 shadow-sm">
+                    <div class="card radius-10 bg-info">
                         <div class="card-body">
                             <div class="d-flex align-items-center">
-                                <div class="rounded-circle p-3 bg-light-info me-3">
-                                    <i class="bx bx-building-house text-info fs-4"></i>
+                                <div class="rounded-circle p-3 bg-light-primary me-3">
+                                    <i class="bx bx-building-house text-primary fs-4"></i>
                                 </div>
                                 <div>
-                                    <h6 class="text-muted mb-0">MDAs Affected</h6>
-                                    <h4 class="mb-0">{{ $employees->pluck('mda.mda')->unique()->count() }}</h4>
+                                    <h6 class="mb-0 text-white">MDAs Affected</h6>
+                                    <h4 class="mb-0 text-white">{{ $employees->pluck('mda.mda')->unique()->count() }}</h4>
                                 </div>
                             </div>
                         </div>
@@ -202,9 +206,7 @@
                                         </div>
                                     </td>
                                     <td>
-                                        <span class="badge bg-light-info text-primary">
-                                            {{ $emp->mda->mda ?? 'N/A' }}
-                                        </span>
+                                    {{ $emp->mda->mda ?? 'N/A' }}
                                     </td>
                                     <td class="text-end pe-3">
                                         <button class="btn btn-sm btn-outline-primary" title="View Details">
@@ -226,12 +228,11 @@
                             </tbody>
                         </table>
                     </div>
+
                     <div class="d-flex justify-content-center">
-                        {{ $employees->links() }}
+                        {{ $employees->links('pagination::bootstrap-5') }}
                     </div>
                 </div>
-
-               
             </div>
         </div>
     </div>
