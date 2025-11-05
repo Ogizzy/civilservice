@@ -21,6 +21,7 @@
         </button>
     </div>
 </div>
+<hr>
 
 <!-- Filter Form -->
 <div class="card mb-4">
@@ -70,7 +71,7 @@
 							<div class="card-body">
 								<div class="d-flex align-items-center">
 									<div>
-										<p class="mb-0 text-white">Total Employees</p>
+										<h6 class="mb-0 text-white">Total Employees</h6>
 										<h4 class="my-1 text-white">{{ $employees->total() }}</h4>
 									</div>
 									<div class="text-white ms-auto font-35"><i class="bx bx-user-check"></i>
@@ -85,7 +86,7 @@
 							<div class="card-body">
 								<div class="d-flex align-items-center">
 									<div>
-										<p class="mb-0 text-white">Current Filter</p>
+										<h6 class="mb-0 text-white">Current Filter</h6>
 										<h4 class="my-1 text-white">{{ $rank ?: 'All Ranks' }}</h4>
 									</div>
 									<div class="text-white ms-auto font-35"><i class="fadeIn animated bx bx-layer"></i>

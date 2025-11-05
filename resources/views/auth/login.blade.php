@@ -80,7 +80,7 @@
 
       <!-- Right: Image + Text -->
       <div class="login-image">
-        <img src="{{ asset('backend/assets/login/people.jpg')}}" alt="People" class="hero-img" />
+        <img src="{{ asset('backend/assets/login/people2.jpg')}}" alt="People" class="hero-img" />
         <div class="image-text">
           <h2>Creating a Digital Benue</h2>
           <p>
