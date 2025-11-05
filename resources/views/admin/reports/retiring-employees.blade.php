@@ -58,7 +58,7 @@
 								<div class="d-flex align-items-center">
 									<div>
 										<h4 class="mb-0 text-white">Total Retirements</h4>
-										<h3 class="my-1 text-white">{{ $employees->total() }}</h3>
+										<p class="my-1 text-white"><strong>{{ $employees->total() }}</strong></p>
 									</div>
 									<div class="text-white ms-auto font-35"><i class="fadeIn animated bx bx-layer"></i>
 									</div>
