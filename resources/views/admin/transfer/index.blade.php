@@ -107,6 +107,7 @@
                                                 <small class="text-muted">{{ $transfer->created_at->diffForHumans() }}</small>
                                             </div>
                                         </td>
+                                        
                                         @if (auth()->user()->role->role != 'Employee')
                                             <td>
                                                 <div class="action-buttons">
