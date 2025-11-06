@@ -29,9 +29,8 @@
         </div>
     </div>
     <!--end breadcrumb-->
-
     <div class="container">
-       <hr>
+    <hr>
 
 
 <!-- Statistics -->
@@ -41,7 +40,6 @@
 							<div class="card-body">
 								<div class="d-flex align-items-center">
 									<div>
-									
 										<h4 class="my-1 text-dark">Employees Retiring Soon</h4>
                                         	<p class="mb-0 text-dark">Overview of upcoming retirements</p>
 									</div>
@@ -66,7 +64,6 @@
 							</div>
 						</div>
 					</div>
-                     
 				</div>
 
         <!-- Filter Section -->

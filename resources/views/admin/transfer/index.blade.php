@@ -14,6 +14,7 @@
                         <li class="breadcrumb-item active">Transfer History</li>
                     </ul>
                 </div>
+                
                 @if (auth()->user()->role->role != 'Employee')
                     <div class="col-auto">
                         <a href="{{ route('employees.transfers.create', $employee->id) }}" class="btn btn-primary">
@@ -24,7 +25,7 @@
             </div>
         </div>
         <!-- End Header Section -->
-
+       
         <div class="container-fluid">
             <!-- Employee Info Card -->
             <div class="card employee-card mb-4">
@@ -32,9 +33,9 @@
                     <div class="employee-info">
                         <h5 class="card-title">Transfer History For:</h5>
                         <div class="employee-details">
-                            <span class="employee-name">{{ $employee->surname }} {{ $employee->first_name }}
+                            <span class="text-primary">{{ $employee->surname }} {{ $employee->first_name }}
                                 {{ $employee->middle_name }}</span>
-                            <span class="employee-id"> | Employee No: {{ $employee->employee_number }}</span>
+                            <span class="text-danger"> | Employee No: {{ $employee->employee_number }}</span>
                         </div>
                     </div>
                 </div>
@@ -99,10 +100,11 @@
                                         </td>
                                         <td>
                                             <div class="user-info">
-                                                <span class="user-name">{{ $transfer->user->surname ?? 'N/A' }}
-                                                    {{ $transfer->user->first_name ?? 'N/A' }}</span><br>
-                                                <small
-                                                    class="text-muted">{{ $transfer->created_at->diffForHumans() }}</small>
+                                                <span class="user-name">  {{ $transfer->user->role->role ?? 'N/A' }}</span>
+                                                <br>
+                                                <small class="text-muted"> {{ $transfer->user->surname ?? 'N/A' }} {{ $transfer->user->first_name ?? 'N/A' }}</small> 
+                                                <br>
+                                                <small class="text-muted">{{ $transfer->created_at->diffForHumans() }}</small>
                                             </div>
                                         </td>
                                         @if (auth()->user()->role->role != 'Employee')

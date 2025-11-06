@@ -30,7 +30,7 @@
                     <div class="flex-grow-1">
                         <h5 class="mb-1 text-primary">Initiate Transfer For:</h5>
                         <h4 class="mb-0">{{ $employee->surname }} {{ $employee->first_name }} {{ $employee->middle_name }}</h4>
-                        <small>Current MDA: {{$employee->mda->mda ?? 'N/A'}}</small>
+                        <small class="text-danger"> Current MDA: {{$employee->mda->mda ?? 'N/A'}}</small>
                     </div>
                     <div class="employee-id">
                         <span class="badge bg-primary">Employee No: {{ $employee->employee_number }}</span>
