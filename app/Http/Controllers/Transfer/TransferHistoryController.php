@@ -16,14 +16,36 @@ class TransferHistoryController extends Controller
     /**
      * Display a listing of the employee's transfer history.
      */
-    public function index(Employee $employee)
-    {
-        $transfers = TransferHistory::where('employee_id', $employee->id)
-            ->with(['previousMda', 'currentMda', 'document', 'user'])
-            ->orderBy('effective_date', 'desc')
-            ->paginate(2);
-        return view('admin.transfer.index', compact('employee', 'transfers'));
+  public function index(Request $request, Employee $employee)
+{
+    $query = TransferHistory::where('employee_id', $employee->id)
+        ->with(['previousMda', 'currentMda', 'document', 'user']);
+
+    // SEARCH
+    if ($request->has('search') && $request->search != '') {
+        $search = $request->search;
+
+        $query->where(function ($q) use ($search) {
+            $q->whereHas('previousMda', function ($m) use ($search) {
+                $m->where('mda', 'LIKE', "%{$search}%");
+            })
+            ->orWhereHas('currentMda', function ($m) use ($search) {
+                $m->where('mda', 'LIKE', "%{$search}%");
+            })
+            ->orWhereHas('mda', function ($u) use ($search) {
+                $u->where('name', 'LIKE', "%{$search}%");
+            });
+        });
     }
+
+    $transfers = $query->orderBy('effective_date', 'desc')->paginate(2);
+
+    // Preserve search term in pagination
+    $transfers->appends($request->query());
+
+    return view('admin.transfer.index', compact('employee', 'transfers'));
+}
+
 
     /**
      * Show the form for creating a new transfer record.
