@@ -177,21 +177,7 @@
                         </div>
                         <div class="card-body p-4">
                             <div class="row g-3">
-                                <div class="col-md-4">
-                                    <label for="mda_id" class="form-label text-dark fw-medium">MDA <span class="text-danger">*</span></label>
-                                    <div class="input-group input-group-seamless">
-                                        <span class="input-group-text bg-light border-end-0"><i class="bx bx-building text-primary"></i></span>
-                                        <select class="form-select border-start-0 ps-0 @error('mda_id') is-invalid @enderror" id="mda_id" name="mda_id" required>
-                                            <option value="">Select MDA</option>
-                                            @foreach($mdas as $mda)
-                                                <option value="{{ $mda->id }}" @selected(old('mda_id') == $mda->id)>{{ $mda->mda }}</option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-                                    @error('mda_id')
-                                        <div class="invalid-feedback d-block small mt-1"><i class="bx bx-error-circle me-1"></i>{{ $message }}</div>
-                                    @enderror
-                                </div>
+                               
                                 
                                 <div class="col-md-4">
                                     <label for="paygroup_id" class="form-label text-dark fw-medium">Pay Group <span class="text-danger">*</span></label>
@@ -240,6 +226,57 @@
                                         <div class="invalid-feedback d-block small mt-1"><i class="bx bx-error-circle me-1"></i>{{ $message }}</div>
                                     @enderror
                                 </div>
+
+                                 <div class="col-md-4">
+                                    <label for="mda_id" class="form-label text-dark fw-medium">MDA <span class="text-danger">*</span></label>
+                                    <div class="input-group input-group-seamless">
+                                        <span class="input-group-text bg-light border-end-0"><i class="bx bx-building text-primary"></i></span>
+                                        <select id="mda_id" name="mda_id" class="form-select" required>
+                                    <option value="">Select MDA</option>
+                                    @foreach($mdas as $mda)
+                                        <option value="{{ $mda->id }}" 
+                                            @selected(old('mda_id', $employee->mda_id ?? '') == $mda->id)>
+                                            {{ $mda->mda }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                                    </div>
+                                    @error('mda_id')
+                                        <div class="invalid-feedback d-block small mt-1"><i class="bx bx-error-circle me-1"></i>{{ $message }}</div>
+                                    @enderror
+                                </div>
+
+                                <div class="col-md-4">
+                                    <label for="department_id" class="form-label text-dark fw-medium">Department <span class="text-danger">*</span></label>
+                                    <div class="input-group input-group-seamless">
+                                        <span class="input-group-text bg-light border-end-0"><i class="bx bx-ladder text-primary"></i></span>
+                                        <select class="form-select border-start-0 ps-0" id="department_id" name="department_id" required>
+    <option value="">Select Department</option>
+</select>
+
+                                    </div>
+                                    @error('department_id')
+                                        <div class="invalid-feedback d-block small mt-1"><i class="bx bx-error-circle me-1"></i>{{ $message }}</div>
+                                    @enderror
+                                </div>
+
+
+                                <div class="col-md-4">
+                                    <label for="unit_id" class="form-label text-dark fw-medium">Unit <span class="text-danger">*</span></label>
+                                    <div class="input-group input-group-seamless">
+                                        <span class="input-group-text bg-light border-end-0"><i class="bx bx-ladder text-primary"></i></span>
+                                        <select class="form-select border-start-0 ps-0 @error('unit_id') is-invalid @enderror"  name="unit_id" id="unitSelect" required>
+                                            <option value="">-- select unit --</option>
+                                            {{-- @foreach($units as $unit) --}}
+                                                {{-- <option value="{{ $unit->id }}" @selected(old('unit_id') == $unit->id)>{{ $unit->unit_name }}</option> --}}
+                                            {{-- @endforeach --}}
+                                        </select>
+                                    </div>
+                                    @error('unit_id')
+                                        <div class="invalid-feedback d-block small mt-1"><i class="bx bx-error-circle me-1"></i>{{ $message }}</div>
+                                    @enderror
+                                </div>
+                                
                                 
                                 <div class="col-md-4">
                                     <label for="first_appointment_date" class="form-label text-dark fw-medium">First Appointment Date</label>
@@ -277,17 +314,6 @@
                                     @enderror
                                 </div>
                                 
-                                {{-- <div class="col-md-4">
-                                    <label for="retirement_date" class="form-label text-dark fw-medium">Retirement Date</label>
-                                    <div class="input-group input-group-seamless">
-                                        <span class="input-group-text bg-light border-end-0"><i class="bx bx-calendar-x text-primary"></i></span>
-                                        <input type="date" class="form-control border-start-0 ps-0 @error('retirement_date') is-invalid @enderror" 
-                                               id="retirement_date" name="retirement_date" value="{{ old('retirement_date') }}">
-                                    </div>
-                                    @error('retirement_date')
-                                        <div class="invalid-feedback d-block small mt-1"><i class="bx bx-error-circle me-1"></i>{{ $message }}</div>
-                                    @enderror
-                                </div> --}}
                                 
                                 <div class="col-md-4">
                                     <label for="rank" class="form-label text-dark fw-medium">Rank</label>
@@ -693,6 +719,99 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 </script>
 
+
+{{--  Dynamic Unit Loading Based on Department Selection --}}
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+    const mdaSelect = document.getElementById('mda_id');
+    const departmentSelect = document.getElementById('department_id');
+    const unitSelect = document.getElementById('unitSelect');
+
+    const selectedDepartmentId = "{{ old('department_id', $employee->department_id ?? '') }}";
+    const selectedUnitId = "{{ old('unit_id', $employee->unit_id ?? '') }}";
+
+    // Load departments on edit page
+    if (mdaSelect.value) {
+        loadDepartments(mdaSelect.value, true);
+    }
+
+    // When MDA changes
+    mdaSelect.addEventListener('change', function () {
+        loadDepartments(this.value, false);
+    });
+
+    // When department changes
+    departmentSelect.addEventListener('change', function () {
+        loadUnits(this.value, false);
+    });
+
+    function loadDepartments(mdaId, isEditMode) {
+        departmentSelect.innerHTML = '<option value="">Loading departments...</option>';
+        unitSelect.innerHTML = '<option value="">Select Unit</option>';
+
+        if (!mdaId) {
+            departmentSelect.innerHTML = '<option value="">Select Department</option>';
+            return;
+        }
+
+        fetch(`/get-departments-by-mda/${mdaId}`, {
+            headers: {
+                "X-Requested-With": "XMLHttpRequest"
+            }
+        })
+        .then(res => res.json())
+        .then(data => {
+            departmentSelect.innerHTML = '<option value="">Select Department</option>';
+
+            data.forEach(dept => {
+                const opt = document.createElement('option');
+                opt.value = dept.id;
+                opt.textContent = dept.department_name;
+
+                if (isEditMode && selectedDepartmentId == dept.id) {
+                    opt.selected = true;
+                    loadUnits(dept.id, true);
+                }
+
+                departmentSelect.appendChild(opt);
+            });
+        });
+    }
+
+    function loadUnits(departmentId, isEditMode) {
+        unitSelect.innerHTML = '<option value="">Loading units...</option>';
+
+        if (!departmentId) {
+            unitSelect.innerHTML = '<option value="">Select Unit</option>';
+            return;
+        }
+
+        fetch(`/get-units-by-department/${departmentId}`, {
+            headers: {
+                "X-Requested-With": "XMLHttpRequest"
+            }
+        })
+        .then(res => res.json())
+        .then(data => {
+            unitSelect.innerHTML = '<option value="">Select Unit</option>';
+
+            data.forEach(unit => {
+                const opt = document.createElement('option');
+                opt.value = unit.id;
+                opt.textContent = unit.unit_name;
+
+                if (isEditMode && selectedUnitId == unit.id) {
+                    opt.selected = true;
+                }
+
+                unitSelect.appendChild(opt);
+            });
+        });
+    }
+});
+</script>
 
 
 @endsection

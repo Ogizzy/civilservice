@@ -39,6 +39,62 @@
             @endif
 
 
+             <li class="menu-label">Manage System Structure</li>
+               <!-- Manage Departments -->
+            {{-- @usercan('Employee Management', 'can_edit') --}}
+            <li>
+                <a href="javascript:;" class="has-arrow">
+                    <div class="parent-icon"><i class="fadeIn animated bx bx-layer"></i></div>
+                    <div class="menu-title">Manage Depts.</div>
+                </a>
+
+                <ul>
+                    {{-- @usercan('Employee Management', 'can_create') --}}
+                        <li>
+                            <a href="{{ route('departments.create') }}">
+                                <i class='bx bx-radio-circle'></i>Create Department
+                            </a>
+                        </li>
+                    {{-- @endusercan --}}
+
+                    <li>
+                        <a href="{{ route('departments.index') }}">
+                            <i class='bx bx-radio-circle'></i>View Departments
+                        </a>
+                    </li>
+                   
+                </ul>
+            </li>
+        {{-- @endusercan --}}
+
+               <!-- Manage Units -->
+            {{-- @usercan('Employee Management', 'can_edit') --}}
+            <li>
+                <a href="javascript:;" class="has-arrow">
+                    <div class="parent-icon"><i class="fadeIn animated bx bx-merge"></i></div>
+                    <div class="menu-title">Manage Units</div>
+                </a>
+
+                <ul>
+                    {{-- @usercan('Employee Management', 'can_create') --}}
+                        <li>
+                            <a href="{{ route('units.create') }}">
+                                <i class='bx bx-radio-circle'></i>Create Unit
+                            </a>
+                        </li>
+                    {{-- @endusercan --}}
+
+                    <li>
+                        <a href="{{ route('units.index') }}">
+                            <i class='bx bx-radio-circle'></i>View Units
+                        </a>
+                    </li>
+                   
+                </ul>
+            </li>
+        {{-- @endusercan --}}
+
+
             <!-- Employee Management Group -->
             @usercan('Employee Management', 'can_edit')
             <li>

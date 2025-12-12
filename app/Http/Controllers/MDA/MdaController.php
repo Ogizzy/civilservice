@@ -72,6 +72,7 @@ public function deactivate($id)
         $validated = $request->validate([
             'mda' => 'required|string|max:255|unique:mdas',
             'mda_code' => 'required|string|max:255|unique:mdas',
+            'head_id' => 'nullable|exists:employees,id'
         ]);
 
         MDA::create($validated);
@@ -98,7 +99,8 @@ public function deactivate($id)
      */
     public function edit(Mda $mda)
     {
-        return view('admin.mda.edit', compact('mda'));
+        $employees = Employee::orderBy('surname')->get();
+        return view('admin.mda.edit', compact('mda', 'employees'));
     }
 
     /**
@@ -109,6 +111,7 @@ public function deactivate($id)
         $validated = $request->validate([
             'mda' => 'required|string|max:255|unique:mdas,mda,' . $mda->id,
             'mda_code' => 'required|string|max:255|unique:mdas,mda_code,' . $mda->id,
+            'head_id' => 'nullable|exists:employees,id'
         ]);
 
         $mda->update($validated);

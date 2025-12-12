@@ -17,6 +17,7 @@ class MDA extends Model implements Auditable
         'mda',
         'mda_code',
         'status',
+        'head_id',
     ];
 
     public function employees()
@@ -32,5 +33,15 @@ class MDA extends Model implements Auditable
     public function currentTransfers()
     {
         return $this->hasMany(TransferHistory::class, 'current_mda');
+    }
+
+     public function head()
+    {
+        return $this->belongsTo(Employee::class, 'head_id');
+    }
+
+    public function departments()
+    {
+        return $this->hasMany(Department::class);
     }
 }

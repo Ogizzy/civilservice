@@ -222,4 +222,56 @@ class EmployeeApiController extends Controller
     ]);
 }
 
+
+/*
+|--------------------------------------------------------------------------
+Display Employee Details 
+|--------------------------------------------------------------------------
+*/
+
+public function employeeProfile(Request $request)
+{
+    $employee = $request->user();  // authenticated model
+
+    // If a User (admin) tries to access this endpoint
+    if ($employee instanceof \App\Models\User) {
+        return response()->json([
+            'status' => 'error',
+            'message' => 'Only employees can access this endpoint.',
+        ], 403);
+    }
+
+    // Load Relations
+    $employee->load(['mda:id,mda', 'gradeLevel:id,level', 'step:id,step', 'paygroup:id,paygroup']);
+
+    return response()->json([
+        'status' => 'success',
+        'data' => [
+            'employee_number' => $employee->employee_number,
+            'surname' => $employee->surname,
+            'first_name' => $employee->first_name,
+            'middle_name' => $employee->middle_name,
+            'gender' => $employee->gender,
+            'email' => $employee->email,
+            'phone' => $employee->phone,
+            'dob' => $employee->dob,
+            'first_appointment_date' => $employee->first_appointment_date,
+            'confirmation_date' => $employee->confirmation_date,
+            'retirement_date' => $employee->retirement_date,
+            'rank' => $employee->rank,
+
+            'mda' => optional($employee->mda)->mda,
+            'level' => optional($employee->level)->level,
+            'step' => optional($employee->step)->step,
+            'paygroup' => optional($employee->paygroup)->paygroup,
+
+            'passport' => $employee->passport
+                ? (str_starts_with($employee->passport, 'http')
+                    ? $employee->passport
+                    : null)
+                : null,
+        ]
+    ]);
+}
+
 }

@@ -6,11 +6,13 @@ use Carbon\Carbon;
 use App\Models\LGA;
 use App\Models\MDA;
 use App\Models\Step;
+use App\Models\Unit;
 use App\Models\User;
 use App\Models\State;
 use App\Models\Document;
 use App\Models\Employee;
 use App\Models\PayGroup;
+use App\Models\Department;
 use App\Models\GradeLevel;
 use Illuminate\Http\Request;
 use App\Imports\EmployeeImport;
@@ -21,11 +23,11 @@ use Illuminate\Support\Facades\Hash;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Storage;
 use Maatwebsite\Excel\Concerns\FromArray;
+use Illuminate\Contracts\Filesystem\Cloud;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Maatwebsite\Excel\Validators\ValidationException;
 use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
-use Illuminate\Contracts\Filesystem\Cloud;
 
 class EmployeeController extends Controller
 {
@@ -69,7 +71,10 @@ class EmployeeController extends Controller
         $steps = Step::all();
         $lgas = LGA::all();
         $states = State::all();
-        return view('admin.employee.create', compact('mdas', 'payGroups', 'gradeLevels', 'steps', 'lgas', 'states'));
+        $departments = Department::orderBy('department_name')->get();
+        $units = Unit::orderBy('unit_name')->get();
+
+        return view('admin.employee.create', compact('mdas', 'payGroups', 'gradeLevels', 'steps', 'lgas', 'states', 'departments', 'units'));
     }
 
     /**
@@ -83,6 +88,8 @@ class EmployeeController extends Controller
             'level_id' => 'required|exists:grade_levels,id',
             'step_id' => 'required|exists:steps,id',
             'state_id' => 'required|exists:states,id',
+            'department_id' => 'required|exists:departments,id',
+            'unit_id' => 'required|exists:units,id',
             'employee_number' => 'required|string|max:255|unique:employees',
             'surname' => 'required|string|max:255',
             'first_name' => 'required|string|max:255',
@@ -167,6 +174,8 @@ class EmployeeController extends Controller
     public function show(Employee $employee)
     {
         $employees = Employee::with('state')->get();
+        $departments = Department::orderBy('department_name')->get();
+        $units = Unit::orderBy('unit_name')->get();
         $documents = Document::where('employee_id', $employee->id)->paginate(5);
         $documents = $employee->documents()->paginate(5, ['*'], 'documents');
         $transfers = $employee->transferHistories()->with(['previousMda', 'currentMda'])->paginate(5, ['*'], 'transfers');
@@ -186,7 +195,10 @@ class EmployeeController extends Controller
         $steps = Step::all();
         $lgas = LGA::all();
         $states = State::all();
-        return view('admin.employee.edit', compact('employee', 'mdas', 'payGroups', 'gradeLevels', 'steps', 'lgas', 'states'));
+        $departments = Department::orderBy('department_name')->get();
+        $units = Unit::orderBy('unit_name')->get();
+
+        return view('admin.employee.edit', compact('employee', 'mdas', 'payGroups', 'gradeLevels', 'steps', 'lgas', 'states', 'departments', 'units'));
     }
 
     /**
@@ -200,6 +212,8 @@ class EmployeeController extends Controller
             'level_id' => 'required|exists:grade_levels,id',
             'step_id' => 'required|exists:steps,id',
             'state_id' => 'required|exists:states,id',
+            'department_id' => 'required|exists:departments,id',
+            'unit_id' => 'required|exists:units,id',
             'employee_number' => ['required', 'string', 'max:255', Rule::unique('employees')->ignore($employee->id)],
             'surname' => 'required|string|max:255',
             'first_name' => 'required|string|max:255',

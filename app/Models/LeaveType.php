@@ -36,7 +36,4 @@ class LeaveType extends Model implements Auditable
     {
         return $this->hasMany(Leave::class);
     }
-
-    
-    
 }

@@ -4,16 +4,18 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\MDA\MdaController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Step\StepController;
+use App\Http\Controllers\Unit\UnitController;
 use App\Http\Controllers\User\UserController;
-use App\Http\Controllers\Admin\AdminController;
 // use App\Http\Controllers\User\UserRoleController;
 // use App\Http\Controllers\CommendationController;
+use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\AuditLog\AuditLogController;
 use App\Http\Controllers\Document\DocumentController;
 use App\Http\Controllers\Employee\EmployeeController;
 use App\Http\Controllers\Paygroup\PayGroupController;
 use App\Http\Controllers\UserRole\UserRoleController;
 use App\Http\Controllers\Employee\LeaveTypeController;
+use App\Http\Controllers\Department\DepartmentController;
 use App\Http\Controllers\Gradelevel\GradeLevelController;
 use SebastianBergmann\CodeCoverage\Report\Html\Dashboard;
 use App\Http\Controllers\Employee\EmployeeLeaveController;
@@ -97,7 +99,30 @@ Route::get('/mdas/{mda}/activate', [MdaController::class, 'activate'])->name('md
 Route::get('/mdas/{id}/activate', [MdaController::class, 'activate']);
 Route::get('/mdas/{id}/deactivate', [MdaController::class, 'deactivate']);
 
+// Department Routes
+Route::get('/departments', [DepartmentController::class, 'index'])->name('departments.index');
+Route::get('/departments/create', [DepartmentController::class, 'create'])->name('departments.create');
+Route::post('/departments', [DepartmentController::class, 'store'])->name('departments.store');
+Route::get('/departments/{department}', [DepartmentController::class, 'show'])->name('departments.show');
+Route::get('/departments/{department}/edit', [DepartmentController::class, 'edit'])->name('departments.edit');
+Route::put('/departments/{department}', [DepartmentController::class, 'update'])->name('departments.update');
+Route::delete('/departments/{department}', [DepartmentController::class, 'destroy'])->name('departments.destroy');
 
+// Unit Routes
+Route::get('/units', [UnitController::class, 'index'])->name('units.index');
+Route::get('/units/create', [UnitController::class, 'create'])->name('units.create');
+Route::post('/units', [UnitController::class, 'store'])->name('units.store');
+Route::get('/units/{unit}', [UnitController::class, 'show'])->name('units.show');
+Route::get('/units/{unit}/edit', [UnitController::class, 'edit'])->name('units.edit');
+Route::put('/units/{unit}', [UnitController::class, 'update'])->name('units.update');
+Route::delete('/units/{unit}', [UnitController::class, 'destroy'])->name('units.destroy');
+// AJAX Route to get Units by Department
+Route::get('/get-units-by-department/{department}', [UnitController::class, 'getUnitsByDepartment'])
+    ->name('units.by.department');
+// Load departments under MDA
+Route::get('/get-departments-by-mda/{mda}', [DepartmentController::class, 'getDepartmentsByMda'])
+    ->name('departments.by.mda');
+    
 
 // All Pay Groups Routes
 Route::get('/pay-groups', [PayGroupController::class, 'index'])->name('pay-groups.index');

@@ -17,6 +17,8 @@ class Employee extends Model implements Auditable
         'paygroup_id',
         'level_id',
         'step_id',
+        'department_id',
+        'unit_id',
         'employee_number',
         'surname',
         'first_name',
@@ -132,5 +134,14 @@ public function leaves()
     return $this->hasMany(\App\Models\EmployeeLeave::class);
 }
 
+public function department()
+{
+    return $this->belongsTo(Department::class);
+}
+
+public function unit()
+{
+    return $this->belongsTo(Unit::class);
+}
 
 }
