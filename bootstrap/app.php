@@ -21,6 +21,8 @@ return Application::configure(basePath: dirname(__DIR__))
             'role' => \App\Http\Middleware\Role::class,  
             'user.status' => \App\Http\Middleware\CheckUserStatus::class,
             'check.status' => \App\Http\Middleware\CheckUserStatus::class,
+            'hod' => \App\Http\Middleware\EnsureHod::class,
+            'unit.head' => \App\Http\Middleware\EnsureUnitHead::class,
 
               $middleware->api(prepend: [
             EnsureFrontendRequestsAreStateful::class,

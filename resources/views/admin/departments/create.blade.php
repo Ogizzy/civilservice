@@ -1,45 +1,61 @@
 @extends('admin.admin_dashboard')
 @section('admin')
-    <div class="page-content">
-        <!--breadcrumb-->
-        <div class="page-breadcrumb d-none d-sm-flex align-items-center mb-3">
-            <div class="breadcrumb-title pe-3">Departments</div>
-            <div class="ps-3">
-                <nav aria-label="breadcrumb">
-                    <ol class="breadcrumb mb-0 p-0">
-                        <li class="breadcrumb-item"><a href="javascript:;"><i class="bx bx-home-alt"></i></a>
-                        </li>
-                        <li class="breadcrumb-item active" aria-current="page">List of Departments</li>
-                    </ol>
-                </nav>
-            </div>
-            <div class="ms-auto">
-                <div class="btn-group">
-                    <a href="{{ route('departments.index') }}" class="btn btn-primary" title="View Departments">
-                        <i class="fadeIn animated bx bx-list-ul"></i> View Departments
-                    </a>
-                </div>
-            </div>
+
+<div class="page-content">
+
+    {{-- Breadcrumb --}}
+    <div class="page-breadcrumb d-none d-sm-flex align-items-center mb-3">
+        <div class="breadcrumb-title pe-3">Departments</div>
+
+        <div class="ps-3">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-0 p-0">
+                    <li class="breadcrumb-item">
+                        <a href="javascript:void(0);">
+                            <i class="bx bx-home-alt"></i>
+                        </a>
+                    </li>
+                    <li class="breadcrumb-item active">Create Department</li>
+                </ol>
+            </nav>
         </div>
-        <!--end breadcrumb-->
-        <h6 class="mb-0 text-uppercase">Add New Department</h6>
 
-        <hr>
+        <div class="ms-auto">
+            <a href="{{ route('departments.index') }}" class="btn btn-primary btn-sm">
+                <i class="bx bx-list-ul"></i> View Departments
+            </a>
+        </div>
+    </div>
 
-        <div class="row">
-					<div class="col-xl-9 mx-auto">
-                <div class="card">
-                    <div class="card-body">
-                        <form action="{{ route('departments.store') }}" method="POST">
-                            @csrf
+    <h6 class="mb-0 text-uppercase">Add New Department</h6>
+    <hr>
 
-                            <div class="mb-3">
-                                <label class="form-label">MDA</label>
+    <div class="row">
+        <div class="col-xl-8 mx-auto">
+
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-light fw-semibold">
+                    <i class="bx bx-building me-1"></i> Department Information
+                </div>
+
+                <div class="card-body">
+                    <form action="{{ route('departments.store') }}" method="POST">
+                        @csrf
+
+                        <div class="row g-3">
+
+                            {{-- MDA --}}
+                            <div class="col-md-12">
+                                <label class="form-label">
+                                    MDA <span class="text-danger">*</span>
+                                </label>
                                 <select name="mda_id" class="form-select" required>
-                                    <option value="">-- select MDA --</option>
+                                    <option value="">-- Select MDA --</option>
                                     @foreach ($mdas as $mda)
-                                        <option value="{{ $mda->id }}" {{ old('mda_id') == $mda->id ? 'selected' : '' }}>
-                                            {{ $mda->mda }}</option>
+                                        <option value="{{ $mda->id }}"
+                                            {{ old('mda_id') == $mda->id ? 'selected' : '' }}>
+                                            {{ $mda->mda }}
+                                        </option>
                                     @endforeach
                                 </select>
                                 @error('mda_id')
@@ -47,44 +63,57 @@
                                 @enderror
                             </div>
 
-                            <div class="mb-3">
-                                <label class="form-label">Department Name</label>
-                                <input name="department_name" class="form-control" value="{{ old('department_name') }}"
-                                    required placeholder="Department Name">
+                            {{-- Department Name --}}
+                            <div class="col-md-8">
+                                <label class="form-label">
+                                    Department Name <span class="text-danger">*</span>
+                                </label>
+                                <input
+                                    type="text"
+                                    name="department_name"
+                                    class="form-control"
+                                    placeholder="e.g. Human Resources"
+                                    value="{{ old('department_name') }}"
+                                    required
+                                >
                                 @error('department_name')
                                     <small class="text-danger">{{ $message }}</small>
                                 @enderror
                             </div>
 
-                            <div class="mb-3">
+                            {{-- Department Code --}}
+                            <div class="col-md-4">
                                 <label class="form-label">Department Code</label>
-                                <input name="department_code" class="form-control" placeholder="Department Code" value="{{ old('department_code') }}">
+                                <input
+                                    type="text"
+                                    name="department_code"
+                                    class="form-control"
+                                    placeholder="e.g. HRD"
+                                    value="{{ old('department_code') }}">
                                 @error('department_code')
                                     <small class="text-danger">{{ $message }}</small>
                                 @enderror
                             </div>
 
-                            <div class="mb-3">
-                                <label class="form-label">Head of Department (HOD)</label>
-                                <select name="hod_id" class="form-select">
-                                    <option value="">-- Select HOD --</option>
-                                    @foreach ($employees as $employee)
-                                        <option value="{{ $employee->id }}" {{ old('hod_id') == $employee->id ? 'selected' : '' }}>
-                                            {{ $employee->surname }} {{ $employee->first_name }} ({{ $employee->employee_number }})
-                                        </option>
-                                    @endforeach
-                                </select>
-                                @error('hod_id')
-                                    <small class="text-danger">{{ $message }}</small>
-                                @enderror
-                            </div>
+                        </div>
 
-                            <button class="btn btn-primary btn-sm">Create Department</button>
-                            <a href="{{ route('departments.index') }}" class="btn btn-danger btn-sm">Cancel</a>
-                        </form>
-                    </div>
+                        <div class="mt-4 d-flex justify-content-end gap-2">
+                            <a href="{{ route('departments.index') }}" class="btn btn-secondary btn-sm">
+                                Cancel
+                            </a>
+
+                            <button type="submit" class="btn btn-primary btn-sm">
+                                <i class="bx bx-save"></i> Create Department
+                            </button>
+                        </div>
+
+                    </form>
                 </div>
             </div>
+
         </div>
     </div>
+
+</div>
+
 @endsection

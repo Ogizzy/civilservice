@@ -18,6 +18,13 @@
                     </ol>
                 </nav>
             </div>
+            <div class="ms-auto">
+                    <div class="btn-group">
+                        <a href="{{ route('roles.create') }}" class="btn btn-primary btn-sm">
+                            <i class="bx bxs-plus-square"></i> Add Role
+                        </a>
+                    </div>
+                </div>
         </div>
         <!--end breadcrumb-->
         <hr>

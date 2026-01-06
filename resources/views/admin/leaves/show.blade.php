@@ -1,4 +1,3 @@
-{{-- resources/views/leaves/show.blade.php --}}
 @extends('admin.admin_dashboard')
 @section('admin')
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -14,10 +13,11 @@
                             <a href="{{ route('leaves.index') }}" class="btn btn-secondary btn-sm">
                                 <i class="fas fa-arrow-left"></i> Back to List
                             </a>
+                            
                             @if ($leave->status === 'pending')
-                                <a href="{{ route('leaves.edit', $leave->id) }}" class="btn btn-warning btn-sm">
+                                {{-- <a href="{{ route('leaves.edit', $leave->id) }}" class="btn btn-warning btn-sm">
                                     <i class="fas fa-edit"></i> Edit
-                                </a>
+                                </a> --}}
                             @endif
 
 
@@ -87,12 +87,20 @@
                                                 <td>{{ $leave->employee->mda->mda ?? 'N/A' }}</td>
                                             </tr>
                                             <tr>
+                                                <td><strong>Department:</strong></td>
+                                                <td>{{ $leave->employee->department->department_name ?? 'N/A' }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td><strong>Unit:</strong></td>
+                                                <td>{{ $leave->employee->unit->unit_name ?? 'N/A' }}</td>
+                                            </tr>
+                                            <tr>
                                                 <td><strong>Grade Level:</strong></td>
-                                                <td>{{ $leave->employee->gradeLevel->level ?? 'N/A' }}</td>
+                                                <td>Grade Level {{ $leave->employee->gradeLevel->level ?? 'N/A' }}</td>
                                             </tr>
                                             <tr>
                                                 <td><strong>Step:</strong></td>
-                                                <td>{{ $leave->employee->step->step ?? 'N/A' }}</td>
+                                                <td>Step {{ $leave->employee->step->step ?? 'N/A' }}</td>
                                             </tr>
                                         </table>
                                     </div>
@@ -110,7 +118,8 @@
                                             <tr>
                                                 <td><strong>Leave Type:</strong></td>
                                                 <td>
-                                                    <span class="badge badge-info">  {{ $leave->leaveType->name ?? 'Not Available' }}</span>
+                                                    <span class="badge bg-primary">
+                                                        {{ $leave->leaveType->name ?? 'Not Available' }}</span>
                                                 </td>
                                             </tr>
                                             <tr>
@@ -125,7 +134,7 @@
                                             <tr>
                                                 <td><strong>Total Days:</strong></td>
                                                 <td>
-                                                    <span class="badge badge-primary">{{ $leave->total_days }}
+                                                    <span class="badge bg-primary">{{ $leave->total_days }}
                                                         day(s)</span>
                                                 </td>
                                             </tr>
@@ -193,7 +202,8 @@
                                         <div class="card-body">
                                             <div class="attachment-block clearfix">
                                                 <img class="attachment-img"
-                                                    src="{{ asset('backend/assets/images/login-images/benue-logo.png') }}" style="height: 60px" alt="Attachment">
+                                                    src="{{ asset('backend/assets/images/login-images/benue-logo.png') }}"
+                                                    style="height: 60px" alt="Attachment">
                                                 <div class="attachment-pushed">
                                                     <h4 class="attachment-heading">
                                                         <a href="{{ asset('storage/' . $leave->supporting_document_url) }}"
@@ -233,22 +243,63 @@
                                         </div>
                                         <div class="card-body">
                                             <table class="table table-borderless">
-                                                <tr>
-                                                    <td><strong>{{ ucfirst($leave->status) }} By:</strong></td>
-                                                    <td>{{ $leave->approvedBy->role->role ?? 'Admin' }}</td>
-                                                </tr>
-                                                <tr>
-                                                    <td><strong>{{ ucfirst($leave->status) }} Date:</strong></td>
-                                                    <td>{{ $leave->approved_at ? \Carbon\Carbon::parse($leave->approved_at)->format('D, M j, Y g:i A') : 'N/A' }}
-                                                    </td>
-                                                </tr>
-                                                @if ($leave->approval_comments)
+
+                                                {{-- HOD APPROVAL --}}
+                                                @if ($leave->hodApprovedBy)
                                                     <tr>
-                                                        <td><strong>Comments:</strong></td>
-                                                        <td>{{ $leave->approval_comments }}</td>
+                                                        <td><strong>HOD Approved By:</strong></td>
+                                                        <td>
+                                                            <strong>
+                                                                {{ $leave->hodApprovedBy->surname }}
+                                                                {{ $leave->hodApprovedBy->first_name }}
+                                                            </strong><br>
+                                                            {{ $leave->hodApprovedBy->mda->mda ?? 'N/A' }}<br>
+                                                            <small class="text-muted">HOD</small>
+                                                        </td>
                                                     </tr>
                                                 @endif
+
+                                                {{-- MDA HEAD APPROVAL --}}
+                                                @if ($leave->approvedBy)
+                                                    <tr>
+                                                        <td><strong>MDA Approved By:</strong></td>
+                                                        <td>
+                                                            <strong>
+                                                                {{ $leave->approvedBy->surname }}
+                                                                {{ $leave->approvedBy->first_name }}
+                                                            </strong><br>
+                                                            {{ $leave->approvedBy->mda->mda ?? 'N/A' }}<br>
+                                                            <small class="text-muted">MDA Head</small>
+                                                        </td>
+                                                    </tr>
+                                                @endif
+
+                                                {{-- FINAL STATUS DATE --}}
+                                                <tr>
+                                                    <td><strong>Approval Date:</strong></td>
+                                                    <td>
+                                                        {{ $leave->approved_at ? \Carbon\Carbon::parse($leave->approved_at)->format('D, M j, Y g:i A') : 'N/A' }}
+                                                    </td>
+                                                </tr>
+
+                                                {{-- HOD COMMENTS --}}
+                                                @if (!empty($leave->hod_remarks))
+                                                    <tr>
+                                                        <td><strong>HOD Comments:</strong></td>
+                                                        <td>{{ $leave->hod_remarks }}</td>
+                                                    </tr>
+                                                @endif
+                                                
+                                                {{-- MDA COMMENTS --}}
+                                                @if (!empty($leave->mda_head_remarks))
+                                                    <tr>
+                                                        <td><strong>MDA Comments:</strong></td>
+                                                        <td>{{ $leave->mda_head_remarks }}</td>
+                                                    </tr>
+                                                @endif
+
                                             </table>
+
                                         </div>
                                     </div>
                                 </div>
@@ -265,7 +316,7 @@
                                     <div class="card-body">
                                         <div class="timeline">
                                             <div class="time-label">
-                                                <span class="bg-info">{{ $leave->created_at->format('M j, Y') }}</span>
+                                                <span class="bg-primary" style="color:white"> {{ $leave->created_at->format('M j, Y') }} </span>
                                             </div>
                                             <div>
                                                 <i class="fas fa-paper-plane bg-blue"></i>
@@ -274,21 +325,23 @@
                                                         {{ $leave->created_at->format('g:i A') }}</span>
                                                     <h3 class="timeline-header"> Leave Application Submitted</h3>
                                                     <div class="timeline-body">
-                                                       <p> {{ $leave->employee->surname }} {{ $leave->employee->first_name }} submitted a leave application
-                                                        for {{ $leave->total_days }} day(s).</p>
+                                                        <p> {{ $leave->employee->surname }}
+                                                            {{ $leave->employee->first_name }} submitted a leave
+                                                            application
+                                                            for {{ $leave->total_days }} day(s).</p>
                                                     </div>
                                                 </div>
                                             </div>
 
                                             @if ($leave->status !== 'pending')
                                                 <div class="time-label">
-                                                    <span
+                                                    <span style="color: white"
                                                         class="bg-{{ $leave->status === 'approved' ? 'success' : 'danger' }}">
                                                         {{ $leave->approved_at ? \Carbon\Carbon::parse($leave->approved_at)->format('M j, Y') : 'N/A' }}
                                                     </span>
                                                 </div>
                                                 <div>
-                                                    <i
+                                                    <i style="color: white"
                                                         class="fas fa-{{ $leave->status === 'approved' ? 'check' : 'times' }} bg-{{ $leave->status === 'approved' ? 'success' : 'danger' }}"></i>
                                                     <div class="timeline-item">
                                                         <span class="time">
@@ -298,8 +351,9 @@
                                                         <h4 class="timeline-header">Leave Application
                                                             {{ ucfirst($leave->status) }}</h4>
                                                         <div class="timeline-body">
-                                                            @if ($leave->approval_comments)
-                                                                <strong>Comments:</strong> {{ $leave->approval_comments }}
+                                                            @if ($leave->mda_head_remarks)
+                                                                <strong>MDA Head Comments:</strong>
+                                                                {{ $leave->mda_head_remarks }}
                                                             @else
                                                                 <p>Leave application was {{ $leave->status }}</p>.
                                                             @endif
@@ -307,10 +361,6 @@
                                                     </div>
                                                 </div>
                                             @endif
-
-                                            <div>
-                                                <i class="fas fa-clock bg-gray"></i>
-                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -327,7 +377,7 @@
                                 </small>
                             </div>
                             <div class="col-md-6 text-right">
-                                @if ($leave->status === 'pending' && auth()->user()->id === $leave->employee->user_id)
+                                {{-- @if ($leave->status === 'pending' && auth()->user()->id === $leave->employee->user_id)
                                     <form action="{{ route('leaves.cancel', $leave->id) }}" method="POST"
                                         style="display: inline-block;"
                                         onsubmit="return confirm('Are you sure you want to cancel this leave application?')">
@@ -337,7 +387,7 @@
                                             <i class="fas fa-ban"></i> Cancel Application
                                         </button>
                                     </form>
-                                @endif
+                                @endif --}}
                                 <button onclick="window.print()" class="btn btn-secondary btn-sm">
                                     <i class="fas fa-print"></i> Print
                                 </button>

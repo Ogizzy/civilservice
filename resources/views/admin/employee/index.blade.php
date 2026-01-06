@@ -18,7 +18,7 @@
                 </div>
                 <div class="ms-auto">
                     <div class="btn-group">
-                        <a href="{{ route('employees.create') }}" class="btn btn-primary">
+                        <a href="{{ route('employees.create') }}" class="btn btn-primary btn-sm">
                             <i class="bx bxs-plus-square"></i> Add Employee
                         </a>
                     </div>
@@ -77,7 +77,7 @@
 
                                                 <!-- Action Dropdown -->
                                                 <div class="dropdown">
-                                                    <button class="btn btn-sm btn-secondary dropdown-toggle" type="button"
+                                                    <button class="btn btn-sm btn-primary dropdown-toggle" type="button"
                                                         id="actionDropdown{{ $employee->id }}" data-bs-toggle="dropdown"
                                                         aria-expanded="false" title="More actions">
                                                         <i class="bx bx-cog"></i>
@@ -122,6 +122,20 @@
                                                                 href="{{ route('employees.queries.create', $employee->id) }}">
                                                                 <i class="bx bx-error-circle text-warning"></i>
                                                                 Query/Misconduct
+                                                            </a>
+                                                        </li>
+                                                        <li>
+                                                            <a class="dropdown-item"
+                                                                href="{{ route('employees.posting.create', $employee->id) }}">
+                                                                <i class="bx bx-recycle text-info"></i>
+                                                                Employee Posting
+                                                            </a>
+                                                        </li>
+                                                        <li>
+                                                            <a class="dropdown-item"
+                                                                href="{{ route('employees.posting.index', $employee->id) }}">
+                                                                <i class="bx bx-transfer text-info"></i>
+                                                                View Postings
                                                             </a>
                                                         </li>
                                                     </ul>

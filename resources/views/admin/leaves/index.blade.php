@@ -242,7 +242,8 @@
     </style>
 
     <div class="container-fluid">
-        <!-- Header Section -->
+
+        {{-- ===================== HEADER ===================== --}}
         <div class="page-header">
             <div class="row align-items-center">
                 <div class="col-md-8">
@@ -251,17 +252,27 @@
                     </h1>
                     <p class="page-description">View and manage leave applications</p>
                 </div>
-                @if(auth()->user()->employee)
-                <div class="col-md-4 text-md-end">
-                    <a href="{{ route('leaves.create') }}" class="btn btn-primary">
-                        <i class="fadeIn animated bx bx-plus-circle"></i> Apply for Leave
-                    </a>
-                </div>
+
+                {{-- Disable Apply for Leave button after cutoff date --}}
+                @php
+                    $cutoffReached = now()->month == 11 && now()->day >= 28;
+                @endphp
+
+                @if (auth()->user()->employee)
+                    <div class="col-md-4 text-md-end">
+
+                        @if (!$cutoffReached)
+                            <a href="{{ route('leaves.create') }}" class="btn btn-primary">
+                                <i class="bx bx-plus-circle"></i> Apply for Leave
+                            </a>
+                        @endif
+
+                    </div>
                 @endif
             </div>
         </div>
 
-        <!-- Stats Cards -->
+        {{-- ===================== STATS ===================== --}}
         <div class="row mb-4">
             <div class="col-md-3">
                 <div class="stats-card pending">
@@ -284,10 +295,11 @@
             <div class="col-md-3">
                 <div class="stats-card total">
                     <div class="stats-number text-primary">{{ $leaves->count() }}</div>
-                    <div class="stats-label">Total Applications</div>
+                    <div class="stats-label">Total</div>
                 </div>
             </div>
         </div>
+
 
         <!-- Filter Section -->
         <div class="filter-section">
@@ -302,7 +314,7 @@
                             </option>
                             <option value="rejected" {{ request('status') == 'rejected' ? 'selected' : '' }}>Rejected
                             </option>
-                            <option value="cancelled" {{ request('status') == 'cancelled' ? 'selected' : '' }}>Cancelled
+                            {{-- <option value="cancelled" {{ request('status') == 'cancelled' ? 'selected' : '' }}>Cancelled --}}
                             </option>
                         </select>
                     </div>
@@ -338,12 +350,13 @@
             </form>
         </div>
 
-        <!-- Main Data Table -->
+        {{-- ===================== TABLE ===================== --}}
         <div class="data-table">
             <div class="table-responsive">
                 <table class="table">
                     <thead>
                         <tr>
+                            <th>S/N</th>
                             <th>Employee</th>
                             <th>Leave Type</th>
                             <th>Dates</th>
@@ -354,347 +367,329 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @forelse($leaves as $leave)
+
+                        @forelse($leaves as $index => $leave)
                             <tr>
+                                <td>{{ $leaves->firstItem() + $loop->index }}</td>
+
                                 <td>
-                                    <div class="employee-name">{{ $leave->employee->surname }},
-                                        {{ $leave->employee->first_name }}</div>
-                                    <div class="employee-number">{{ $leave->employee->employee_number }}</div>
+                                    <strong>{{ $leave->employee->surname }} {{ $leave->employee->first_name }}</strong>
+                                    <div class="text-muted small">{{ $leave->employee->employee_number }}</div>
                                 </td>
+
                                 <td>{{ $leave->leaveType->name }}</td>
+
                                 <td>
-                                    <div>{{ $leave->start_date->format('M d, Y') }}</div>
-                                    <div class="text-muted small">to {{ $leave->end_date->format('M d, Y') }}</div>
+                                    {{ $leave->start_date->format('M d, Y') }} <br>
+                                    <small class="text-muted">to {{ $leave->end_date->format('M d, Y') }}</small>
                                 </td>
+
                                 <td>{{ $leave->total_days }}</td>
+
                                 <td>
-                                    @switch($leave->status)
-                                        @case('pending')
-                                            <span class="status-badge badge-pending">Pending</span>
-                                        @break
-
-                                        @case('approved')
-                                            <span class="status-badge badge-approved">Approved</span>
-                                        @break
-
-                                        @case('rejected')
-                                            <span class="status-badge badge-rejected">Rejected</span>
-                                        @break
-
-                                        @case('cancelled')
-                                            <span class="status-badge badge-cancelled">Cancelled</span>
-                                        @break
-                                    @endswitch
-
-                                    @if ($leave->supporting_document_url)
-                                        <div class="document-indicator">
-                                            <i class="lni lni-files"></i> Document
-                                        </div>
+                                    @if ($leave->status === 'pending')
+                                        <span class="status-badge badge-pending">Pending</span>
+                                    @elseif($leave->status === 'approved')
+                                        <span class="status-badge badge-approved">Approved</span>
+                                    @elseif($leave->status === 'rejected')
+                                        <span class="status-badge badge-rejected">Rejected</span>
                                     @endif
                                 </td>
 
                                 <td>
-                                    @php
-                                        $documentPath = 'storage/' . $leave->supporting_document_url;
-                                        $fullPath = public_path($documentPath);
-                                    @endphp
-
-                                    @if (!empty($leave->supporting_document_url) && file_exists(public_path('storage/' . $leave->supporting_document_url)))
-                                        <button
-                                            onclick="previewDocument('{{ asset('storage/' . $leave->supporting_document_url) }}')"
-                                            class="btn btn-sm btn-outline-primary" title="Preview Document">
-                                            <i class="fadeIn animated bx bx-show"></i> Preview
+                                    @if ($leave->supporting_document_url)
+                                        <button class="btn btn-sm btn-outline-primary"
+                                            onclick="previewDocument('{{ asset('storage/' . $leave->supporting_document_url) }}')">
+                                            Preview
                                         </button>
-
-                                        <a href="{{ asset('storage/' . $leave->supporting_document_url) }}"
-                                            class="btn btn-sm btn-outline-secondary"
-                                            download="{{ $leave->supporting_document_name }}">
-                                            <i class="lni lni-download"></i> 
-                                        </a>
-                                    @elseif (!empty($leave->supporting_document_name))
-                                        <span class="text-muted">
-                                            {{ $leave->supporting_document_name }} <br>
-                                            <small class="text-warning">File not found or missing link</small>
-                                        </span>
                                     @else
                                         <span class="text-muted">None</span>
                                     @endif
-
                                 </td>
 
-
                                 <td>
-                                    <div class="d-flex">
-                                        <a href="{{ route('leaves.show', $leave) }}" class="action-btn btn-primary"
-                                            title="View Leave Details">
-                                            <i class="lni lni-radio-button"></i>
+                                    <div class="d-flex gap-1">
+
+                                        {{-- VIEW --}}
+                                        <a href="{{ route('leaves.show', $leave) }}" class="action-btn btn-primary">
+                                            <i class="bx bx-show"></i>
                                         </a>
 
-                                        @if ($leave->status == 'pending' && (Auth::user()->employee && Auth::user()->employee->id == $leave->employee_id))
-                                            <a href="{{ route('leaves.edit', $leave) }}" class="action-btn btn-warning"
-                                                title="Edit">
-                                                <i class="fadeIn animated bx bx-edit"></i>
-                                            </a>
-                                            <button type="button" class="action-btn btn-secondary"
-                                                data-bs-toggle="modal" data-bs-target="#cancelModal{{ $leave->id }}"
-                                                title="Cancel">
-                                                <i class="fadeIn animated bx bx-time"></i>
+                                        {{-- ===================== HOD ACTIONS ===================== --}}
+                                        @if (
+                                            $leave->status === 'pending' &&
+                                                $leave->approval_stage === 'hod' &&
+                                                auth()->user()->employee &&
+                                                auth()->user()->employee->department &&
+                                                auth()->user()->employee->department->hod_id === auth()->user()->employee->id)
+                                            <button class="action-btn btn-success" data-bs-toggle="modal"
+                                                data-bs-target="#approveModal{{ $leave->id }}">
+                                                <i class="bx bx-check"></i>
+                                            </button>
+
+                                            <button class="action-btn btn-danger" data-bs-toggle="modal"
+                                                data-bs-target="#rejectModal{{ $leave->id }}">
+                                                <i class="bx bx-x"></i>
                                             </button>
                                         @endif
 
-                                        @if ($leave->status == 'pending' && Auth::user()->canApproveLeaves())
-                                            <button type="button" class="action-btn btn-success" data-bs-toggle="modal"
-                                                data-bs-target="#approveModal{{ $leave->id }}" title="Approve">
-                                                <i class="fadeIn animated bx bx-check"></i>
+                                        {{-- ===================== MDA HEAD ACTIONS ===================== --}}
+                                        @if (
+                                            $leave->status === 'pending' &&
+                                                $leave->approval_stage === 'mda_head' &&
+                                                auth()->user()->role->role === 'MDA Head' &&
+                                                auth()->user()->mda_id === $leave->employee->mda_id)
+                                            <button class="action-btn btn-success" data-bs-toggle="modal"
+                                                data-bs-target="#mdaApproveModal{{ $leave->id }}">
+                                                <i class="bx bx-check"></i>
                                             </button>
-                                            <button type="button" class="action-btn btn-danger" data-bs-toggle="modal"
-                                                data-bs-target="#rejectModal{{ $leave->id }}" title="Reject">
-                                                <i class="fadeIn animated bx bx-time"></i>
+
+                                            <button class="action-btn btn-danger" data-bs-toggle="modal"
+                                                data-bs-target="#mdaRejectModal{{ $leave->id }}">
+                                                <i class="bx bx-x"></i>
                                             </button>
                                         @endif
                                     </div>
                                 </td>
                             </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="6" class="empty-state">
-                                        <div class="empty-state-icon">
-                                            <i class="fadeIn animated bx bx-calendar"></i>
-                                        </div>
-                                        <h5>No leave applications found</h5>
-                                        <p class="text-muted">Try adjusting your filters or create a new application</p>
-                                    </td>
-                                </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
-                </div>
+                        @empty
+                            <tr>
+                                <td colspan="8" class="text-center py-4">
+                                    <i class="bx bx-calendar"></i>
+                                    <p class="text-muted">No leave records found</p>
+                                </td>
+                            </tr>
+                        @endforelse
 
-                {{-- Pagination --}}
-                @if ($leaves->hasPages())
-                    <div class="p-3">
-                        {{ $leaves->appends(request()->query())->links() }}
-                    </div>
-                @endif
-            </div>
-        </div>
-
-        {{-- Include your existing modal code here without changes --}}
-        @foreach ($leaves as $leave)
-            @if ($leave->status == 'pending' && Auth::user()->canManageOwnLeave($leave))
-                <!-- Cancel Modal -->
-                <div class="modal fade" id="cancelModal{{ $leave->id }}" tabindex="-1"
-                    aria-labelledby="cancelModalLabel{{ $leave->id }}" aria-hidden="true">
-                    <div class="modal-dialog modal-dialog-centered">
-                        <div class="modal-content">
-                            <form method="POST" action="{{ route('leaves.cancel', $leave) }}">
-                                @csrf
-                                @method('POST')
-                                <div class="modal-header">
-                                    <h5 class="modal-title fw-bold" id="cancelModalLabel{{ $leave->id }}"
-                                        style="color: whitesmoke">
-                                        <i class="lni lni-alarm-clock me-2"></i>Cancel Leave Application
-                                    </h5>
-                                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
-                                        aria-label="Close"></button>
-                                </div>
-                                <div class="modal-body">
-                                    <div class="row mb-3">
-                                        <div class="col-sm-4 fw-semibold text-muted">Leave Type:</div>
-                                        <div class="col-sm-8">{{ $leave->leaveType->name }}</div>
-                                    </div>
-                                    <div class="row mb-3">
-                                        <div class="col-sm-4 fw-semibold text-muted">Duration:</div>
-                                        <div class="col-sm-8">
-                                            {{ $leave->start_date->format('M d, Y') }} to
-                                            {{ $leave->end_date->format('M d, Y') }}
-                                            <span class="badge bg-primary ms-2">{{ $leave->total_days }} days</span>
-                                        </div>
-                                    </div>
-                                    <div class="alert alert-warning">
-                                        <i class="fadeIn animated bx bx-exclamation-triangle me-2"></i>
-                                        <strong>Are you sure you want to cancel this leave application?</strong>
-                                        <br><small>This action cannot be undone.</small>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="cancelRemarks{{ $leave->id }}" class="form-label fw-semibold">
-                                            Reason for Cancellation <span class="text-muted">(Optional)</span>
-                                        </label>
-                                        <textarea class="form-control" id="cancelRemarks{{ $leave->id }}" name="remarks" rows="3"
-                                            placeholder="Please provide a reason for cancellation..."></textarea>
-                                    </div>
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">
-                                        <i class="fadeIn animated bx bx-chevrons-left me-1"></i> Keep Application
-                                    </button>
-                                    <button type="submit" class="btn btn-danger">
-                                        <i class="fadeIn animated bx bx-time me-1"></i> Cancel Application
-                                    </button>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            @endif
-
-            @if ($leave->status == 'pending' && Auth::user()->canApproveLeaves())
-                <!-- Approve Modal -->
-                <div class="modal fade" id="approveModal{{ $leave->id }}" tabindex="-1"
-                    aria-labelledby="approveModalLabel{{ $leave->id }}" aria-hidden="true">
-                    <div class="modal-dialog modal-dialog-centered">
-                        <div class="modal-content">
-                            <form method="POST" action="{{ route('leaves.approve', $leave) }}">
-                                @csrf
-                                @method('POST')
-                                <div class="modal-header">
-                                    <h5 class="modal-title fw-bold" id="approveModalLabel{{ $leave->id }}"
-                                        style="color: whitesmoke">
-                                        <i class="fadeIn animated bx bx-check-circle"></i> Approve Leave Application
-                                    </h5>
-                                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
-                                        aria-label="Close"></button>
-                                </div>
-                                <div class="modal-body">
-                                    <div class="row mb-3">
-                                        <div class="col-sm-4 fw-semibold text-muted">Employee:</div>
-                                        <div class="col-sm-8">{{ $leave->employee->surname }},
-                                            {{ $leave->employee->first_name }}</div>
-                                    </div>
-                                    <div class="row mb-3">
-                                        <div class="col-sm-4 fw-semibold text-muted">Leave Type:</div>
-                                        <div class="col-sm-8">{{ $leave->leaveType->name }}</div>
-                                    </div>
-                                    <div class="row mb-4">
-                                        <div class="col-sm-4 fw-semibold text-muted">Duration:</div>
-                                        <div class="col-sm-8">
-                                            {{ $leave->start_date->format('M d, Y') }} to
-                                            {{ $leave->end_date->format('M d, Y') }}
-                                            <span class="badge bg-success ms-2">{{ $leave->total_days }} days</span>
-                                        </div>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="remarks{{ $leave->id }}" class="form-label fw-semibold">
-                                            Approval Remarks <span class="text-muted">(Optional)</span>
-                                        </label>
-                                        <textarea class="form-control" id="remarks{{ $leave->id }}" name="remarks" rows="3"
-                                            placeholder="Add any remarks for approval..."></textarea>
-                                    </div>
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
-                                    <button type="submit" class="btn btn-success">
-                                        <i class="fadeIn animated bx bx-check-circle"></i> Approve Leave
-                                    </button>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Reject Modal -->
-                <div class="modal fade" id="rejectModal{{ $leave->id }}" tabindex="-1"
-                    aria-labelledby="rejectModalLabel{{ $leave->id }}" aria-hidden="true">
-                    <div class="modal-dialog modal-dialog-centered">
-                        <div class="modal-content">
-                            <form method="POST" action="{{ route('leaves.reject', $leave) }}">
-                                @csrf
-                                @method('POST')
-                                <div class="modal-header">
-                                    <h5 class="modal-title fw-bold" id="rejectModalLabel{{ $leave->id }}"
-                                        style="color: whitesmoke">
-                                        <i class="fadeIn animated bx bx-time"></i> Reject Leave Application
-                                    </h5>
-                                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
-                                        aria-label="Close"></button>
-                                </div>
-                                <div class="modal-body">
-                                    <div class="row mb-3">
-                                        <div class="col-sm-4 fw-semibold text-muted">Employee:</div>
-                                        <div class="col-sm-8">{{ $leave->employee->surname }},
-                                            {{ $leave->employee->first_name }}</div>
-                                    </div>
-                                    <div class="row mb-3">
-                                        <div class="col-sm-4 fw-semibold text-muted">Leave Type:</div>
-                                        <div class="col-sm-8">{{ $leave->leaveType->name }}</div>
-                                    </div>
-                                    <div class="row mb-4">
-                                        <div class="col-sm-4 fw-semibold text-muted">Duration:</div>
-                                        <div class="col-sm-8">
-                                            {{ $leave->start_date->format('M d, Y') }} to
-                                            {{ $leave->end_date->format('M d, Y') }}
-                                            <span class="badge bg-danger ms-2">{{ $leave->total_days }} days</span>
-                                        </div>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="rejectRemarks{{ $leave->id }}" class="form-label fw-semibold">
-                                            Reason for Rejection <span class="text-danger">*</span>
-                                        </label>
-                                        <textarea class="form-control" id="rejectRemarks{{ $leave->id }}" name="remarks" rows="3"
-                                            placeholder="Please provide a detailed reason for rejection..." required></textarea>
-                                    </div>
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
-                                    <button type="submit" class="btn btn-danger">
-                                        <i class="fadeIn animated bx bx-time"></i> Reject Leave
-                                    </button>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            @endif
-        @endforeach
-
-        <!-- Document Preview Modal -->
-        <div class="modal fade" id="documentModal" tabindex="-1" aria-hidden="true">
-            <div class="modal-dialog modal-lg">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" style="color: white">Supporting Document</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <div id="documentPreview"></div>
-                    </div>
-                    <div class="modal-footer">
-                        <a href="#" id="downloadDocument" class="btn btn-primary">
-                            <i class="fas fa-download"></i> Download
-                        </a>
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    </div>
+                    </tbody>
+                </table>
+                <div class="p-3">
+                    {{ $leaves->links('pagination::bootstrap-5') }}
                 </div>
             </div>
         </div>
 
-        <script>
-            // In your blade file's script section
-            function previewDocument(url) {
-                const extension = url.split('.').pop().toLowerCase();
-                const previewDiv = $('#documentPreview');
-                const downloadBtn = $('#downloadDocument');
+    </div>
 
-                downloadBtn.attr('href', url);
+    {{-- ===================== MODALS ===================== --}}
+    @foreach ($leaves as $leave)
+        {{-- ===================== HOD APPROVE MODAL ===================== --}}
+        @if (
+            $leave->status === 'pending' &&
+                $leave->approval_stage === 'hod' &&
+                auth()->user()->employee &&
+                auth()->user()->employee->department &&
+                auth()->user()->employee->department->hod_id === auth()->user()->employee->id)
+            <div class="modal fade" id="approveModal{{ $leave->id }}" tabindex="-1">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <form method="POST" action="{{ route('leaves.hod.approve', $leave) }}">
+                            @csrf
+                            <div class="modal-header bg-success">
+                                <h5 class="modal-title" style="color: white">
+                                    <i class="bx bx-check-circle"></i> HOD Approval
+                                </h5>
+                                <button class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                            </div>
 
-                if (['jpg', 'jpeg', 'png', 'gif'].includes(extension)) {
-                    previewDiv.html(`<img src="${url}" class="img-fluid" alt="Document Preview">`);
-                } else if (extension === 'pdf') {
-                    previewDiv.html(`
+                            <div class="modal-body">
+                                <p><strong>Employee:</strong>
+                                    {{ $leave->employee->surname }} {{ $leave->employee->first_name }} -
+                                    ({{ $leave->employee->employee_number }})
+                                </p>
+
+                                <p><strong>Leave Type:</strong>
+                                    {{ $leave->leaveType->name }} ({{ $leave->total_days }} days)</p>
+
+                                <div class="mb-3">
+                                    <label class="form-label">HOD Remarks (Optional)</label>
+                                    <textarea name="hod_remarks" class="form-control" rows="3"></textarea>
+                                </div>
+                            </div>
+
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-light btn-sm"
+                                    data-bs-dismiss="modal">Cancel</button>
+                                <button type="submit" class="btn btn-success btn-sm"><i
+                                        class="bx bx-check-circle"></i>Approve</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            {{-- ===================== HOD REJECT MODAL ===================== --}}
+            <div class="modal fade" id="rejectModal{{ $leave->id }}" tabindex="-1">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <form method="POST" action="{{ route('leaves.hod.reject', $leave) }}">
+                            @csrf
+                            <div class="modal-header bg-danger text-white">
+                                <h5 class="modal-title" style="color: white">
+                                    <i class="bx bx-x-circle"></i> HOD Rejection
+                                </h5>
+                                <button class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                            </div>
+
+                            <div class="modal-body">
+                                <p><strong>Employee:</strong>
+                                    {{ $leave->employee->surname }} {{ $leave->employee->first_name }} -
+                                    ({{ $leave->employee->employee_number }})</p>
+
+                                <p><strong>Leave Type:</strong>
+                                    {{ $leave->leaveType->name }} ({{ $leave->total_days }} days)</p>
+
+                                <div class="mb-3">
+                                    <label class="form-label text-danger">Reason for Rejection *</label>
+                                    <textarea name="hod_remarks" class="form-control" rows="3" required></textarea>
+                                </div>
+                            </div>
+
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-light btn-sm"
+                                    data-bs-dismiss="modal">Cancel</button>
+                                <button type="submit" class="btn btn-danger btn-sm"><i
+                                        class="bx bx-x-circle"></i>Reject</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        @endif
+    @endforeach
+
+    {{-- ===================== MDA APPROVE MODAL ===================== --}}
+    @foreach ($leaves as $leave)
+        @if (
+            $leave->status === 'pending' &&
+                $leave->approval_stage === 'mda_head' &&
+                auth()->user()->role->role === 'MDA Head' &&
+                $leave->employee->mda_id === auth()->user()->mda_id)
+            <div class="modal fade" id="mdaApproveModal{{ $leave->id }}" tabindex="-1">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <form method="POST" action="{{ route('leaves.mda.approve', $leave->id) }}">
+                            @csrf
+                            <input type="hidden" name="action" value="approve">
+                            <div class="modal-header bg-success" style="color: white">
+                                <h5 class="modal-title" style="color: white">
+                                    <i class="bx bx-check-circle"></i> MDA Head Approval
+                                </h5>
+                                <button class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                            </div>
+
+                            <div class="modal-body">
+                                <p><strong>Employee:</strong> {{ $leave->employee->surname }}
+                                    {{ $leave->employee->first_name }} - ({{ $leave->employee->employee_number }})</p>
+                                <p><strong>Leave Type:</strong> {{ $leave->leaveType->name }} ({{ $leave->total_days }}
+                                    days)
+                                </p>
+
+                                <div class="mb-3">
+                                    <label class="form-label">MDA Head Remarks (Optional)</label>
+                                    <textarea name="mda_head_remarks" class="form-control" rows="3"></textarea>
+                                </div>
+                            </div>
+
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-light btn-sm"
+                                    data-bs-dismiss="modal">Cancel</button>
+                                <button type="submit" class="btn btn-success btn-sm"><i
+                                        class="bx bx-check-circle"></i>Approve</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            {{-- ===================== MDA REJECT MODAL ===================== --}}
+            <div class="modal fade" id="mdaRejectModal{{ $leave->id }}" tabindex="-1">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <form method="POST" action="{{ route('leaves.mda.reject', $leave->id) }}">
+                            @csrf
+                            <div class="modal-header bg-danger text-white">
+                                <h5 class="modal-title" style="color: white">
+                                    <i class="bx bx-x-circle"></i> MDA Head Rejection
+                                </h5>
+                                <button class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                            </div>
+
+                            <div class="modal-body">
+                                <p><strong>Employee:</strong> {{ $leave->employee->surname }}
+                                    {{ $leave->employee->first_name }} - ({{ $leave->employee->employee_number }})</p>
+                                <p><strong>Leave Type:</strong> {{ $leave->leaveType->name }} ({{ $leave->total_days }}
+                                    days)
+                                </p>
+
+                                <div class="mb-3">
+                                    <label class="form-label text-danger">Reason for Rejection *</label>
+                                    <textarea name="mda_head_remarks" class="form-control" rows="3" required></textarea>
+                                </div>
+                            </div>
+
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-light btn-sm"
+                                    data-bs-dismiss="modal">Cancel</button>
+                                <button type="submit" class="btn btn-danger btn-sm"><i
+                                        class="bx bx-x-circle"></i>Reject</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        @endif
+    @endforeach
+
+
+    <!-- Document Preview Modal -->
+    <div class="modal fade" id="documentModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" style="color: white">Supporting Document</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="documentPreview"></div>
+                </div>
+                <div class="modal-footer">
+                    <a href="#" id="downloadDocument" class="btn btn-primary">
+                        <i class="fas fa-download"></i> Download
+                    </a>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Blade file's script section
+        function previewDocument(url) {
+            const extension = url.split('.').pop().toLowerCase();
+            const previewDiv = $('#documentPreview');
+            const downloadBtn = $('#downloadDocument');
+
+            downloadBtn.attr('href', url);
+
+            if (['jpg', 'jpeg', 'png', 'gif'].includes(extension)) {
+                previewDiv.html(`<img src="${url}" class="img-fluid" alt="Document Preview">`);
+            } else if (extension === 'pdf') {
+                previewDiv.html(`
             <iframe src="${url}" 
                     style="width:100%; height:500px;" 
                     frameborder="0"></iframe>
         `);
-                } else {
-                    previewDiv.html(`
+            } else {
+                previewDiv.html(`
             <div class="alert alert-info">
                 <i class="fas fa-info-circle"></i> 
                 Document cannot be previewed. Please download to view.
             </div>
         `);
-                }
-
-                $('#documentModal').modal('show');
             }
-        </script>
-    @endsection
+
+            $('#documentModal').modal('show');
+        }
+    </script>
+@endsection

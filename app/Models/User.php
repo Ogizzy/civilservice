@@ -67,10 +67,16 @@ class User extends Authenticatable implements Auditable
         return $this->hasMany(QueriesMisconduct::class, 'user_id');
     }
 
+public function mda()
+{
+    return $this->belongsTo(Mda::class, 'mda_id');
+}
+
+
 // Leave Approvals
 public function canApproveLeaves()
 {
-    return $this->role && in_array($this->role->role, ['BDIC Super Admin', 'Director', 'Commissioner', 'Head of Service']);
+    return $this->role && in_array($this->role->role, ['BDIC Super Admin', 'Director', 'Commissioner', 'Head of Service', 'MDA Head']);
 }
 
 public function canManageOwnLeave($leave)
@@ -102,18 +108,6 @@ public function hasFeaturePermission($featureId, $permission = null)
     return $query->exists();
 }
 
-
-
-// public function hasFeatureByName($featureName, $permission = null)
-// {
-//     $feature = \App\Models\PlatformFeature::where('feature', $featureName)->first();
-    
-//     if (!$feature) {
-//         return false;
-//     }
-    
-//     return $this->hasFeaturePermission($feature->id, $permission);
-// }
 
 // Show Employee Profile Photo on the Header
 public function getPassportUrlAttribute()

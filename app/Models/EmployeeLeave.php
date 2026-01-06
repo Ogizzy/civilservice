@@ -31,7 +31,15 @@ class EmployeeLeave extends Model implements Auditable
         'applied_date',
         'approved_by',
         'approved_at',
-        'created_by'
+        'created_by',
+        'updated_by',
+        'approval_stage',
+        'hod_approved_at',
+        'hod_approved_by',
+        'hod_remarks',
+        'mda_head_approved_at',
+        'mda_head_approved_by',
+        'mda_head_remarks'
     ];
 
     protected $casts = [
@@ -109,5 +117,14 @@ class EmployeeLeave extends Model implements Auditable
         return $this->belongsTo(Leave::class);
     }
 
+    public function hodApprovedBy()
+    {
+        return $this->belongsTo(Employee::class, 'hod_approved_by');
+    }
+
+    public function mdaApprovedBy()
+    {
+        return $this->belongsTo(User::class, 'mda_approved_by');
         
+    }
 }

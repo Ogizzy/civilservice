@@ -33,7 +33,7 @@
         </div>
 
         <div class="d-flex justify-content-between align-items-center mb-2">
-            <h6 class="mb-0">Units</h6>
+            <h6 class="mb-0">Units in {{ $department->department_name }} Department</h6>
         </div>
     </div>
 </div>
@@ -48,6 +48,7 @@
             </div>
             <div class="ms-auto"><a href="{{ route('units.create') }}?department_id={{ $department->id }}"
                     class="btn btn-primary radius-30 mt-2 mt-lg-0"><i class="bx bxs-plus-square"></i>Create Unit</a>
+                    <a href="{{ route('departments.index') }}" class="btn btn-secondary radius-30 mt-2 mt-lg-0"><i class="bx bx-arrow-to-left"></i>Go Back</a>
             </div>
         </div>
         <div class="table-responsive">

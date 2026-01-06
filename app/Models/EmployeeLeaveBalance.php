@@ -16,7 +16,18 @@ class EmployeeLeaveBalance extends Model implements Auditable
         'year',
         'entitled_days',
         'used_days',
-        'remaining_days'
+        'remaining_days',
+        'status',
+        'approval_stage',
+        'hod_approved_by',
+        'hod_approved_at',
+        'hod_remarks',
+        'mda_approved_by',
+        'mda_head_approved_at',
+        'mda_head_remarks',
+        'approved_by',
+        'approved_at',
+        'remarks',
     ];
 
     protected static function boot()

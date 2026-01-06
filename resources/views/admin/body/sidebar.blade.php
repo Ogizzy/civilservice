@@ -6,20 +6,20 @@
             <img src="{{ asset('backend/assets/images/login-images/benue-logo.png') }}" class="logo-icon" alt="logo icon">
         </div>
         <div>
-            <h6>Civil Service Mgt System</h6>
+            <h6 style="margin: 0; font-size: 14px;">Civil Service Management System</h6>
         </div>
 
 
         {{-- <div class="toggle-icon ms-auto"><i class='bx bx-arrow-back'></i></div> --}}
-         @if (auth()->check() && auth()->user()->role->role === 'Employee')
-        <a href="{{ route('employee.dashboard') }}" class="toggle-icon ms-auto">
-            <i class='bx bx-arrow-back'></i>
-        </a>
-          @elseif(auth()->check())
-                <a href="{{ route('admin.dashboard') }}" class="toggle-icon ms-auto">
-            <i class='bx bx-arrow-back'></i>
-                </a>
-            @endif
+        @if (auth()->check() && auth()->user()->role->role === 'Employee')
+            <a href="{{ route('employee.dashboard') }}" class="toggle-icon ms-auto">
+                <i class='bx bx-arrow-back'></i>
+            </a>
+        @elseif(auth()->check())
+            <a href="{{ route('admin.dashboard') }}" class="toggle-icon ms-auto">
+                <i class='bx bx-arrow-back'></i>
+            </a>
+        @endif
     </div>
 
     <!--navigation-->
@@ -38,65 +38,77 @@
                 </a>
             @endif
 
+            @if (auth()->user()->employee?->isHod())
+        <li>
+            <a href="">HOD Dashboard</a>
+        </li>
+        @endif
 
-             <li class="menu-label">Manage System Structure</li>
-               <!-- Manage Departments -->
-            {{-- @usercan('Employee Management', 'can_edit') --}}
+        @if (auth()->user()->employee?->isUnitHead())
             <li>
-                <a href="javascript:;" class="has-arrow">
-                    <div class="parent-icon"><i class="fadeIn animated bx bx-layer"></i></div>
-                    <div class="menu-title">Manage Depts.</div>
-                </a>
-
-                <ul>
-                    {{-- @usercan('Employee Management', 'can_create') --}}
-                        <li>
-                            <a href="{{ route('departments.create') }}">
-                                <i class='bx bx-radio-circle'></i>Create Department
-                            </a>
-                        </li>
-                    {{-- @endusercan --}}
-
-                    <li>
-                        <a href="{{ route('departments.index') }}">
-                            <i class='bx bx-radio-circle'></i>View Departments
-                        </a>
-                    </li>
-                   
-                </ul>
+                <a href="">Unit Dashboard</a>
             </li>
+        @endif
+
+
+        <li class="menu-label">Manage System Structure</li>
+        <!-- Manage Departments -->
+        {{-- @usercan('Employee Management', 'can_edit') --}}
+        <li>
+            <a href="javascript:;" class="has-arrow">
+                <div class="parent-icon"><i class="fadeIn animated bx bx-layer"></i></div>
+                <div class="menu-title">Manage Depts.</div>
+            </a>
+
+            <ul>
+                {{-- @usercan('Employee Management', 'can_create') --}}
+                <li>
+                    <a href="{{ route('departments.create') }}">
+                        <i class='bx bx-radio-circle'></i>Create Department
+                    </a>
+                </li>
+                {{-- @endusercan --}}
+
+                <li>
+                    <a href="{{ route('departments.index') }}">
+                        <i class='bx bx-radio-circle'></i>View Departments
+                    </a>
+                </li>
+
+            </ul>
+        </li>
         {{-- @endusercan --}}
 
-               <!-- Manage Units -->
-            {{-- @usercan('Employee Management', 'can_edit') --}}
-            <li>
-                <a href="javascript:;" class="has-arrow">
-                    <div class="parent-icon"><i class="fadeIn animated bx bx-merge"></i></div>
-                    <div class="menu-title">Manage Units</div>
-                </a>
+        <!-- Manage Units -->
+        {{-- @usercan('Employee Management', 'can_edit') --}}
+        <li>
+            <a href="javascript:;" class="has-arrow">
+                <div class="parent-icon"><i class="fadeIn animated bx bx-merge"></i></div>
+                <div class="menu-title">Manage Units</div>
+            </a>
 
-                <ul>
-                    {{-- @usercan('Employee Management', 'can_create') --}}
-                        <li>
-                            <a href="{{ route('units.create') }}">
-                                <i class='bx bx-radio-circle'></i>Create Unit
-                            </a>
-                        </li>
-                    {{-- @endusercan --}}
+            <ul>
+                {{-- @usercan('Employee Management', 'can_create') --}}
+                <li>
+                    <a href="{{ route('units.create') }}">
+                        <i class='bx bx-radio-circle'></i>Create Unit
+                    </a>
+                </li>
+                {{-- @endusercan --}}
 
-                    <li>
-                        <a href="{{ route('units.index') }}">
-                            <i class='bx bx-radio-circle'></i>View Units
-                        </a>
-                    </li>
-                   
-                </ul>
-            </li>
+                <li>
+                    <a href="{{ route('units.index') }}">
+                        <i class='bx bx-radio-circle'></i>View Units
+                    </a>
+                </li>
+
+            </ul>
+        </li>
         {{-- @endusercan --}}
 
 
-            <!-- Employee Management Group -->
-            @usercan('Employee Management', 'can_edit')
+        <!-- Employee Management Group -->
+        @usercan('Employee Management', 'can_edit')
             <li>
                 <a href="javascript:;" class="has-arrow">
                     <div class="parent-icon"><i class="bx bx-user-circle"></i></div>
@@ -131,14 +143,25 @@
                             <i class='bx bx-radio-circle'></i>Promote Employee
                         </a>
                     </li>
+                    <li>
+                        <a href="{{ route('employees.index') }}">
+                            <i class='bx bx-radio-circle'></i>Manage Postings
+                        </a>
+                    </li>
                 </ul>
             </li>
         @endusercan
+        
 
-      
-        @usercan('Employee Management', 'can_create')
-          <li class="menu-label">Organization Structure</li>
+         <!-- Manage Postings -->
+
+
+        
         <!-- HR Management -->
+
+        @usercan('Employee Management', 'can_create')
+            <li class="menu-label">Organization Structure</li>
+            <!-- HR Management -->
             <li>
                 <a href="javascript:;" class="has-arrow">
                     <div class="parent-icon"><i class="bx bx-comment-check"></i></div>
@@ -177,6 +200,11 @@
                         <li>
                             <a href="{{ route('mdas.index') }}">
                                 <i class='bx bx-radio-circle'></i>Manage MDAs
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ route('mda-heads.index') }}">
+                                <i class='bx bx-radio-circle'></i>Manage MDA Heads
                             </a>
                         </li>
                     @endusercan
@@ -247,44 +275,44 @@
 
         <!-- Leave Management -->
         @usercan('Employee Management', 'can_create')
-        <li>
-            <a href="javascript:;" class="has-arrow">
-                <div class="parent-icon"><i class="lni lni-timer"></i></div>
-                <div class="menu-title">Manage Leaves</div>
-            </a>
-            <ul>
-                @usercan('Employee Management', 'can_create')
+            <li>
+                <a href="javascript:;" class="has-arrow">
+                    <div class="parent-icon"><i class="lni lni-timer"></i></div>
+                    <div class="menu-title">Manage Leaves</div>
+                </a>
+                <ul>
+                    @usercan('Employee Management', 'can_create')
+                        <li>
+                            <a href="{{ route('leave-types.index') }}">
+                                <i class='bx bx-radio-circle'></i>Add Leave Type
+                            </a>
+                        </li>
+                    @endusercan
+
                     <li>
-                        <a href="{{ route('leave-types.index') }}">
-                            <i class='bx bx-radio-circle'></i>Add Leave Type
+                        <a href="{{ route('leaves.index') }}">
+                            <i class='bx bx-radio-circle'></i>View Leaves
                         </a>
                     </li>
-                @endusercan
 
-                <li>
-                    <a href="{{ route('leaves.index') }}">
-                        <i class='bx bx-radio-circle'></i>View Leaves
-                    </a>
-                </li>
-
-                {{-- <li>
+                    {{-- <li>
                     <a href="{{ route('leaves.create') }}">
                         <i class='bx bx-radio-circle'></i>Apply for Leave
                     </a>
                 </li> --}}
 
-                {{-- <li>
+                    {{-- <li>
                     <a href="{{ route('leave.balance.show') }}">
                         <i class='bx bx-radio-circle'></i>Leave Balance
                     </a>
                 </li> --}}
-                <li>
-                    <a href="{{ route('employee_leaves.history') }}">
-                        <i class='bx bx-radio-circle'></i>Leave History
-                    </a>
-                </li>
-            </ul>
-        </li>
+                    <li>
+                        <a href="{{ route('employee_leaves.history') }}">
+                            <i class='bx bx-radio-circle'></i>Leave History
+                        </a>
+                    </li>
+                </ul>
+            </li>
         @endusercan
 
 
@@ -391,11 +419,17 @@
                         </a>
                     </li>
 
+                    {{-- Disable leave application after November 28th --}}
+                    @php
+                        $cutoffReached = now()->month == 11 && now()->day >= 28;
+                    @endphp
+                      @if (!$cutoffReached)
                     <li>
                         <a href="{{ route('leaves.create') }}">
                             <i class='bx bx-radio-circle'></i>Apply for Leave
                         </a>
                     </li>
+                    @endif
 
                     {{-- <li>
                         <a href="{{ route('leave.balance.show') }}">

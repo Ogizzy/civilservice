@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Department;
 
 use App\Models\MDA;
+use App\Models\Unit;
 use App\Models\Employee;
 use App\Models\Department;
 use Illuminate\Http\Request;
@@ -12,13 +13,14 @@ class DepartmentController extends Controller
 {
     public function index()
     {
+        $employees = Employee::orderBy('surname')->get();
         $departments = Department::with('mda', 'hod')->paginate(10);
-        return view('admin.departments.index', compact('departments'));
+        return view('admin.departments.index', compact('departments', 'employees'));
     }
 
     public function create()
     {
-        $mdas = Mda::orderBy('mda')->get();
+        $mdas = MDA::orderBy('mda')->get();
         $employees = Employee::orderBy('surname')->get();
         return view('admin.departments.create', compact('mdas', 'employees'));
     }
@@ -31,6 +33,18 @@ class DepartmentController extends Controller
             'department_code' => 'nullable|unique:departments',
             'hod_id' => 'nullable|exists:employees,id'
         ]);
+
+        // Rule
+        if (!empty($data['hod_id'])) {
+            $exists = Department::where('hod_id', $data['hod_id'])->exists()
+                || Unit::where('unit_head_id', $data['hod_id'])->exists();
+
+            if ($exists) {
+                return back()->withErrors([
+                    'hod_id' => 'This employee is already a HOD or Unit Head.'
+                ])->withInput();
+            }
+        }
 
         Department::create($data);
 
@@ -91,6 +105,45 @@ class DepartmentController extends Controller
     // AJAX Method to get Departments by MDA
     public function getDepartmentsByMda($mdaId)
     {
-       return Department::where('mda_id', $mdaId)->get();
+        $departments = Department::where('mda_id', $mdaId)->get();
+        return response()->json($departments);
     }
+
+    // Load employees by department
+    public function byDepartment(Department $department)
+    {
+        return response()->json(
+            $department->employees()
+                ->select('id', 'surname', 'first_name', 'employee_number')
+                ->orderBy('surname')
+                ->get()
+        );
+    }
+
+    public function assignHodForm(Department $department)
+{
+    // Get all employees in this MDA
+    $employees = $department->mda->employees ?? collect();
+
+    return view('admin.departments.assign-hod', compact('department', 'employees'));
+}
+
+
+public function assignHod(Request $request, Department $department)
+{
+    $request->validate([
+        'hod_id' => 'required|exists:employees,id',
+    ]);
+
+    $department->hod_id = $request->hod_id;
+    $department->save();
+
+     $notification = array(
+            'message' => 'HOD Assigned Successfully',
+            'alert-type' => 'success'
+        );
+
+    return redirect()->route('departments.index')->with($notification);
+}
+
 }

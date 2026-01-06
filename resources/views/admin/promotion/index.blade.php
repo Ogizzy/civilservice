@@ -76,13 +76,16 @@
                                 @forelse($promotions as $promotion)
                                     <tr>
                                         <td>{{ $loop->iteration }}</td>
-                                        <td>GL {{ $promotion->previousLevel->level ?? 'N/A' }} - Step
+                                        <td>Grade Level {{ $promotion->previousLevel->level ?? 'N/A' }} > Step
                                             {{ $promotion->previousStep->step ?? 'N/A' }}</td>
-                                        <td>GL {{ $promotion->currentLevel->level ?? 'N/A' }} - Step
+                                        <td>Grade Level {{ $promotion->currentLevel->level ?? 'N/A' }} > Step
                                             {{ $promotion->currentStep->step ?? 'N/A' }}</td>
                                         <td>{{ ucfirst($promotion->promotion_type) }}</td>
                                         <td>{{ $promotion->effective_date->format('d M, Y') }}</td>
-                                        <td>{{ $promotion->user->surname ?? 'N/A' }} {{ $promotion->user->first_name ?? 'N/A' }}</td>
+                                        <td>{{ $promotion->user->role->role ?? 'N/A' }} <br> 
+                                        <small class="text-muted">{{ $promotion->user->surname ?? 'N/A' }} {{ $promotion->user->first_name ?? 'N/A' }}</small></td>
+                                        <br>
+                                        <small class="text-muted">{{ $promotion->created_at->diffForHumans() }}</small>
                                         <td>
                                             <a href="{{ asset('storage/' . $promotion->document->document) }}" target="_blank"
                                                 class="btn btn-sm btn-secondary" title="View Document">

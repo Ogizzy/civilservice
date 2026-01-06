@@ -1,14 +1,16 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\HOD\HodController;
 use App\Http\Controllers\MDA\MdaController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Step\StepController;
 use App\Http\Controllers\Unit\UnitController;
-use App\Http\Controllers\User\UserController;
 // use App\Http\Controllers\User\UserRoleController;
 // use App\Http\Controllers\CommendationController;
+use App\Http\Controllers\User\UserController;
 use App\Http\Controllers\Admin\AdminController;
+use App\Http\Controllers\MDA\MdaHeadController;
 use App\Http\Controllers\AuditLog\AuditLogController;
 use App\Http\Controllers\Document\DocumentController;
 use App\Http\Controllers\Employee\EmployeeController;
@@ -19,6 +21,7 @@ use App\Http\Controllers\Department\DepartmentController;
 use App\Http\Controllers\Gradelevel\GradeLevelController;
 use SebastianBergmann\CodeCoverage\Report\Html\Dashboard;
 use App\Http\Controllers\Employee\EmployeeLeaveController;
+use App\Http\Controllers\Posting\EmployeePostingController;
 use App\Http\Controllers\Transfer\TransferHistoryController;
 use App\Http\Controllers\Commendation\CommendationController;
 use App\Http\Controllers\Queries\QueriesMisconductController;
@@ -42,7 +45,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';
 
 Route::get('/admin/logout', [AdminController::class, 'AdminLogout'])->name('admin.logout');
 
@@ -83,6 +86,43 @@ Route::delete('/employees/{employee}', [EmployeeController::class, 'destroy'])->
 Route::get('/employees/reports', [EmployeeController::class, 'reports'])->name('employees.reports');
 
 
+// Route::middleware(['auth'])->group(function () {
+// // HOD Routes
+// Route::middleware('hod')->group(function () {
+//     Route::get('/hod/dashboard', [HodController::class, 'index']);
+// });
+
+// // Unit Head Routes
+// Route::middleware('unit.head')->group(function () {
+//     Route::get('/unit/dashboard', [UnitController::class, 'index']);
+// });
+// });
+
+// Employee Posting Routes
+Route::middleware(['auth'])->group(function () {
+    // Show posting form
+    Route::get('/employees/{employee}/posting',[EmployeePostingController::class, 'create']
+    )->name('employees.posting.create');
+
+    // Handle posting submission
+    Route::post('/employees/{employee}/post',[EmployeePostingController::class, 'store']
+    )->name('employees.posting.store');
+
+    Route::get('/employees/{employee}/postings',[EmployeePostingController::class, 'index']
+    )->name('employees.posting.index');
+
+    Route::get('/employees/{employee}/postings/{posting}/edit',[EmployeePostingController::class, 'edit']
+    )->name('employees.posting.edit');
+
+    Route::put('/employees/{employee}/postings/{posting}',[EmployeePostingController::class, 'update']
+    )->name('employees.posting.update');
+
+    Route::delete('/employees/{employee}/postings/{posting}',[EmployeePostingController::class, 'destroy']
+    )->name('employees.posting.destroy');
+
+});
+
+
 // All MDAs Routes
 Route::get('/mdas', [MdaController::class, 'index'])->name('mdas.index');
 Route::get('/mdas/create', [MdaController::class, 'create'])->name('mdas.create');
@@ -107,6 +147,19 @@ Route::get('/departments/{department}', [DepartmentController::class, 'show'])->
 Route::get('/departments/{department}/edit', [DepartmentController::class, 'edit'])->name('departments.edit');
 Route::put('/departments/{department}', [DepartmentController::class, 'update'])->name('departments.update');
 Route::delete('/departments/{department}', [DepartmentController::class, 'destroy'])->name('departments.destroy');
+// Load employees by department
+Route::get('/employees/by-department/{department}', [DepartmentController::class, 'byDepartment']
+)->name('employees.byDepartment');
+
+// Departments by MDA for Posting Form
+Route::get('/get-departments-by-mda/{mda}',[DepartmentController::class, 'getDepartmentsByMda']
+    )->name('departments.byMda');
+
+// Assign HOD Routes
+Route::get('/departments/{department}/assign-hod', [DepartmentController::class, 'assignHodForm'])->name('departments.assignHodForm');
+Route::post('/departments/{department}/assign-hod', [DepartmentController::class, 'assignHod'])->name('departments.assignHod');
+
+
 
 // Unit Routes
 Route::get('/units', [UnitController::class, 'index'])->name('units.index');
@@ -120,9 +173,17 @@ Route::delete('/units/{unit}', [UnitController::class, 'destroy'])->name('units.
 Route::get('/get-units-by-department/{department}', [UnitController::class, 'getUnitsByDepartment'])
     ->name('units.by.department');
 // Load departments under MDA
-Route::get('/get-departments-by-mda/{mda}', [DepartmentController::class, 'getDepartmentsByMda'])
-    ->name('departments.by.mda');
-    
+Route::get('/mdas/{mda}/departments', [DepartmentController::class, 'getDepartmentsByMda']);
+    // Load employees by unit
+Route::get('/employees/by-unit/{unit}', [UnitController::class, 'byUnit'])->name('employees.byUnit');
+
+// Assign Unit Head Route
+Route::post('/units/{unit}/assign-head', [UnitController::class, 'assignHead']
+)->name('units.assignHead');
+
+Route::get('/units/{unit}/employees',[UnitController::class, 'employeesByUnitDepartment']
+)->name('units.employees');
+
 
 // All Pay Groups Routes
 Route::get('/pay-groups', [PayGroupController::class, 'index'])->name('pay-groups.index');
@@ -213,17 +274,17 @@ Route::get('/get-lgas/{state_id}', function ($state_id) {
 });
 
 // Roles Routes
-    Route::prefix('roles')->name('roles.')->group(function () {
-        Route::get('/', [UserRoleController::class, 'index'])->name('index');
-        Route::get('/create', [UserRoleController::class, 'create'])->name('create');
-        Route::post('/', [UserRoleController::class, 'store'])->name('store');
-        Route::get('/{role}', [UserRoleController::class, 'show'])->name('show');
-        Route::get('/{role}/edit', [UserRoleController::class, 'edit'])->name('edit');
-        Route::put('/{role}', [UserRoleController::class, 'update'])->name('update');
-        Route::delete('/{role}', [UserRoleController::class, 'destroy'])->name('destroy');
-    });
+Route::prefix('roles')->name('roles.')->group(function () {
+    Route::get('/', [UserRoleController::class, 'index'])->name('index');
+    Route::get('/create', [UserRoleController::class, 'create'])->name('create');
+    Route::post('/', [UserRoleController::class, 'store'])->name('store');
+    Route::get('/{role}', [UserRoleController::class, 'show'])->name('show');
+    Route::get('/{role}/edit', [UserRoleController::class, 'edit'])->name('edit');
+    Route::put('/{role}', [UserRoleController::class, 'update'])->name('update');
+    Route::delete('/{role}', [UserRoleController::class, 'destroy'])->name('destroy');
+});
 
-    // Features Routes
+// Features Routes
 Route::prefix('features')->name('features.')->group(function () {
     Route::get('/', [PlatformFeatureController::class, 'index'])->name('index');
     Route::get('/create', [PlatformFeatureController::class, 'create'])->name('create');
@@ -285,7 +346,7 @@ Route::get('/audit-logs', [AuditLogController::class, 'index'])->name('audit.log
 Route::get('/service-account', [ServiceAccountController::class, 'edit'])->name('service-account.edit')->middleware('auth');
 Route::put('/service-account', [ServiceAccountController::class, 'update'])->name('service-account.update')->middleware('auth');
 
-    // Import Excel
+// Import Excel
 Route::get('/import-employees-form', [EmployeeController::class, 'showImportForm'])->name('import.employees.form');
 Route::post('/import-employees', [EmployeeController::class, 'import'])->name('import.employees');
 
@@ -293,13 +354,13 @@ Route::post('/import-employees', [EmployeeController::class, 'import'])->name('i
 Route::post('/users/{user}/status', [UserController::class, 'changeStatus'])
     ->name('users.status.change')->middleware(['auth', 'user.status:active']);
 
-    Route::middleware(['auth', 'check.status'])->group(function () {
-        Route::get('/user/management/', [UserController::class, 'usermgt'])->name('user.management');
-        // Other routes...
-    });
+Route::middleware(['auth', 'check.status'])->group(function () {
+    Route::get('/user/management/', [UserController::class, 'usermgt'])->name('user.management');
+    // Other routes...
+});
 
-    
-    
+
+
 //     Route::middleware(['auth', 'check.status'])->group(function () {
 //     Route::get('/dashboard', [UserController::class, 'index'])->name('user.dashboard');
 //     Route::get('/admin/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
@@ -322,8 +383,8 @@ Route::middleware(['auth', 'check.status', 'role:BDIC Super Admin,Head of Servic
     // other admin routes
 });
 
-   
-    // Excel Template Download Route
+
+// Excel Template Download Route
 Route::get('/download-sample-template', [EmployeeController::class, 'downloadSampleTemplate'])->name('download.sample.template');
 
 // Leave Management Routes
@@ -339,30 +400,42 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/leaves/{leave}/approve', [EmployeeLeaveController::class, 'approve'])->name('leaves.approve');
     Route::post('/leaves/{leave}/reject', [EmployeeLeaveController::class, 'reject'])->name('leaves.reject');
 
-       // Routes for Leave Balance
-Route::get('/leave-balance', [EmployeeLeaveController::class, 'showLeaveBalance'])->name('leave.balance.show');
-Route::get('/dashboard/my-leave-balance', [EmployeeLeaveController::class, 'getLeaveBalance'])->name('dashboard.my_leave_balance');
-Route::get('/leaves/history', [EmployeeLeaveController::class, 'history'])->name('leaves.history');
-Route::get('/employee-leaves/history', [EmployeeLeaveController::class, 'history'])->name('employee_leaves.history');
-// Download routes file
-Route::get('/leaves/{id}/document', [EmployeeLeaveController::class, 'viewDocument'])->name('leaves.document.view')
-     ->middleware('auth');
+    // Routes for Leave Balance
+    Route::get('/leave-balance', [EmployeeLeaveController::class, 'showLeaveBalance'])->name('leave.balance.show');
+    Route::get('/dashboard/my-leave-balance', [EmployeeLeaveController::class, 'getLeaveBalance'])->name('dashboard.my_leave_balance');
+    Route::get('/leaves/history', [EmployeeLeaveController::class, 'history'])->name('leaves.history');
+    Route::get('/employee-leaves/history', [EmployeeLeaveController::class, 'history'])->name('employee_leaves.history');
+    // Download routes file
+    Route::get('/leaves/{id}/document', [EmployeeLeaveController::class, 'viewDocument'])->name('leaves.document.view')
+        ->middleware('auth');
 
-     // Leave Type Controller
-Route::prefix('leave-types')->group(function () {
-    Route::get('/', [LeaveTypeController::class, 'index'])->name('leave-types.index'); // List all
-    Route::get('/create', [LeaveTypeController::class, 'create'])->name('leave-types.create'); // Show create form
-    Route::post('/', [LeaveTypeController::class, 'store'])->name('leave-types.store'); // Handle form submit
+    // Leave Type Controller
+    Route::prefix('leave-types')->group(function () {
+        Route::get('/', [LeaveTypeController::class, 'index'])->name('leave-types.index'); // List all
+        Route::get('/create', [LeaveTypeController::class, 'create'])->name('leave-types.create'); // Show create form
+        Route::post('/', [LeaveTypeController::class, 'store'])->name('leave-types.store'); // Handle form submit
 
-    Route::get('/{leaveType}/edit', [LeaveTypeController::class, 'edit'])->name('leave-types.edit'); // Show edit form
-    Route::put('/{leaveType}', [LeaveTypeController::class, 'update'])->name('leave-types.update'); // Handle update
+        Route::get('/{leaveType}/edit', [LeaveTypeController::class, 'edit'])->name('leave-types.edit'); // Show edit form
+        Route::put('/{leaveType}', [LeaveTypeController::class, 'update'])->name('leave-types.update'); // Handle update
 
-    Route::patch('/{leaveType}/toggle-status', [LeaveTypeController::class, 'toggleStatus'])->name('leave-types.toggle-status'); // Toggle active status
+        Route::patch('/{leaveType}/toggle-status', [LeaveTypeController::class, 'toggleStatus'])->name('leave-types.toggle-status'); // Toggle active status
 
-    Route::get('/{leaveType}', [LeaveTypeController::class, 'show'])->name('leave-types.show'); // Optional: View single record
-    Route::delete('/{leaveType}', [LeaveTypeController::class, 'destroy'])->name('leave-types.destroy'); // Optional: Delete
+        Route::get('/{leaveType}', [LeaveTypeController::class, 'show'])->name('leave-types.show'); // Optional: View single record
+        Route::delete('/{leaveType}', [LeaveTypeController::class, 'destroy'])->name('leave-types.destroy'); // Optional: Delete
+    });
+
+    Route::post('/leaves/{leave}/hod-approve', [EmployeeLeaveController::class, 'hodApprove'])->name('leaves.hod.approve');
+    Route::post('/leaves/{leave}/hod-reject', [EmployeeLeaveController::class, 'hodReject'])->name('leaves.hod.reject');
+    Route::post('/leaves/{leave}/mda-approve', [EmployeeLeaveController::class, 'mdaApprove'])->name('leaves.mda.approve');
+    Route::post('/leaves/{leave}/mda-reject', [EmployeeLeaveController::class, 'mdaReject'])->name('leaves.mda.reject');
+    
+
+// MDA Heads Management Routes
+    Route::prefix('mda')->middleware(['auth'])->group(function () {
+    Route::get('/mda-heads', [MdaHeadController::class, 'index'])->name('mda-heads.index');
+    Route::get('/mda-heads/{mda}/assign', [MdaHeadController::class, 'edit'])->name('mda-heads.assign');
+    Route::post('/mda-heads/{mda}', [MdaHeadController::class, 'update'])->name('mda-heads.update');
 });
 
 
 });
-

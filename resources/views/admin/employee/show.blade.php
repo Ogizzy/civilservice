@@ -108,10 +108,11 @@
                                         <div class="col-md-6">
                                             <h5 class="mb-2">Employment Details</h5>
                                             <p><strong>MDA:</strong> {{ $employee->mda->mda ?? 'N/A' }}</p>
+                                            <p><strong>Department:</strong> {{ $employee->department->department_name ?? 'N/A' }}</p>
+                                            <p><strong>Unit:</strong> {{ $employee->unit->unit_name ?? 'N/A' }}</p>
                                             <p><strong>Employee Number:</strong> {{ $employee->employee_number }}</p>
                                             <p><strong>Pay Group:</strong> {{ $employee->paygroup->paygroup ?? 'N/A' }}</p>
-                                            <p><strong>Grade Level:</strong> {{ $employee->gradeLevel->level ?? 'N/A' }}
-                                            </p>
+                                            <p><strong>Grade Level:</strong> {{ $employee->gradeLevel->level ?? 'N/A' }}</p>
                                             <p><strong>Step:</strong> {{ $employee->step->step ?? 'N/A' }}</p>
                                             <p><strong>Rank:</strong> {{ $employee->rank ?? 'N/A' }}</p>
                                         </div>

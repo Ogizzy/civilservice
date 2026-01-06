@@ -35,13 +35,19 @@ class MDA extends Model implements Auditable
         return $this->hasMany(TransferHistory::class, 'current_mda');
     }
 
-     public function head()
-    {
-        return $this->belongsTo(Employee::class, 'head_id');
-    }
+    //  public function head()
+    // {
+    //     return $this->belongsTo(Employee::class, 'head_id');
+    // }
 
     public function departments()
     {
         return $this->hasMany(Department::class);
     }
+
+ public function head()
+{
+    return $this->hasOne(User::class, 'mda_id');
+}
+    
 }

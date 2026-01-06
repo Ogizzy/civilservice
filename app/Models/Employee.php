@@ -144,4 +144,33 @@ public function unit()
     return $this->belongsTo(Unit::class);
 }
 
+
+public function departmentHeaded()
+    {
+        return $this->hasOne(Department::class, 'hod_id');
+    }
+
+    public function unitHeaded()
+    {
+        return $this->hasOne(Unit::class, 'unit_head_id');
+    }
+
+    public function isHod(): bool
+    {
+        return $this->departmentHeaded()->exists();
+    }
+
+    public function isUnitHead(): bool
+    {
+        return $this->unitHeaded()->exists();
+
+    }
+    
+public function postings()
+{
+    return $this->hasMany(EmployeePosting::class);
+}
+
+
+
 }

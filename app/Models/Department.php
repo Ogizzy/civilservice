@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\MDA;
 use Illuminate\Database\Eloquent\Model;
 
 class Department extends Model
@@ -15,7 +16,7 @@ class Department extends Model
 
     public function mda()
     {
-        return $this->belongsTo(Mda::class);
+        return $this->belongsTo(MDA::class);
     }
 
     public function hod()
@@ -32,4 +33,6 @@ class Department extends Model
     {
         return $this->hasMany(Employee::class);
     }
+
+    
 }

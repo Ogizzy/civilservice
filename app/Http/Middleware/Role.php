@@ -41,6 +41,7 @@ class Role
             case 'Head of Service':
             case 'Commissioner':
             case 'Director':
+            case 'MDA Head':
                 
                 if ($currentRoute !== 'admin.dashboard') {
                     return redirect()->route('admin.dashboard');

@@ -57,8 +57,29 @@ class EmployeeController extends Controller
         $perPage = $request->input('per_page', 10);
         $employees = $query->orderBy('surname')->paginate($perPage);
 
+    //     // Role-based data access
+    //     $user = auth()->user();
+    // $employee = $user->employee;
+
+    // if ($employee && $employee->isHod()) {
+    //     $departmentId = $employee->departmentHeaded->id;
+
+    //     $employees = Employee::where('department_id', $departmentId)->get();
+    // }
+    // elseif ($employee && $employee->isUnitHead()) {
+    //     $unitId = $employee->unitHeaded->id;
+
+    //     $employees = Employee::where('unit_id', $unitId)->get();
+    // }
+    // else {
+    //     // Admin
+    //     $employees = Employee::all();
+    // }
+
+
         return view('admin.employee.index', compact('employees'));
     }
+
 
     /**
      * Show the form for creating a new employee.
@@ -206,6 +227,13 @@ class EmployeeController extends Controller
      */
     public function update(Request $request, Employee $employee)
     {
+         $authEmployee = auth()->user()->employee;
+
+    // Restrict HODs and Unit Heads from updating
+    if ($authEmployee && ($authEmployee->isHod() || $authEmployee->isUnitHead())) {
+        abort(403, 'You are not allowed to update employees.');
+    }
+
         $validated = $request->validate([
             'mda_id' => 'required|exists:mdas,id',
             'paygroup_id' => 'required|exists:pay_groups,id',
