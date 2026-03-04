@@ -72,6 +72,23 @@ public function mda()
     return $this->belongsTo(Mda::class, 'mda_id');
 }
 
+//////
+
+public function gradeLevel()
+{
+    return $this->belongsTo(GradeLevel::class);
+}
+
+public function step()
+{
+    return $this->belongsTo(Step::class);
+}
+
+public function paygroup()
+{
+    return $this->belongsTo(Paygroup::class);
+}
+
 
 // Leave Approvals
 public function canApproveLeaves()

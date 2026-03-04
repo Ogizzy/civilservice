@@ -40,13 +40,12 @@
 
             @if (auth()->user()->employee?->isHod())
         <li>
-            <a href="">HOD Dashboard</a>
+            <a href="">Head of Depart. (HOD)</a>
         </li>
-        @endif
-
-        @if (auth()->user()->employee?->isUnitHead())
+       
+        @elseif (auth()->user()->employee?->isUnitHead())
             <li>
-                <a href="">Unit Dashboard</a>
+                <a href="">Unit Head</a>
             </li>
         @endif
 

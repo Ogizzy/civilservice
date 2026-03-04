@@ -3,12 +3,16 @@
 namespace App\Models;
 
 use App\Models\State;
-use Illuminate\Database\Eloquent\Model;
-use OwenIt\Auditing\Contracts\Auditable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Notifications\Notifiable;
+use Laravel\Sanctum\HasApiTokens;
+use OwenIt\Auditing\Contracts\Auditable;
+
 
 class Employee extends Model implements Auditable
 {
+     use HasFactory, HasApiTokens, Notifiable;
     use HasFactory;
     use \OwenIt\Auditing\Auditable;
 
@@ -48,10 +52,12 @@ class Employee extends Model implements Auditable
         'next_of_kin_relationship',
         'next_of_kin_phone',
         'next_of_kin_address',
+
     ];
 
     protected $hidden = [
         'password',
+         'remember_token',
     ];
 
     protected $casts = [

@@ -6,6 +6,12 @@ use Log;
 use App\Models\Employee;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
+use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
 
 
 class EmployeeApiController extends Controller
@@ -44,42 +50,67 @@ class EmployeeApiController extends Controller
     }
 
     /**
-     * (2) Update employee phone number and email.
+     * Update employee information.
      */
 
     public function updateContact(Request $request, $employee_number)
     {
-        $request->validate([
-            'phone' => 'required|string|max:11',
-            'email' => 'required|email|max:255',
-        ]);
+         $validated = $request->validate([
+        'surname' => 'required|string|max:255',
+        'first_name' => 'required|string|max:255',
+        'middle_name' => 'nullable|string|max:255',
+        'phone' => 'required|string|max:11',
+        'email' => 'required|email|max:255',
+        'gender' => 'nullable|string|max:10',
+        'marital_status' => 'nullable|string|max:20',
+        'religion' => 'nullable|string|max:50',
+        'lga' => 'nullable|string|max:100',
+        'contact_address' => 'nullable|string|max:255',
+        'password' => 'nullable|string|min:6|confirmed',
+        'passport' => 'nullable|image|max:2048',
+    ]);
 
-        // Find the employee by their number
-        $employee = Employee::where('employee_number', $employee_number)->first();
+    $employee = Employee::where('employee_number', $employee_number)->first();
 
-        if (!$employee) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Employee not found with the provided Subhead Number',
-            ], 404);
+    if (!$employee) {
+        return response()->json([
+            'status' => 'error',
+            'message' => 'Employee not found.'
+        ], 404);
+    }
+
+    // Update basic details
+    $employee->fill($validated);
+
+    // Update password only if provided
+    if ($request->filled('password')) {
+        $employee->password = Hash::make($request->password);
+    }
+
+    // Cloudinary upload
+    if ($request->hasFile('passport')) {
+
+        // Delete old image from Cloudinary
+        if (!empty($employee->passport_public_id)) {
+            Cloudinary::destroy($employee->passport_public_id);
         }
 
-        // Update phone and email
-        $employee->update([
-            'phone' => $request->phone,
-            'email' => $request->email,
-        ]);
+        $uploadedFile = Cloudinary::upload(
+            $request->file('passport')->getRealPath(),
+            ['folder' => 'civil_service/passports']
+        );
 
-        // Return response
-        return response()->json([
-            'status' => 'success',
-            'message' => 'Records updated successfully.',
-            'data' => [
-                'employee_number' => $employee->employee_number,
-                'phone' => $employee->phone,
-                'email' => $employee->email,
-            ]
-        ], 200);
+        $employee->passport = $uploadedFile->getSecurePath();
+        $employee->passport_public_id = $uploadedFile->getPublicId();
+    }
+
+    $employee->save();
+
+    return response()->json([
+        'status' => 'success',
+        'message' => 'Service Account updated successfully.',
+        'data' => $employee
+    ]);
     }
 
 
@@ -223,6 +254,7 @@ class EmployeeApiController extends Controller
 }
 
 
+// For Mobile App: Get employee profile details for the authenticated user. The mobile app will call this endpoint to display the employee's profile information.
 /*
 |--------------------------------------------------------------------------
 Display Employee Details 
@@ -231,19 +263,16 @@ Display Employee Details
 
 public function employeeProfile(Request $request)
 {
-    $employee = $request->user();  // authenticated model
+    $employee = $request->user(); // or auth()->user()
 
-    // If a User (admin) tries to access this endpoint
-    if ($employee instanceof \App\Models\User) {
-        return response()->json([
-            'status' => 'error',
-            'message' => 'Only employees can access this endpoint.',
-        ], 403);
-    }
 
-    // Load Relations
-    $employee->load(['mda:id,mda', 'gradeLevel:id,level', 'step:id,step', 'paygroup:id,paygroup']);
-
+    $employee->load([
+        'mda:id,mda',
+        'gradeLevel:id,level',
+        'step:id,step',
+        'paygroup:id,paygroup'
+    ]);
+    
     return response()->json([
         'status' => 'success',
         'data' => [
@@ -254,22 +283,12 @@ public function employeeProfile(Request $request)
             'gender' => $employee->gender,
             'email' => $employee->email,
             'phone' => $employee->phone,
-            'dob' => $employee->dob,
-            'first_appointment_date' => $employee->first_appointment_date,
-            'confirmation_date' => $employee->confirmation_date,
-            'retirement_date' => $employee->retirement_date,
             'rank' => $employee->rank,
-
             'mda' => optional($employee->mda)->mda,
-            'level' => optional($employee->level)->level,
+            'level' => optional($employee->gradeLevel)->level,
             'step' => optional($employee->step)->step,
             'paygroup' => optional($employee->paygroup)->paygroup,
-
-            'passport' => $employee->passport
-                ? (str_starts_with($employee->passport, 'http')
-                    ? $employee->passport
-                    : null)
-                : null,
+            'passport' => $employee->passport,
         ]
     ]);
 }

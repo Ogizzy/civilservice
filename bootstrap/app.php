@@ -30,6 +30,11 @@ return Application::configure(basePath: dirname(__DIR__))
         
         ]);
     })
+    
+    ->withMiddleware(function (Middleware $middleware) {
+        $middleware->statefulApi(); // This is important for Sanctum
+    })
+
     ->withExceptions(function (Exceptions $exceptions) {
         //
     })

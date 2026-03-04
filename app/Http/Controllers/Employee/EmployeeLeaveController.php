@@ -157,6 +157,7 @@ class EmployeeLeaveController extends Controller
 
         return view('admin.leaves.create', compact('employee', 'leaveTypes', 'leaveBalances'));
     }
+
     /**
      * Store a newly created leave application
      */

@@ -81,14 +81,16 @@
 
                                     {{-- Assign HOD --}}
                                     <button type="button"
-                                        class="btn btn-primary btn-sm assign-hod-btn"
-                                        data-bs-toggle="modal"
-                                        data-bs-target="#assignHodModal"
-                                        data-id="{{ $department->id }}"
-                                        data-name="{{ $department->department_name }}"
-                                        data-hod="{{ $department->hod_id }}">
-                                        <i class="bx bx-user">Assign HOD</i>
-                                    </button>
+                                    class="btn btn-sm {{ $department->hod_id ? 'btn-success' : 'btn-info' }} assign-hod-btn"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#assignHodModal"
+                                    data-id="{{ $department->id }}"
+                                    data-name="{{ $department->department_name }}"
+                                    data-hod="{{ $department->hod_id }}">
+                                    
+                                    <i class="bx bx-user"></i>
+                                    {{ $department->hod_id ? 'Reassign HOD' : 'Assign HOD' }}
+                                </button>
 
                                     <a href="{{ route('departments.edit', $department->id) }}"
                                         class="btn btn-warning btn-sm">
