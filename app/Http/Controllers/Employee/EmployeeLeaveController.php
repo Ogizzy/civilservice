@@ -2,18 +2,19 @@
 
 namespace App\Http\Controllers\Employee;
 
-use Log;
-use App\Models\Employee;
-use App\Models\LeaveType;
-use Illuminate\Http\Request;
-use App\Models\EmployeeLeave;
-use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use App\Models\Employee;
+use App\Models\EmployeeLeave;
 use App\Models\EmployeeLeaveBalance;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Storage;
+use App\Models\LeaveType;
 use App\Notifications\LeaveStatusNotification;
 use Carbon\Carbon;
+use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
+use Log;
 
 class EmployeeLeaveController extends Controller
 {
@@ -249,11 +250,20 @@ class EmployeeLeaveController extends Controller
                 $documentPath = null;
                 $documentName = null;
 
-                if ($request->hasFile('supporting_document')) {
-                    $file = $request->file('supporting_document');
-                    $documentName = $file->getClientOriginalName();
-                    $documentPath = $file->store('leave-documents', 'public');
-                }
+                 // Upload leave document to Cloudinary
+        if ($request->hasFile('supporting_document')) {
+            $file = $request->file('supporting_document');
+            $documentName = $file->getClientOriginalName();
+
+            // Upload to Cloudinary
+            $uploadedFile = Cloudinary::upload(
+                $file->getRealPath(),
+                ['folder' => 'civil_service/leaves']
+            );
+
+            // Get the secure URL
+            $documentUrl = $uploadedFile->getSecurePath();
+        }
 
                 EmployeeLeave::create([
                     'employee_id' => $employee->id,
@@ -266,8 +276,8 @@ class EmployeeLeaveController extends Controller
                     'contact_phone' => $validated['contact_phone'],
                     'emergency_contact' => $validated['emergency_contact'],
                     'emergency_phone' => $validated['emergency_phone'],
-                    'supporting_document_url' => $documentPath,
-                    'supporting_document_name' => $file->getClientOriginalName(),
+                    'supporting_document_url' => $documentUrl ?? null,
+                    'supporting_document_name' => $documentName ?? null,
                     'status' => 'pending',
                     'approval_stage' => 'hod',
                     'created_by' => Auth::id(),

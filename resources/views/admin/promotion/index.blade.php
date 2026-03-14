@@ -87,7 +87,7 @@
                                         <br>
                                         <small class="text-muted">{{ $promotion->created_at->diffForHumans() }}</small>
                                         <td>
-                                            <a href="{{ asset('storage/' . $promotion->document->document) }}" target="_blank"
+                                            <a href="{{ $promotion->document->document }}" target="_blank"
                                                 class="btn btn-sm btn-secondary" title="View Document">
                                                 <i class="lni lni-eye"> View</i>
                                             </a>

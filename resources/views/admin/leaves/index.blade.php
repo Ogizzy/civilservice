@@ -399,7 +399,7 @@
                                 <td>
                                     @if ($leave->supporting_document_url)
                                         <button class="btn btn-sm btn-outline-primary"
-                                            onclick="previewDocument('{{ asset('storage/' . $leave->supporting_document_url) }}')">
+                                            onclick="previewDocument('{{ $leave->supporting_document_url }}')">
                                             Preview
                                         </button>
                                     @else

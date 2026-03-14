@@ -33,7 +33,7 @@
                             <i class="fadeIn animated bx bx-left-arrow-alt me-1"></i> Back to Promotions
                         </a>
                         @if($promotion->document)
-                            <a href="{{ asset('storage/' . $promotion->document->document) }}" target="_blank" class="btn btn-primary">
+                            <a href="{{ $promotion->document->document }}" target="_blank" class="btn btn-primary">
                                 <i class="lni lni-download me-1"></i> Download Document
                             </a>
                         @endif
@@ -160,10 +160,10 @@
                                     </div>
                                 </div>
                                 <div class="d-flex gap-2">
-                                    <a href="{{ asset('storage/' . $promotion->document->document) }}" target="_blank" class="btn btn-outline-primary btn-sm">
+                                    <a href="{{ $promotion->document->document }}" target="_blank" class="btn btn-outline-primary btn-sm">
                                         <i class="lni lni-eye me-1"></i> View
                                     </a>
-                                    <a href="{{ asset('storage/' . $promotion->document->document) }}" download class="btn btn-outline-secondary btn-sm">
+                                    <a href="{{ $promotion->document->document }}" target="_blank" download class="btn btn-outline-secondary btn-sm">
                                         <i class="lni lni-download me-1"></i> Download
                                     </a>
                                 </div>

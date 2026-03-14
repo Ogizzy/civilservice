@@ -43,8 +43,31 @@ class EmployeeApiController extends Controller
         return response()->json([
             'status' => 'success',
             'data' => [
+                'name' => trim("{$employee->surname}, {$employee->first_name} {$employee->middle_name}"),
                 'employee_number' => $employee->employee_number,
-                'name' => trim("{$employee->surname} {$employee->first_name} {$employee->middle_name}"),
+                'email' => $employee->email,
+                'phone' => $employee->phone,
+                'contact_address' => $employee->contact_address,
+                'dob' => $employee->dob,
+                'gender' => $employee->gender,
+                'marital_status' => $employee->marital_status,
+                'religion' => $employee->religion,
+                'lga' => $employee->lga,
+                'first_appointment_date' => $employee->first_appointment_date,
+                'confirmation_date' => $employee->confirmation_date,
+                'retirement_date' => $employee->retirement_date,
+                'rank' => $employee->rank,
+                'qualifications' => $employee->qualifications,
+                'net_pay' => $employee->net_pay,
+                'mda_id' => $employee->mda,
+                'department_id' => $employee->department,
+                'paygroup_id' => $employee->paygroup,
+                'level_id' => $employee->gradeLevel,
+                'step_id' => $employee->step,
+                // 'passport' => $employee->passport,
+                'passport' => $employee->passport ? $employee->passport : null,
+
+                
             ]
         ]);
     }

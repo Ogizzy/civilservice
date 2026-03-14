@@ -2,12 +2,13 @@
 
 namespace App\Http\Controllers\Transfer;
 
+use App\Http\Controllers\Controller;
 use App\Models\Document;
 use App\Models\Employee;
-use Illuminate\Http\Request;
-use App\Models\TransferHistory;
-use App\Http\Controllers\Controller;
 use App\Models\MDA;
+use App\Models\TransferHistory;
+use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
@@ -69,20 +70,22 @@ class TransferHistoryController extends Controller
         'document_file' => 'required|file|max:10240', // 10MB max
     ]);
 
-    // Fetch the employee by ID
-    // $employee = Employee::findOrFail($validated['employee_id']);  // Fetch the employee based on ID
+    // upload supporting document On (Cloudinary)
+     $url = null;
 
-    // Upload supporting document On (Local Machine)
-    $path = $request->file('document_file')->store('transfers', 'public');
-    $url = asset('storage/' . $path);
-
-    // Upload supporting document On (Cloudinary or AWS S3 Bucket).)
-    // $path = $request->file('document_file')->store('transfers', 's3');
-    // $url = Storage::disk('s3')->url($path);
+    // Upload supporting document on Cloudinary
+    if ($request->hasFile('document_file')) {
+        $uploadedFile = Cloudinary::upload(
+            $request->file('document_file')->getRealPath(),
+            ['folder' => 'civil_service/transfers']
+        );
+        // Get the URL of the uploaded file
+        $url = $uploadedFile->getSecurePath();
+    }
 
     // Create document record
     $document = Document::create([
-        'employee_id' => $employee->id, // Store the employee ID
+        'employee_id' => $employee->id,
         'document_type' => 'Transfer Letter',
         'document' => $url,
         'user_id' => Auth::id(),

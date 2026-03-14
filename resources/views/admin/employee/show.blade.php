@@ -194,7 +194,7 @@
                                                         <td>{{ $document->document_type }}</td>
                                                         <td>{{ $document->created_at->format('d M, Y') }}</td>
                                                         <td>
-                                                            <a href="{{ asset('storage/' . $document->document) }}"
+                                                            <a href="{{ $document->document }}"
                                                                 target="_blank" class="btn btn-sm btn-primary">
                                                                 <i class="lni lni-eye"></i> View
                                                             </a>

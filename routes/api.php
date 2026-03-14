@@ -26,11 +26,20 @@ Route::middleware('api')->group(function () {
     // Route::post('/password/reset', [AuthController::class, 'resetPassword']);
 });
 
+// Reset Link Based Password Reset for Web
 Route::post('/forgot-password', 
     [PasswordResetController::class, 'sendResetLink']);
 
 Route::post('/reset-password', 
     [PasswordResetController::class, 'resetPassword']);
+
+// OTP Based Password Reset for Mobile App
+Route::prefix('password')->group(function () {
+    Route::post('/send-otp', [AuthController::class, 'sendOtp'])
+        ->middleware('throttle:5,1');
+    Route::post('/verify-otp', [AuthController::class, 'verifyOtp']);
+    Route::post('/reset-otp', [AuthController::class, 'resetPasswordWithOtp']);
+});
 
 /*
 |--------------------------------------------------------------------------

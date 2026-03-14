@@ -2,13 +2,14 @@
 
 namespace App\Http\Controllers\Promotiom;
 
-use App\Models\Step;
+use App\Http\Controllers\Controller;
 use App\Models\Document;
 use App\Models\Employee;
 use App\Models\GradeLevel;
-use Illuminate\Http\Request;
 use App\Models\PromotionHistory;
-use App\Http\Controllers\Controller;
+use App\Models\Step;
+use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
@@ -68,15 +69,21 @@ class PromotionHistoryController extends Controller
             'document_file' => 'required|file|mimes:pdf,doc,docx,jpg,jpeg|max:10240', // 10MB max
         ]);
 
-        // Upload supporting document
-        $path = $request->file('document_file')->store('promotions', 'public');
-        // $url = Storage::url($path);
+        // Upload supporting document to Cloudinary
+        $url = null;
+        if ($request->hasFile('document_file')) {
+            $uploadedFile = Cloudinary::upload(
+                $request->file('document_file')->getRealPath(),
+                ['folder' => 'civil_service/promotions']
+            );
+            $url = $uploadedFile->getSecurePath();
+        }
 
         // Create document record
         $document = Document::create([
             'employee_id' => $employee->id,
             'document_type' => 'Promotion Letter',
-            'document' => $path,
+            'document' => $url,
             'user_id' => Auth::id(),
         ]);
 

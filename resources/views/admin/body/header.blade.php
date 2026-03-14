@@ -33,26 +33,12 @@
             </div>
 
             <div class="user-box dropdown px-3">
-                {{-- <a class="d-flex align-items-center nav-link dropdown-toggle gap-3 dropdown-toggle-nocaret" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                    <img src="{{ Auth::user()->passport_url }}" class="user-img" alt="user avatar">
-                    <div class="user-info">
-                        <p class="user-name mb-0">
-                            {{ Auth::user()->surname ?? '' }} {{ Auth::user()->first_name ?? '' }}
-                        </p>
-                        <p class="designattion mb-0">
-                            {{ Auth::user()->role->role ?? 'Role not assigned' }}
-                        </p>
-                    </div>
-                    
-                </a> --}}
-
-
                 @php
                 $user = Auth::user();
             @endphp
             
             <a class="d-flex align-items-center nav-link dropdown-toggle gap-3 dropdown-toggle-nocaret" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                <img src="{{ $user?->passport_url ?? asset('default-avatar.png') }}" class="user-img" alt="user avatar">
+                <img src="{{ $user?->employee->passport ?? asset('default-avatar.png') }}" class="user-img" alt="user avatar">
                 <div class="user-info">
                     <p class="user-name mb-0">
                         {{ $user?->surname ?? '' }} {{ $user?->first_name ?? '' }}
@@ -62,8 +48,6 @@
                     </p>
                 </div>
             </a>
-            
-
                 
                 <ul class="dropdown-menu dropdown-menu-end">
                     <li><a class="dropdown-item d-flex align-items-center" href="{{ route('service-account.edit')}}"><i class="bx bx-user fs-5"></i><span>My Service Account</span></a>
