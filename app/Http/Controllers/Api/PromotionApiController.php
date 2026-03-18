@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Document;
 use App\Models\Employee;
 use App\Models\PromotionHistory;
 use Illuminate\Http\Request;

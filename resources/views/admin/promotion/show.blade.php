@@ -194,7 +194,7 @@
                                 <i class="bx bx-list-ul me-1"></i> All Promotions
                             </a>
                             @if($promotion->document)
-                                <a href="{{ asset('storage/' . $promotion->document->document) }}" target="_blank" class="btn btn-outline-success btn-sm">
+                                <a href="{{ $promotion->document->document }}" target="_blank" class="btn btn-outline-success btn-sm">
                                     <i class="bx bx-printer me-1"></i> Print Document
                                 </a>
                             @endif

@@ -129,6 +129,7 @@ class PromotionHistoryController extends Controller
         
         return view('admin.promotion.show', compact('employee', 'promotion'));
     }
+    
 
     /**
      * Remove the specified promotion record from storage.
