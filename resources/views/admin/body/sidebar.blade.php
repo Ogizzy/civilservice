@@ -52,7 +52,7 @@
 
         <li class="menu-label">Manage System Structure</li>
         <!-- Manage Departments -->
-        {{-- @usercan('Employee Management', 'can_edit') --}}
+        @usercan('Employee Management', 'can_edit')
         <li>
             <a href="javascript:;" class="has-arrow">
                 <div class="parent-icon"><i class="fadeIn animated bx bx-layer"></i></div>
@@ -60,13 +60,13 @@
             </a>
 
             <ul>
-                {{-- @usercan('Employee Management', 'can_create') --}}
+                @usercan('Employee Management', 'can_create')
                 <li>
                     <a href="{{ route('departments.create') }}">
                         <i class='bx bx-radio-circle'></i>Create Department
                     </a>
                 </li>
-                {{-- @endusercan --}}
+                @endusercan
 
                 <li>
                     <a href="{{ route('departments.index') }}">
@@ -76,10 +76,10 @@
 
             </ul>
         </li>
-        {{-- @endusercan --}}
+        @endusercan
 
         <!-- Manage Units -->
-        {{-- @usercan('Employee Management', 'can_edit') --}}
+        @usercan('Employee Management', 'can_edit')
         <li>
             <a href="javascript:;" class="has-arrow">
                 <div class="parent-icon"><i class="fadeIn animated bx bx-merge"></i></div>
@@ -87,13 +87,13 @@
             </a>
 
             <ul>
-                {{-- @usercan('Employee Management', 'can_create') --}}
+                @usercan('Employee Management', 'can_create')
                 <li>
                     <a href="{{ route('units.create') }}">
                         <i class='bx bx-radio-circle'></i>Create Unit
                     </a>
                 </li>
-                {{-- @endusercan --}}
+                @endusercan
 
                 <li>
                     <a href="{{ route('units.index') }}">
@@ -103,7 +103,7 @@
 
             </ul>
         </li>
-        {{-- @endusercan --}}
+        @endusercan
 
 
         <!-- Employee Management Group -->

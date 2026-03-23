@@ -77,7 +77,7 @@
                             <td>{{ $doc->created_at->format('d M, Y') }}</td>
                             <td>{{ $doc->user->surname ?? 'N/A' }} {{ $doc->user->first_name ?? 'N/A' }}</td>
                             <td>
-                                <a href="{{ asset('storage/' . $doc->document) }}" target="_blank" class="btn btn-sm btn-info"><i class="lni lni-eye" title="View This Document"></i> View Document</a>
+                                <a href="{{ $doc->document }}" target="_blank" class="btn btn-sm btn-info"><i class="lni lni-eye" title="View This Document"></i> View Document</a>
                             </td>
 
                              @if(auth()->user()->role->role != 'Employee')

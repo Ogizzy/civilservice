@@ -59,7 +59,7 @@ Route::put('/platform-features/{platform_feature}', [PlatformFeatureController::
 Route::patch('/platform-features/{platform_feature}', [PlatformFeatureController::class, 'update']);
 Route::delete('/platform-features/{platform_feature}', [PlatformFeatureController::class, 'destroy'])->name('platform-features.destroy');
 
-Route::prefix('users')->middleware(['auth'])->group(function () {
+Route::prefix('/admin/users')->middleware(['auth', 'check.status', 'role:BDIC Super Admin,Head of Service,Commissioner,Director'])->group(function () {
     Route::get('/', [UserController::class, 'index'])->name('users.index');
     Route::get('/create', [UserController::class, 'create'])->name('users.create');
     Route::post('/', [UserController::class, 'store'])->name('users.store');
@@ -373,8 +373,8 @@ Route::middleware(['auth', 'check.status'])->group(function () {
 
 
 // Regular users
-Route::middleware(['auth', 'check.status'])->group(function () {
-    Route::get('/dashboard', [UserController::class, 'index'])->name('user.dashboard');
+Route::middleware(['auth', 'check.status', 'role:BDIC Super Admin,Head of Service,Commissioner,Director'])->group(function () {
+    Route::get('/dashboard', [UserController::class, 'index'])->name('admin.dashboard');
 });
 
 // Admins only

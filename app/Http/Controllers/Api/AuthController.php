@@ -15,7 +15,7 @@ class AuthController extends Controller
 {
     public function login(Request $request)
     {
-       $request->validate([
+        $request->validate([
             'email' => 'required|email',
             'password' => 'required'
         ]);
@@ -36,8 +36,17 @@ class AuthController extends Controller
             'status' => 'success',
             'message' => 'Login successful',
             'token' => $token,
-            'user' => $user
-        ]);
+            'user' => [
+                'id' => $user->id,
+                'employee_id' => optional($user->employee)->id, // 👈 THIS
+                'employee_number' => optional($user->employee)->employee_number,
+                'surname' => $user->surname,
+                'first_name' => $user->first_name,
+                'email' => $user->email,
+                'role_id' => $user->role_id,
+                'status' => $user->status,
+            ]
+        ], 200);
     }
 
     public function resetPassword(Request $request)
@@ -102,82 +111,82 @@ Benue State Civil Service Commission", function ($message) use ($request) {
         ]);
     }
 
-public function verifyOtp(Request $request)
-{
-    $request->validate([
-        'email' => 'required|email',
-        'otp'   => 'required|digits:6'
-    ]);
+    public function verifyOtp(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email',
+            'otp'   => 'required|digits:6'
+        ]);
 
-    $otpRecord = DB::table('password_otps')
-        ->where('email', $request->email)
-        ->where('otp', $request->otp)
-        ->first();
+        $otpRecord = DB::table('password_otps')
+            ->where('email', $request->email)
+            ->where('otp', $request->otp)
+            ->first();
 
-    // Check if OTP exists
-    if (!$otpRecord) {
+        // Check if OTP exists
+        if (!$otpRecord) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Invalid OTP'
+            ], 400);
+        }
+
+        // Check if OTP expired
+        if (now()->gt($otpRecord->expires_at)) {
+            return response()->json([
+                'status' => false,
+                'message' => 'OTP has expired'
+            ], 400);
+        }
+
         return response()->json([
-            'status' => false,
-            'message' => 'Invalid OTP'
-        ], 400);
+            'status' => true,
+            'message' => 'OTP verified successfully'
+        ]);
     }
 
-    // Check if OTP expired
-    if (now()->gt($otpRecord->expires_at)) {
+    public function resetPasswordWithOtp(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email',
+            'otp' => 'required',
+            'password' => 'required|min:6|confirmed'
+        ]);
+
+        $otp = DB::table('password_otps')
+            ->where('email', $request->email)
+            ->where('otp', $request->otp)
+            ->first();
+
+        if (!$otp) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Invalid OTP'
+            ], 400);
+        }
+
+        if (now()->gt($otp->expires_at)) {
+            return response()->json([
+                'status' => false,
+                'message' => 'OTP expired'
+            ], 400);
+        }
+
+        $user = \App\Models\User::where('email', $request->email)->first();
+
+        $user->update([
+            'password' => Hash::make($request->password)
+        ]);
+
+        DB::table('password_otps')
+            ->where('email', $request->email)
+            ->delete();
+
         return response()->json([
-            'status' => false,
-            'message' => 'OTP has expired'
-        ], 400);
+            'status' => true,
+            'message' => 'Password reset successful'
+        ]);
     }
-
-    return response()->json([
-        'status' => true,
-        'message' => 'OTP verified successfully'
-    ]);
-}
-
-public function resetPasswordWithOtp(Request $request)
-{
-    $request->validate([
-        'email'=>'required|email',
-        'otp'=>'required',
-        'password'=>'required|min:6|confirmed'
-    ]);
-
-    $otp = DB::table('password_otps')
-        ->where('email',$request->email)
-        ->where('otp',$request->otp)
-        ->first();
-
-    if(!$otp){
-        return response()->json([
-            'status'=>false,
-            'message'=>'Invalid OTP'
-        ],400);
-    }
-
-    if(now()->gt($otp->expires_at)){
-        return response()->json([
-            'status'=>false,
-            'message'=>'OTP expired'
-        ],400);
-    }
-
-    $user = \App\Models\User::where('email',$request->email)->first();
-
-    $user->update([
-        'password'=>Hash::make($request->password)
-    ]);
-
-    DB::table('password_otps')
-        ->where('email',$request->email)
-        ->delete();
-
-    return response()->json([
-        'status'=>true,
-        'message'=>'Password reset successful'
-    ]);
-} 
-//  End of OTP Based Password Reset Methods
+    //  End of OTP Based Password Reset Methods
 
 }
