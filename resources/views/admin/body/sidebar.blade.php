@@ -401,6 +401,12 @@
                             <i class='bx bx-radio-circle'></i>Transfer History
                         </a>
                     </li>
+                   
+                    <li>
+                        <a href="{{ route('employees.posting.index', $employee->id) }}">
+                            <i class='bx bx-radio-circle'></i>Posting History
+                        </a>
+                    </li>
 
                 </ul>
             </li>

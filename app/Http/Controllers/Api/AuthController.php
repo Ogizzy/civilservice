@@ -38,7 +38,7 @@ class AuthController extends Controller
             'token' => $token,
             'user' => [
                 'id' => $user->id,
-                'employee_id' => optional($user->employee)->id, // 👈 THIS
+                'employee_id' => optional($user->employee)->id, 
                 'employee_number' => optional($user->employee)->employee_number,
                 'surname' => $user->surname,
                 'first_name' => $user->first_name,

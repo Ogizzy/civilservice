@@ -465,7 +465,7 @@ class EmployeeLeaveController extends Controller
                 // Upload new document
                 $file = $request->file('supporting_document');
                 $originalName = $file->getClientOriginalName();
-                $filePath = $file->store('leave-documents', 'public'); // saved in storage/app/public/leave-documents
+                $filePath = $file->store('leave-documents', 'public'); 
 
                 $updateData['supporting_document_url'] = $filePath;
                 $updateData['supporting_document_name'] = $originalName;

@@ -64,6 +64,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::post('/leave/apply', [LeaveController::class, 'apply']);
     Route::get('/leave/{id}', [LeaveController::class, 'show']);
     Route::post('/leave/{id}/cancel', [LeaveController::class, 'cancel']);
+    Route::get('/leave/balances', [LeaveController::class, 'leaveBalances']);
 
     // TRANSFER APIs
     Route::get('/employees/{employee}/transfers', [TransferController::class, 'index']);

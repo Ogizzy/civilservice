@@ -80,33 +80,5 @@
             </div>
         </div>
     </div>
-
-    <!-- Employee Quick Links -->
-    <div class="row mt-4">
-        <div class="col-md-3">
-            <a href="{{ route('employees.show', auth()->user()->employee->id) }}" class="btn btn-outline-primary w-100">
-                <i class="bx bx-user me-1"></i> View Profile
-            </a>
-        </div>
-        <div class="col-md-3">
-            <a href="{{ route('employees.documents.index', auth()->user()->employee->id) }}" class="btn btn-outline-info w-100">
-                <i class="bx bx-file me-1"></i> My Documents
-            </a>
-        </div>
-        <div class="col-md-3">
-            <a href="{{ route('employees.promotions.index', auth()->user()->employee->id) }}" class="btn btn-outline-success w-100">
-                <i class="bx bx-up-arrow-circle me-1"></i> Promotion History
-            </a>
-        </div>
-        <div class="col-md-3">
-            <a href="{{ route('employees.transfers.index', auth()->user()->employee->id) }}" class="btn btn-outline-warning w-100">
-                <i class="bx bx-transfer me-1"></i> Transfer History
-            </a>
-        </div>
-    </div>
-
-    <!-- Optional Additions -->
-    {{-- You can also show: commendation, queries, trainings, pending approvals, messages, etc. --}}
 </div>
-
 @endsection
