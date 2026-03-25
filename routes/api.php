@@ -60,13 +60,14 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::post('/employee/upload-image', [EmployeeApiController::class, 'uploadImage']);
 
     // LEAVE APIs
+    Route::get('/leave/balances', [LeaveController::class, 'leaveBalances']);
     Route::get('/leave/history', [LeaveController::class, 'history']);
     Route::post('/leave/apply', [LeaveController::class, 'apply']);
     Route::get('/leave/{id}', [LeaveController::class, 'show']);
     Route::post('/leave/{id}/cancel', [LeaveController::class, 'cancel']);
-    Route::get('/leave/balances', [LeaveController::class, 'leaveBalances']);
+    
 
-    // TRANSFER APIs
+    // TRANSFER APIs 
     Route::get('/employees/{employee}/transfers', [TransferController::class, 'index']);
     Route::post('/employees/{employee}/transfers', [TransferController::class, 'store']);
     Route::get('/employees/{employee}/transfers/{transfer}', [TransferController::class, 'show']);

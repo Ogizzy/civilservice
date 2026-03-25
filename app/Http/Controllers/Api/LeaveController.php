@@ -9,6 +9,7 @@ use App\Models\Employee;
 use App\Models\EmployeeLeave;
 use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class LeaveController extends Controller
 {
@@ -143,50 +144,74 @@ class LeaveController extends Controller
         ], 201);
     }
 
-    public function leaveBalances()
-    {
-       $employee = Employee::where('user_id', auth()->id())->first();
+ public function leaveBalances(Request $request)
+{
+    $employee = Auth::user()->employee;
 
-        if (!$employee) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Employee not found'
-            ], 404);
-        }
-
-        $leaveTypes = \App\Models\LeaveType::where('is_active', true)->get();
-
-        $balances = [];
-
-        foreach ($leaveTypes as $type) {
-
-            $used = $employee->leaves()
-                ->where('leave_type_id', $type->id)
-                ->whereYear('start_date', date('Y'))
-                ->where('status', 'approved')
-                ->sum('total_days');
-
-            $pending = $employee->leaves()
-                ->where('leave_type_id', $type->id)
-                ->whereYear('start_date', date('Y'))
-                ->where('status', 'pending')
-                ->sum('total_days');
-
-            $balances[] = [
-                'leave_type_id' => $type->id,
-                'leave_type' => $type->name,
-                'allocated' => $type->max_days_per_year,
-                'used' => $used,
-                'pending' => $pending,
-                'available' => $type->max_days_per_year - $used - $pending
-            ];
-        }
-
+    if (!$employee) {
         return response()->json([
-            'status' => true,
-            'data' => $balances
-        ]);
+            'status' => false,
+            'message' => 'Employee not found'
+        ], 404);
     }
+
+    $currentYear = now()->year;
+
+    $leaveTypes = \App\Models\LeaveType::where('is_active', true)->get();
+
+    $data = [];
+
+    foreach ($leaveTypes as $type) {
+
+        $balance = \App\Models\EmployeeLeaveBalance::where([
+            'employee_id' => $employee->id,
+            'leave_type_id' => $type->id,
+            'year' => $currentYear
+        ])->first();
+
+        $data[] = [
+            'leave_type_id' => $type->id,
+            'leave_type' => $type->name,
+            'allocated' => $balance?->entitled_days ?? $type->max_days_per_year,
+            'used' => $balance?->used_days ?? 0,
+            'pending' => 0, // optional (if you track pending separately)
+            'available' => $balance?->remaining_days ?? $type->max_days_per_year,
+        ];
+    }
+
+    return response()->json([
+        'status' => true,
+        'data' => $data
+    ]);
+}
+
+ public function show($id)
+{
+    $employee = auth()->user()->employee;
+
+    if (!$employee) {
+        return response()->json([
+            'status' => false,
+            'message' => 'Employee not found'
+        ], 404);
+    }
+
+    $leave = \App\Models\EmployeeLeave::where('id', $id)
+        ->where('employee_id', $employee->id)
+        ->first();
+
+    if (!$leave) {
+        return response()->json([
+            'status' => false,
+            'message' => 'Leave not found for this employee'
+        ], 404);
+    }
+
+    return response()->json([
+        'status' => true,
+        'data' => $leave
+    ]);
+}
 
     public function history()
     {
@@ -203,37 +228,7 @@ class LeaveController extends Controller
         ]);
     }
 
-    public function show($id)
-    {
-       $employee = Employee::where('user_id', auth()->id())->first();
-
-    if (!$employee) {
-        return response()->json([
-            'status' => false,
-            'message' => 'Employee profile not found'
-        ], 404);
-    }
-
-    $leave = EmployeeLeave::where('id', $id)
-        ->where('employee_id', $employee->id)
-        ->first();
-
-    if (!$leave) {
-        return response()->json([
-            'status' => false,
-            'message' => 'Leave not found'
-        ], 404);
-    }
-
-    return response()->json([
-        'status' => true,
-        'data' => $leave
-    ]);
-    
-    }
-
-
-    public function cancel($id)
+     public function cancel($id)
     {
         $employee = auth()->user()->employee;
 
