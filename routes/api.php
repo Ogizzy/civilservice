@@ -1,15 +1,16 @@
 <?php
 
+use App\Http\Controllers\Api\Auth\PasswordResetController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\EmployeeApiController;
 use App\Http\Controllers\Api\LeaveController;
+use App\Http\Controllers\Api\PostingController;
 use App\Http\Controllers\Api\PromotionApiController;
 use App\Http\Controllers\Api\PromotionHistoryController;
 use App\Http\Controllers\Api\TransferController;
 use App\Http\Controllers\Api\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Api\Auth\PasswordResetController;
 
 /*
 |--------------------------------------------------------------------------
@@ -78,4 +79,22 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::post('/employees/{employee}/promotions', [PromotionApiController::class, 'store']);
     Route::get('/employees/{employee}/promotions/{promotion}', [PromotionApiController::class, 'show']);
     Route::delete('/employees/{employee}/promotions/{promotion}', [PromotionApiController::class, 'destroy']);
+    
+    // Employee Posting APIs
+    Route::prefix('postings')->group(function () {
+
+    Route::get('/', [PostingController::class, 'index']); // employee postings
+    Route::post('/create', [PostingController::class, 'store']);
+
+    Route::get('/{id}', [PostingController::class, 'show'])
+        ->where('id', '[0-9]+');
+
+    Route::put('/{id}', [PostingController::class, 'update']);
+    Route::delete('/{id}', [PostingController::class, 'destroy']);
+});
+
+Route::get('/mdas', function () {
+    return \App\Models\MDA::select('id','mda')->get();
+});
+
     });
