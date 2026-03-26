@@ -81,14 +81,13 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::delete('/employees/{employee}/promotions/{promotion}', [PromotionApiController::class, 'destroy']);
     
     // Employee Posting APIs
-    Route::prefix('postings')->group(function () {
+    
+Route::prefix('employees/{employee_id}/postings')->group(function () {
 
-    Route::get('/', [PostingController::class, 'index']); // employee postings
-    Route::post('/create', [PostingController::class, 'store']);
+    Route::get('/', [PostingController::class, 'index']); // list postings
+    Route::post('/', [PostingController::class, 'store']); // create posting
 
-    Route::get('/{id}', [PostingController::class, 'show'])
-        ->where('id', '[0-9]+');
-
+    Route::get('/{id}', [PostingController::class, 'show']);
     Route::put('/{id}', [PostingController::class, 'update']);
     Route::delete('/{id}', [PostingController::class, 'destroy']);
 });

@@ -250,7 +250,7 @@ class EmployeeLeaveController extends Controller
                 $documentPath = null;
                 $documentName = null;
 
-                 // Upload leave document to Cloudinary
+            // Upload leave document to Cloudinary
         if ($request->hasFile('supporting_document')) {
             $file = $request->file('supporting_document');
             $documentName = $file->getClientOriginalName();
